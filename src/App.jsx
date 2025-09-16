@@ -1,34 +1,57 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import NavigationHeader from './components/calendar/NavigationHeader'
+import { getCurrentWeek, getPreviousWeek, getNextWeek, getWeekRange } from './components/calendar/utils/dateUtils'
+import './components/calendar/styles/index.css'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [isNavigating, setIsNavigating] = useState(false)
+
+  const currentWeek = getWeekRange(currentDate)
+
+  const handlePreviousWeek = () => {
+    setIsNavigating(true)
+    setTimeout(() => {
+      setCurrentDate(getPreviousWeek(currentDate))
+      setIsNavigating(false)
+    }, 150)
+  }
+
+  const handleNextWeek = () => {
+    setIsNavigating(true)
+    setTimeout(() => {
+      setCurrentDate(getNextWeek(currentDate))
+      setIsNavigating(false)
+    }, 150)
+  }
+
+  const handleTodayClick = () => {
+    setIsNavigating(true)
+    setTimeout(() => {
+      setCurrentDate(new Date())
+      setIsNavigating(false)
+    }, 150)
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="mobile-calendar">
+      <h1>Mobile Calendar - NavigationHeader Demo</h1>
+
+      <NavigationHeader
+        currentWeek={currentWeek}
+        onPreviousWeek={handlePreviousWeek}
+        onNextWeek={handleNextWeek}
+        onTodayClick={handleTodayClick}
+        isNavigating={isNavigating}
+      />
+
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <p>Use the navigation controls above to browse different weeks.</p>
+        <p>Current week: {currentWeek.startDate.toDateString()} - {currentWeek.endDate.toDateString()}</p>
+        <p>Week number: {currentWeek.weekNumber} of {currentWeek.year}</p>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 

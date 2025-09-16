@@ -3,12 +3,28 @@
  * Mobile-first responsive design with proper touch targets
  */
 
+/* CSS Custom Properties for theming */
+:root {
+  --calendar-primary: #4caf50;
+  --calendar-primary-light: #c8e6c9;
+  --calendar-primary-dark: #2e7d32;
+  --calendar-primary-contrast: #ffffff;
+  --calendar-secondary: #f5f5f5;
+  --calendar-accent: #2196f3;
+  --calendar-background: #ffffff;
+  --calendar-surface: #fafafa;
+  --calendar-border: #e0e0e0;
+  --calendar-text-primary: #212121;
+  --calendar-text-secondary: #757575;
+  --calendar-text-disabled: #bdbdbd;
+}
+
 /* Mobile Calendar Container */
 .mobile-calendar {
   width: 100%;
   max-width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #ffffff;
+  background-color: var(--calendar-background);
 }
 
 /* Week View - Mobile-first Flexbox Layout */
