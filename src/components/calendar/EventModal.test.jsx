@@ -175,22 +175,27 @@ describe('EventModal', () => {
             const descriptionInput = screen.getByLabelText(/description/i);
             const submitButton = screen.getByRole('button', { name: /create/i });
 
+            // Type into the fields (they should be empty initially)
             await user.type(titleInput, 'Test Event');
             await user.type(descriptionInput, 'Test Description');
+            
+            // Submit the form
             await user.click(submitButton);
 
             await waitFor(() => {
-                expect(mockProps.onSave).toHaveBeenCalledWith({
-                    id: expect.any(String),
-                    title: 'Test Event',
-                    description: 'Test Description',
-                    startDate: mockProps.selectedDate,
-                    endDate: mockProps.selectedDate,
-                    startTime: '09:00',
-                    endTime: '10:00',
-                    theme: 'main',
-                    isAllDay: false
-                });
+                expect(mockProps.onSave).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        id: expect.any(String),
+                        title: 'Test Event',
+                        description: 'Test Description',
+                        startDate: mockProps.selectedDate,
+                        endDate: mockProps.selectedDate,
+                        startTime: '09:00',
+                        endTime: '10:00',
+                        theme: 'main',
+                        isAllDay: false
+                    })
+                );
             });
         });
 

@@ -7,12 +7,15 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import DayCell from './DayCell';
+import { createDate } from './utils/dateUtils';
 
 // Mock the dateUtils module
 vi.mock('./utils/dateUtils', () => ({
   formatDayName: vi.fn((date) => date.toLocaleDateString('en-US', { weekday: 'short' })),
   formatDayNumber: vi.fn((date) => date.getDate().toString()),
-  calculateEventPosition: vi.fn((startTime, endTime) => ({ top: 0, height: 60 }))
+  calculateEventPosition: vi.fn((startTime, endTime) => ({ top: 0, height: 60 })),
+  createDate: vi.fn((year, month, day, hours = 0, minutes = 0, seconds = 0) => 
+    new Date(year, month - 1, day, hours, minutes, seconds))
 }));
 
 // Mock EventItem component
@@ -35,7 +38,7 @@ vi.mock('./EventItem', () => ({
 }));
 
 describe('DayCell Component', () => {
-  const mockDate = new Date(2024, 0, 1); // January 1, 2024
+  const mockDate = createDate(2024, 1, 1); // January 1, 2024
   const mockEvents = [
     {
       id: '1',

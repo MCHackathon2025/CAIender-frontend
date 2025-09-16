@@ -4,6 +4,20 @@
  */
 
 /**
+ * Create a new Date with 1-based month input (more intuitive)
+ * @param {number} year - The year
+ * @param {number} month - The month (1-12, where 1 = January)
+ * @param {number} day - The day of the month
+ * @param {number} hours - The hours (optional, defaults to 0)
+ * @param {number} minutes - The minutes (optional, defaults to 0)
+ * @param {number} seconds - The seconds (optional, defaults to 0)
+ * @returns {Date} - New Date object
+ */
+export function createDate(year, month, day, hours = 0, minutes = 0, seconds = 0) {
+  return new Date(year, month - 1, day, hours, minutes, seconds);
+}
+
+/**
  * Get the start of the week (Monday) for a given date
  * @param {Date} date - The date to get the week start for
  * @returns {Date} - The start of the week (Monday)

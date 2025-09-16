@@ -4,7 +4,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import NavigationHeader from './NavigationHeader.jsx';
-import { getCurrentWeek } from './utils/dateUtils.js';
+import { getCurrentWeek, createDate } from './utils/dateUtils.js';
 
 describe('NavigationHeader', () => {
   const mockCurrentWeek = getCurrentWeek();
@@ -102,8 +102,8 @@ describe('NavigationHeader', () => {
   it('handles different week ranges correctly', () => {
     // Test with a specific week range
     const customWeek = {
-      startDate: new Date(2024, 11, 9), // December 9, 2024
-      endDate: new Date(2024, 11, 15),  // December 15, 2024
+      startDate: createDate(2024, 12, 9), // December 9, 2024
+      endDate: createDate(2024, 12, 15),  // December 15, 2024
       weekNumber: 50,
       year: 2024
     };
@@ -117,8 +117,8 @@ describe('NavigationHeader', () => {
   it('handles cross-month week ranges correctly', () => {
     // Test with a week that spans two months
     const crossMonthWeek = {
-      startDate: new Date(2024, 11, 30), // December 30, 2024
-      endDate: new Date(2025, 0, 5),     // January 5, 2025
+      startDate: createDate(2024, 12, 30), // December 30, 2024
+      endDate: createDate(2025, 1, 5),     // January 5, 2025
       weekNumber: 1,
       year: 2025
     };
