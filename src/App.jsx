@@ -77,8 +77,8 @@ function App() {
 
   const handleEventUpdate = (updatedEvent) => {
     console.log('Updating event:', updatedEvent)
-    setEvents(prevEvents => 
-      prevEvents.map(event => 
+    setEvents(prevEvents =>
+      prevEvents.map(event =>
         event.id === updatedEvent.id ? updatedEvent : event
       )
     )
@@ -86,7 +86,7 @@ function App() {
 
   const handleEventDelete = (eventId) => {
     console.log('Deleting event:', eventId)
-    setEvents(prevEvents => 
+    setEvents(prevEvents =>
       prevEvents.filter(event => event.id !== eventId)
     )
   }

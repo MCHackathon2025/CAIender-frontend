@@ -11,7 +11,9 @@ import {
   getWeekRange, 
   getPreviousWeek, 
   getNextWeek,
-  getWeekDays 
+  getWeekDays,
+  isToday,
+  isSameDay
 } from './utils/dateUtils';
 import './styles/index.css';
 
@@ -101,6 +103,13 @@ const MobileCalendar = ({
   }, []);
 
   /**
+   * Handle date click without opening modal - just for selection
+   */
+  const handleDateClick = useCallback((date) => {
+    setSelectedDate(date);
+  }, []);
+
+  /**
    * Handle event click - opens event editing modal
    */
   const handleEventClick = useCallback((event) => {
@@ -186,6 +195,7 @@ const MobileCalendar = ({
         events={events}
         selectedDate={selectedDate}
         onDateSelect={handleDateSelect}
+        onDateClick={handleDateClick}
         onEventClick={handleEventClick}
         onSwipeLeft={handleNextWeek}
         onSwipeRight={handlePreviousWeek}

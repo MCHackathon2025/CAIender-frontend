@@ -3,18 +3,20 @@
  * Displays day header with name and date number, plus events with time-based positioning
  */
 import React from 'react';
-import { formatDayName, formatDayNumber, calculateEventPosition, getHourHeight } from './utils/dateUtils';
+import { formatDayName, formatDayNumber, calculateEventPosition, getHourHeight, isToday, isSameDay } from './utils/dateUtils';
 import EventItem from './EventItem';
 import './styles/index.css';
 
 const DayCell = ({ 
   date, 
   events = [], 
-  isToday = false, 
-  isSelected = false, 
+  selectedDate,
   onDateClick, 
   onEventClick 
 }) => {
+  // Calculate today and selected states
+  const dayIsToday = isToday(date);
+  const dayIsSelected = selectedDate && isSameDay(date, selectedDate);
   // Configuration for event display
   const MAX_VISIBLE_EVENTS = 3; // Maximum events to show before overflow
   const visibleEvents = events.slice(0, MAX_VISIBLE_EVENTS);
@@ -47,8 +49,8 @@ const DayCell = ({
   // Build CSS classes for different states
   const cellClasses = [
     'day-cell',
-    isToday ? 'day-cell--today' : '',
-    isSelected ? 'day-cell--selected' : '',
+    dayIsToday ? 'day-cell--today' : '',
+    dayIsSelected ? 'day-cell--selected' : '',
     events.length > 0 ? 'day-cell--has-events' : '',
     hasOverflow ? 'day-cell--overflow' : ''
   ].filter(Boolean).join(' ');

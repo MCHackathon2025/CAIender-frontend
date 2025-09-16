@@ -641,3 +641,4 @@ input[type="time"]::placeholder {
 .theme-option:focus-visible,
 .event-modal-close:focus-visible {
   outline: 2px solid #2196f3;
+}

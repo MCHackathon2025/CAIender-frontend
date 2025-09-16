@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   getWeekStart,
   getWeekEnd,
@@ -16,6 +16,9 @@ import {
   getWeekNumber,
   timeToMinutes,
   calculateEventPosition,
+  getCurrentTimeInMinutes,
+  getCurrentTimeString,
+  getCurrentTimePosition,
   createDate
 } from './dateUtils.js';
 
@@ -336,6 +339,94 @@ describe('Time Positioning Functions', () => {
       const position = calculateEventPosition('23:00', '23:30', 60);
       expect(position.top).toBe(1380); // 23 * 60
       expect(position.height).toBe(30); // 0.5 hours * 60px
+    });
+  });
+});
+
+describe('Current Time Functions', () => {
+  describe('getCurrentTimeInMinutes', () => {
+    it('should return current time in minutes from midnight', () => {
+      // Mock Date to return a specific time
+      const mockDate = new Date('2024-01-15T14:30:00'); // 2:30 PM
+      vi.spyOn(global, 'Date').mockImplementation(() => mockDate);
+      
+      const result = getCurrentTimeInMinutes();
+      expect(result).toBe(870); // 14 * 60 + 30 = 870 minutes
+      
+      vi.restoreAllMocks();
+    });
+
+    it('should handle midnight correctly', () => {
+      const mockDate = new Date('2024-01-15T00:00:00'); // Midnight
+      vi.spyOn(global, 'Date').mockImplementation(() => mockDate);
+      
+      const result = getCurrentTimeInMinutes();
+      expect(result).toBe(0);
+      
+      vi.restoreAllMocks();
+    });
+  });
+
+  describe('getCurrentTimeString', () => {
+    it('should return formatted current time', () => {
+      // Mock Date to return a specific time
+      const mockDate = new Date('2024-01-15T09:05:00'); // 9:05 AM
+      vi.spyOn(global, 'Date').mockImplementation(() => mockDate);
+      
+      const result = getCurrentTimeString();
+      expect(result).toBe('09:05');
+      
+      vi.restoreAllMocks();
+    });
+
+    it('should pad single digits with zeros', () => {
+      const mockDate = new Date('2024-01-15T03:07:00'); // 3:07 AM
+      vi.spyOn(global, 'Date').mockImplementation(() => mockDate);
+      
+      const result = getCurrentTimeString();
+      expect(result).toBe('03:07');
+      
+      vi.restoreAllMocks();
+    });
+  });
+
+  describe('getCurrentTimePosition', () => {
+    it('should calculate correct position for noon', () => {
+      // Mock Date to return a specific time
+      const mockDate = new Date('2024-01-15T12:00:00'); // 12:00 PM (noon)
+      vi.spyOn(global, 'Date').mockImplementation(() => mockDate);
+      
+      const result = getCurrentTimePosition(60); // 60px per hour
+      expect(result).toBe(720); // 12 * 60 = 720px
+      
+      vi.restoreAllMocks();
+    });
+
+    it('should handle half-hour times', () => {
+      const mockDate = new Date('2024-01-15T10:30:00'); // 10:30 AM
+      vi.spyOn(global, 'Date').mockImplementation(() => mockDate);
+      
+      const result = getCurrentTimePosition(60);
+      expect(result).toBe(630); // 10.5 * 60 = 630px
+      
+      vi.restoreAllMocks();
+    });
+
+    it('should use getHourHeight when hour height not provided', () => {
+      const mockDate = new Date('2024-01-15T10:00:00'); // 10:00 AM
+      vi.spyOn(global, 'Date').mockImplementation(() => mockDate);
+      
+      // Mock window.innerWidth to test responsive behavior
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 400, // Small screen
+      });
+      
+      const result = getCurrentTimePosition(); // Should use 50px per hour for small screens
+      expect(result).toBe(500); // 10 * 50 = 500px
+      
+      vi.restoreAllMocks();
     });
   });
 });

@@ -15,7 +15,9 @@ vi.mock('./utils/dateUtils', () => ({
   formatDayNumber: vi.fn((date) => date.getDate().toString()),
   calculateEventPosition: vi.fn((startTime, endTime) => ({ top: 0, height: 60 })),
   createDate: vi.fn((year, month, day, hours = 0, minutes = 0, seconds = 0) => 
-    new Date(year, month - 1, day, hours, minutes, seconds))
+    new Date(year, month - 1, day, hours, minutes, seconds)),
+  isToday: vi.fn((date) => false), // Default to false for tests
+  isSameDay: vi.fn((date1, date2) => date1?.toDateString() === date2?.toDateString())
 }));
 
 // Mock EventItem component
@@ -70,18 +72,21 @@ describe('DayCell Component', () => {
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
-  test('applies today class when isToday is true', () => {
-    render(<DayCell date={mockDate} isToday={true} />);
+  test('applies today class when date is today', async () => {
+    // Mock isToday to return true for this test
+    const { isToday } = await import('./utils/dateUtils');
+    vi.mocked(isToday).mockReturnValue(true);
+
+    render(<DayCell date={mockDate} />);
 
     const dayCell = document.querySelector('.day-cell');
     expect(dayCell).toHaveClass('day-cell--today');
   });
 
-  test('applies selected class when isSelected is true', () => {
-    render(<DayCell date={mockDate} isSelected={true} />);
+  test('applies selected class when date is selected', () => {
+    render(<DayCell date={mockDate} selectedDate={mockDate} />);
 
     const dayCell = document.querySelector('.day-cell');
-
     expect(dayCell).toHaveClass('day-cell--selected');
   });
 

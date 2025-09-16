@@ -212,6 +212,37 @@ export function timeToMinutes(timeString) {
 }
 
 /**
+ * Get current time in minutes from midnight
+ * @returns {number} - Current time in minutes from midnight
+ */
+export function getCurrentTimeInMinutes() {
+  const now = new Date();
+  return now.getHours() * 60 + now.getMinutes();
+}
+
+/**
+ * Get current time as a formatted string (HH:MM)
+ * @returns {string} - Current time in HH:MM format
+ */
+export function getCurrentTimeString() {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
+/**
+ * Calculate the position of the current time line
+ * @param {number} hourHeight - Height of one hour in pixels
+ * @returns {number} - Top position in pixels for the current time line
+ */
+export function getCurrentTimePosition(hourHeight = null) {
+  const actualHourHeight = hourHeight !== null ? hourHeight : getHourHeight();
+  const currentMinutes = getCurrentTimeInMinutes();
+  return (currentMinutes / 60) * actualHourHeight;
+}
+
+/**
  * Get the current hour height based on screen size
  * This must match the CSS media query breakpoints exactly
  * @returns {number} - Hour height in pixels

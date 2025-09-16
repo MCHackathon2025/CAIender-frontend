@@ -4,7 +4,8 @@
  */
 import React, { useState, useEffect } from 'react';
 import DayCell from './DayCell';
-import { getWeekDays, calculateEventPosition, getHourHeight } from './utils/dateUtils';
+import CurrentTimeLine from './CurrentTimeLine';
+import { getWeekDays, calculateEventPosition, getHourHeight, isToday, isSameDay } from './utils/dateUtils';
 import { useTouchGestures } from './hooks/useTouchGestures';
 import './styles/index.css';
 
@@ -13,6 +14,7 @@ const WeekView = ({
   events = [], 
   selectedDate, 
   onDateSelect, 
+  onDateClick,
   onEventClick,
   onSwipeLeft,
   onSwipeRight,
@@ -63,16 +65,21 @@ const WeekView = ({
       <div className="week-headers">
         <div className="time-scale-header"></div>
         <div className="day-headers">
-          {days.map((date, index) => (
-            <div 
-              key={`header-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
-              className={`day-header-cell ${date.toDateString() === new Date().toDateString() ? 'day-header-cell--today' : ''} ${selectedDate && date.toDateString() === selectedDate.toDateString() ? 'day-header-cell--selected' : ''}`}
-              onClick={() => onDateSelect && onDateSelect(date)}
-            >
-              <div className="day-name">{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
-              <div className="day-number">{date.getDate()}</div>
-            </div>
-          ))}
+          {days.map((date, index) => {
+            const dayIsToday = isToday(date);
+            const dayIsSelected = selectedDate && isSameDay(date, selectedDate);
+            
+            return (
+              <div 
+                key={`header-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
+                className={`day-header-cell ${dayIsToday ? 'day-header-cell--today' : ''} ${dayIsSelected ? 'day-header-cell--selected' : ''}`}
+                onClick={() => onDateClick && onDateClick(date)}
+              >
+                <div className="day-name">{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                <div className="day-number">{date.getDate()}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -127,10 +134,13 @@ const WeekView = ({
               onDateSelect(date, { startTime, endTime });
             };
 
+            const dayIsToday = isToday(date);
+            const dayIsSelected = selectedDate && isSameDay(date, selectedDate);
+            
             return (
               <div 
                 key={`content-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
-                className="day-content"
+                className={`day-content ${dayIsToday ? 'day-content--today' : ''} ${dayIsSelected ? 'day-content--selected' : ''}`}
                 onClick={handleDayContentClick}
                 style={{ cursor: 'pointer' }}
               >
@@ -140,6 +150,9 @@ const WeekView = ({
                     <div key={hour} className="time-grid-hour" />
                   ))}
                 </div>
+                
+                {/* Current Time Line */}
+                <CurrentTimeLine date={date} />
                 
                 {/* Events */}
                 {dayEvents.map((event) => {

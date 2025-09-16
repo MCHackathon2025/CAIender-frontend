@@ -99,15 +99,48 @@ body {
 
 .day-header-cell:hover {
   background-color: #f5f5f5;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.day-header-cell:focus {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.day-header-cell:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Maintain today's background on hover */
+.day-header-cell--today:hover {
+  background-color: #c8e6c9;
+}
+
+/* Maintain selected background on hover */
+.day-header-cell--selected:hover {
+  background-color: #e1bee7;
+}
+
+/* Today + Selected hover state */
+.day-header-cell--today.day-header-cell--selected:hover {
+  background-color: #c8e6c9;
 }
 
 .day-header-cell--today {
   background-color: #e8f5e8;
+  position: relative;
 }
 
 .day-header-cell--selected {
   background-color: #f3e5f5;
-  border: 2px solid #9c27b0;
+  position: relative;
+}
+
+/* Today + Selected state (highest priority) */
+.day-header-cell--today.day-header-cell--selected {
+  background-color: #e8f5e8;
 }
 
 .day-header-cell--today .day-number {
@@ -120,6 +153,27 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+.day-header-cell--selected .day-number {
+  background-color: #9c27b0;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(156, 39, 176, 0.3);
+}
+
+/* Today + Selected takes precedence with today's color but selected border */
+.day-header-cell--today.day-header-cell--selected .day-number {
+  background-color: #4caf50;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
 }
 
 /* Scrollable Content */
@@ -170,6 +224,19 @@ body {
   background-color: #ffffff;
   min-height: calc(24 * 60px);
   box-sizing: border-box;
+  transition: background-color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.day-content--today {
+  background-color: #f8fdf8;
+}
+
+.day-content--selected {
+  background-color: #fdf8fd;
+}
+
+.day-content--today.day-content--selected {
+  background-color: #f8fdf8;
 }
 
 /* Touch gesture states */
@@ -225,7 +292,8 @@ body {
 .day-cell-content {
   flex: 1;
   position: relative;
-  min-height: calc(24 * 60px); /* 24 hours * 60px per hour */
+  min-height: calc(24 * 60px);
+  /* 24 hours * 60px per hour */
   box-sizing: border-box;
 }
 
@@ -240,8 +308,29 @@ body {
   background-color: #eeeeee;
 }
 
+.day-cell:focus {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
+}
+
+/* Maintain today's background on hover */
+.day-cell--today:hover {
+  background-color: #c8e6c9;
+}
+
+/* Maintain selected background on hover */
+.day-cell--selected:hover {
+  background-color: #e1bee7;
+}
+
+/* Today + Selected hover state */
+.day-cell--today.day-cell--selected:hover {
+  background-color: #c8e6c9;
+}
+
 .day-cell--today {
   background-color: #e8f5e8;
+  position: relative;
 }
 
 .day-cell--today .day-number {
@@ -254,11 +343,36 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
 }
 
 .day-cell--selected {
   background-color: #f3e5f5;
-  border: 2px solid #9c27b0;
+  position: relative;
+}
+
+.day-cell--selected .day-number {
+  background-color: #9c27b0;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(156, 39, 176, 0.3);
+}
+
+/* Today + Selected state (highest priority) */
+.day-cell--today.day-cell--selected {
+  background-color: #e8f5e8;
+}
+
+.day-cell--today.day-cell--selected .day-number {
+  background-color: #4caf50;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
 }
 
 .day-cell--has-events {
@@ -272,7 +386,8 @@ body {
   background-color: inherit;
   z-index: 2;
   border-bottom: 1px solid #e0e0e0;
-  height: 60px; /* Fixed height to match time-scale-header */
+  height: 60px;
+  /* Fixed height to match time-scale-header */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -284,6 +399,31 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  transition: transform 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Add subtle animation for today's date */
+.day-header-cell--today .day-header {
+  animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes subtle-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* Disable animation if user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .day-header-cell--today .day-header {
+    animation: none;
+  }
 }
 
 /* Day cell borders for horizontal layout */
@@ -301,6 +441,7 @@ body {
   color: #757575;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  transition: color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .day-number {
@@ -308,6 +449,24 @@ body {
   font-weight: 600;
   color: #212121;
   margin-top: 2px;
+  transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Enhanced styling for today's date */
+.day-header-cell--today .day-name {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+/* Enhanced styling for selected date */
+.day-header-cell--selected .day-name {
+  color: #6a1b9a;
+  font-weight: 600;
+}
+
+/* Today + Selected state */
+.day-header-cell--today.day-header-cell--selected .day-name {
+  color: #2e7d32;
 }
 
 /* Apply horizontal layout spacing for all screen sizes */
@@ -532,6 +691,7 @@ body {
 
 /* Responsive Typography */
 @media (max-width: 480px) {
+
   .time-scale-header,
   .time-scale-slots {
     width: 50px;
@@ -759,4 +919,246 @@ body {
 
 .event-modal {
   /* Styles will be added during implementation */
+}
+
+/* F
+loating Action Button for Event Creation */
+.fab-create-event {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--calendar-primary);
+  color: var(--calendar-primary-contrast);
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 1000;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.fab-create-event:hover {
+  background-color: var(--calendar-primary-dark);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.fab-create-event:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.fab-create-event:focus {
+  outline: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 0 3px rgba(76, 175, 80, 0.3);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+  .fab-create-event {
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* Day co
+ntent click feedback */
+.day-content {
+  position: relative;
+}
+
+.day-content:hover {
+  background-color: rgba(76, 175, 80, 0.02);
+}
+
+.day-content:hover .time-grid-hour {
+  border-color: rgba(76, 175, 80, 0.1);
+}
+
+/* Add subtle visual cue for clickable areas */
+.day-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  transition: background-color 0.2s ease;
+}
+
+.day-content:active::before {
+  background-color: rgba(76, 175, 80, 0.05);
+}
+
+/* Fo
+rce 24-hour format for time inputs */
+input[type="time"] {
+  /* Force 24-hour format display */
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}
+
+/* Ensure time inputs display in 24-hour format across browsers */
+input[type="time"]::-webkit-datetime-edit-hour-field,
+input[type="time"]::-webkit-datetime-edit-minute-field {
+  /* This helps ensure 24-hour format in WebKit browsers */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Additional styling for time inputs to ensure consistency */
+input[type="time"] {
+  font-family: monospace;
+  letter-spacing: 0.1em;
+}
+
+/* 24-hour format time inputs */
+input[type="time"] {
+  font-family: monospace;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hide AM/PM indicators if they appear in WebKit browsers */
+input[type="time"]::-webkit-datetime-edit-ampm-field {
+  display: none;
+}
+
+/* Ensure consistent 24-hour display across browsers */
+input[type="time"][data-format="24"] {
+  /* Custom attribute to indicate 24-hour format preference */
+  --time-format: 24;
+}
+
+/* Current Time Line - Google Calendar style */
+.current-time-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.current-time-line__indicator {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.current-time-line__circle {
+  width: 12px;
+  height: 12px;
+  background-color: #ea4335;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+  z-index: 2;
+  margin-left: -6px;
+  /* Center the circle on the left edge */
+}
+
+.current-time-line__line {
+  height: 2px;
+  background-color: #ea4335;
+  flex: 1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+  .current-time-line__circle {
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+  }
+
+  .current-time-line__line {
+    height: 1.5px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .current-time-line__circle {
+    border-width: 3px;
+  }
+
+  .current-time-line__line {
+    height: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .current-time-line {
+    transition: none;
+  }
+}
+
+/*
+ Custom 24-hour time input component */
+.time-input-24 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.time-select {
+  padding: 8px 4px;
+  border: 1px solid var(--calendar-border);
+  border-radius: 4px;
+  background-color: var(--calendar-background);
+  color: var(--calendar-text-primary);
+  font-family: monospace;
+  font-size: 14px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.time-select:focus {
+  outline: none;
+  border-color: var(--calendar-primary);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.time-separator {
+  font-weight: bold;
+  color: var(--calendar-text-primary);
+  font-family: monospace;
+  font-size: 16px;
+}
+
+/* Error state for time input */
+.time-input-24.error .time-select {
+  border-color: #f44336;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .time-input-24 {
+    font-size: 13px;
+  }
+
+  .time-select {
+    font-size: 13px;
+    padding: 6px 2px;
+    min-width: 45px;
+  }
 }

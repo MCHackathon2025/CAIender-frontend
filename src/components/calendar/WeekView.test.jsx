@@ -28,11 +28,14 @@ describe('WeekView with Touch Gestures', () => {
   const mockOnDateSelect = vi.fn();
   const mockOnEventClick = vi.fn();
 
+  const mockOnDateClick = vi.fn();
+
   const defaultProps = {
     weekDays: getWeekDays(new Date('2024-01-15')), // Monday Jan 15, 2024
     events: [],
     selectedDate: null,
     onDateSelect: mockOnDateSelect,
+    onDateClick: mockOnDateClick,
     onEventClick: mockOnEventClick,
     onSwipeLeft: mockOnSwipeLeft,
     onSwipeRight: mockOnSwipeRight,
@@ -159,7 +162,7 @@ describe('WeekView with Touch Gestures', () => {
     const mondayCell = screen.getByText('15').closest('.day-header-cell');
     fireEvent.click(mondayCell);
     
-    expect(mockOnDateSelect).toHaveBeenCalledWith(
+    expect(mockOnDateClick).toHaveBeenCalledWith(
       expect.objectContaining({
         getDate: expect.any(Function),
       })
