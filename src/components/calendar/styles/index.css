@@ -4,7 +4,8 @@
  */
 
 /* Global reset for full height */
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -34,35 +35,152 @@ html, body {
 .mobile-calendar {
   width: 100%;
   max-width: 100%;
-  height: 100%;
+  height: 100vh;
+  /* Full viewport height */
+  min-height: 100vh;
+  /* Ensure minimum full height */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--calendar-background);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  /* Prevent scrolling on the main container */
 }
 
-/* Week View - Mobile-first Flexbox Layout */
+/* Week View - Synchronized Scrolling Layout */
 .week-view {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
   flex: 1;
-  gap: 1px;
-  background-color: #e0e0e0; /* Gap color between cells */
+  background-color: #e0e0e0;
   position: relative;
   overflow: hidden;
   transition: transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
-  touch-action: pan-y; /* Allow vertical scrolling but handle horizontal gestures */
+  touch-action: pan-y;
+  min-height: 0;
+}
+
+/* Headers Row - Sticky */
+.week-headers {
+  display: flex;
+  flex-direction: row;
+  background-color: #ffffff;
+  border-bottom: 2px solid #e0e0e0;
+  z-index: 10;
+}
+
+.time-scale-header {
+  width: 60px;
+  height: 60px;
+  border-right: 2px solid #e0e0e0;
+  background-color: #fafafa;
+  flex-shrink: 0;
+}
+
+.day-headers {
+  display: flex;
+  flex: 1;
+  gap: 1px;
+  background-color: #e0e0e0;
+}
+
+.day-header-cell {
+  flex: 1;
+  height: 60px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.day-header-cell:hover {
+  background-color: #f5f5f5;
+}
+
+.day-header-cell--today {
+  background-color: #e8f5e8;
+}
+
+.day-header-cell--selected {
+  background-color: #f3e5f5;
+  border: 2px solid #9c27b0;
+}
+
+.day-header-cell--today .day-number {
+  background-color: #4caf50;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+/* Scrollable Content */
+.week-content {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.time-scale-slots {
+  width: 60px;
+  flex-shrink: 0;
+  background-color: #fafafa;
+  border-right: 2px solid #e0e0e0;
+}
+
+.time-slot {
+  height: 60px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #757575;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.time-slot:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Days Content */
+.days-content {
+  display: flex;
+  flex: 1;
+  gap: 1px;
+  background-color: #e0e0e0;
+}
+
+.day-content {
+  flex: 1;
+  position: relative;
+  background-color: #ffffff;
+  min-height: calc(24 * 60px);
+  box-sizing: border-box;
 }
 
 /* Touch gesture states */
 .week-view--gesturing {
-  transition: none; /* Disable transitions during gestures for immediate feedback */
+  transition: none;
+  /* Disable transitions during gestures for immediate feedback */
 }
 
 .week-view--navigating {
-  pointer-events: none; /* Prevent interactions during navigation */
+  pointer-events: none;
+  /* Prevent interactions during navigation */
 }
 
 /* Gesture direction feedback */
@@ -74,45 +192,44 @@ html, body {
   transform: translateX(2px);
 }
 
-/* Tablet and Desktop: Horizontal layout */
-@media (min-width: 768px) {
-  .week-view {
-    flex-direction: row;
-    height: 400px; /* Fixed height for desktop */
-  }
-}
+/* Keep mobile layout for all screen sizes */
 
 /* Day Cell Styles */
 .day-cell {
   background-color: #ffffff;
-  flex: 1; /* Take equal height in mobile view */
-  min-height: 80px; /* Minimum height for mobile */
-  padding: 8px;
+  flex: 1;
+  /* Take equal width in horizontal layout */
+  height: 100%;
+  /* Take full height of container */
   cursor: pointer;
   transition: background-color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
   border: none;
   position: relative;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
-/* Touch target optimization - minimum 44px */
-.day-cell {
-  min-height: 44px;
+/* Day Cell Header */
+.day-cell-header {
+  position: sticky;
+  top: 0;
+  background-color: inherit;
+  z-index: 2;
+  padding: 8px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-/* Tablet and Desktop: Equal width columns */
-@media (min-width: 768px) {
-  .day-cell {
-    flex: 1;
-    min-height: 100%;
-    border-right: 1px solid #e0e0e0;
-  }
-  
-  .day-cell:last-child {
-    border-right: none;
-  }
+/* Day Cell Content */
+.day-cell-content {
+  flex: 1;
+  position: relative;
+  min-height: calc(24 * 60px); /* 24 hours * 60px per hour */
+  box-sizing: border-box;
 }
+
+/* Keep mobile layout for all screen sizes */
 
 /* Day Cell States */
 .day-cell:hover {
@@ -148,28 +265,34 @@ html, body {
   background-color: #fafafa;
 }
 
+/* Day Cell Header */
+.day-cell-header {
+  position: sticky;
+  top: 0;
+  background-color: inherit;
+  z-index: 2;
+  border-bottom: 1px solid #e0e0e0;
+  height: 60px; /* Fixed height to match time-scale-header */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Day Header Styles */
 .day-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 8px;
-  min-height: 44px; /* Ensure touch target */
   justify-content: center;
 }
 
-/* Mobile: Horizontal layout for space efficiency */
-@media (max-width: 767px) {
-  .day-cell {
-    flex: 1; /* Equal height distribution on mobile */
-    min-height: calc((100vh - 60px) / 7); /* Approximate height per day, accounting for navigation */
-  }
-  
-  .day-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
+/* Day cell borders for horizontal layout */
+.day-cell {
+  border-right: 1px solid #e0e0e0;
+}
+
+.day-cell:last-child {
+  border-right: none;
 }
 
 .day-name {
@@ -187,22 +310,53 @@ html, body {
   margin-top: 2px;
 }
 
-/* Mobile: Adjust spacing */
-@media (max-width: 767px) {
-  .day-number {
-    margin-top: 0;
-    font-size: 18px;
-  }
+/* Apply horizontal layout spacing for all screen sizes */
+.day-number {
+  margin-top: 2px;
+  font-size: 16px;
 }
 
-/* Day Events Container */
-.day-events {
-  flex: 1;
+/* Time grid background */
+.time-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  z-index: 0;
+}
+
+.time-grid-hour {
+  height: 60px;
+  border-bottom: 1px solid #f0f0f0;
+  box-sizing: border-box;
+}
+
+.time-grid-hour:nth-child(even) {
+  background-color: rgba(245, 245, 245, 0.3);
+}
+
+/* Positioned events */
+.positioned-event {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  z-index: 1;
+  min-height: 20px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Event styling within positioned container */
+.positioned-event .event-item {
+  height: 100%;
+  margin: 0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 4px 6px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  overflow: hidden;
-  position: relative;
+  justify-content: center;
 }
 
 /* Empty state for days without events */
@@ -304,7 +458,8 @@ html, body {
   cursor: pointer;
   transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
   border-left: 3px solid #bdbdbd;
-  min-height: 32px; /* Touch-optimized sizing */
+  min-height: 32px;
+  /* Touch-optimized sizing */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -312,7 +467,7 @@ html, body {
 
 .event-preview:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .event-preview:active {
@@ -359,39 +514,65 @@ html, body {
   white-space: nowrap;
 }
 
-/* Mobile: Stack time and title horizontally for space */
-@media (max-width: 767px) {
-  .event-preview {
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-  }
-  
-  .event-time {
-    margin-bottom: 0;
-    flex-shrink: 0;
-  }
-  
-  .event-title {
-    flex: 1;
-  }
+/* Apply horizontal layout event styling for all screen sizes */
+.event-preview {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.event-time {
+  margin-bottom: 1px;
+  flex-shrink: 0;
+}
+
+.event-title {
+  flex: 1;
 }
 
 /* Responsive Typography */
 @media (max-width: 480px) {
+  .time-scale-header,
+  .time-scale-slots {
+    width: 50px;
+  }
+
+  .time-slot {
+    font-size: 10px;
+    height: 50px;
+    box-sizing: border-box;
+  }
+
+  .time-grid-hour {
+    height: 50px;
+    box-sizing: border-box;
+  }
+
+  .day-content {
+    min-height: calc(24 * 50px);
+  }
+
+  .day-header-cell {
+    height: 50px;
+  }
+
+  .time-scale-header {
+    height: 50px;
+  }
+
   .day-name {
     font-size: 11px;
   }
-  
+
   .day-number {
     font-size: 16px;
   }
-  
+
   .event-preview {
     font-size: 11px;
     padding: 3px 5px;
   }
-  
+
   .event-time {
     font-size: 9px;
   }
@@ -406,7 +587,8 @@ html, body {
   cursor: pointer;
   transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
   border-left: 3px solid var(--event-primary, #bdbdbd);
-  min-height: 32px; /* Touch-optimized sizing - minimum 32px height */
+  min-height: 32px;
+  /* Touch-optimized sizing - minimum 32px height */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -418,14 +600,14 @@ html, body {
 /* Touch interaction states */
 .event-item:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: var(--event-primary, #f5f5f5);
   color: var(--event-contrast, #212121);
 }
 
 .event-item:active {
   transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .event-item:focus {
@@ -517,23 +699,21 @@ html, body {
   font-size: 11px;
 }
 
-/* Mobile optimizations */
-@media (max-width: 767px) {
-  .event-item {
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 7px;
-  }
-  
-  .event-item__time {
-    margin-bottom: 0;
-    flex-shrink: 0;
-  }
-  
-  .event-item__title {
-    flex: 1;
-  }
+/* Apply horizontal layout event item styling for all screen sizes */
+.event-item {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 6px 8px;
+}
+
+.event-item__time {
+  margin-bottom: 2px;
+  flex-shrink: 0;
+}
+
+.event-item__title {
+  flex: 1;
 }
 
 /* Small mobile screens */
@@ -541,13 +721,14 @@ html, body {
   .event-item {
     font-size: 11px;
     padding: 4px 6px;
-    min-height: 32px; /* Maintain minimum touch target */
+    min-height: 32px;
+    /* Maintain minimum touch target */
   }
-  
+
   .event-item__time {
     font-size: 9px;
   }
-  
+
   .event-item__title {
     font-size: 11px;
   }
@@ -566,7 +747,7 @@ html, body {
   .event-item {
     transition: none;
   }
-  
+
   .event-item:hover {
     transform: none;
   }

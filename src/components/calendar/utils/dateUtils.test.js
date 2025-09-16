@@ -13,7 +13,9 @@ import {
   formatTime,
   isToday,
   isSameDay,
-  getWeekNumber
+  getWeekNumber,
+  timeToMinutes,
+  calculateEventPosition
 } from './dateUtils.js';
 
 describe('Date Utility Functions', () => {
@@ -271,6 +273,68 @@ describe('Date Comparison Functions', () => {
       
       expect(weekNum).toBeGreaterThanOrEqual(1);
       expect(weekNum).toBeLessThanOrEqual(53);
+    });
+  });
+});
+
+describe('Time Positioning Functions', () => {
+  describe('timeToMinutes', () => {
+    it('should convert time string to minutes from midnight', () => {
+      expect(timeToMinutes('00:00')).toBe(0);
+      expect(timeToMinutes('01:00')).toBe(60);
+      expect(timeToMinutes('09:30')).toBe(570); // 9*60 + 30
+      expect(timeToMinutes('12:00')).toBe(720); // 12*60
+      expect(timeToMinutes('23:59')).toBe(1439); // 23*60 + 59
+    });
+
+    it('should handle empty or invalid input', () => {
+      expect(timeToMinutes('')).toBe(0);
+      expect(timeToMinutes(null)).toBe(0);
+      expect(timeToMinutes(undefined)).toBe(0);
+    });
+  });
+
+  describe('calculateEventPosition', () => {
+    it('should calculate correct position for morning events', () => {
+      const position = calculateEventPosition('09:00', '10:00', 60);
+      expect(position.top).toBe(540); // 9 * 60
+      expect(position.height).toBe(60); // 1 hour * 60px
+    });
+
+    it('should calculate correct position for afternoon events', () => {
+      const position = calculateEventPosition('14:30', '16:00', 60);
+      expect(position.top).toBe(870); // 14.5 * 60
+      expect(position.height).toBe(90); // 1.5 hours * 60px
+    });
+
+    it('should handle events without end time', () => {
+      const position = calculateEventPosition('10:00', null, 60);
+      expect(position.top).toBe(600); // 10 * 60
+      expect(position.height).toBe(60); // Default 1 hour
+    });
+
+    it('should handle events without start time', () => {
+      const position = calculateEventPosition(null, '11:00', 60);
+      expect(position.top).toBe(0);
+      expect(position.height).toBe(60); // Default hour height
+    });
+
+    it('should respect minimum height', () => {
+      const position = calculateEventPosition('10:00', '10:05', 60); // 5 minute event
+      expect(position.top).toBe(600);
+      expect(position.height).toBe(20); // Minimum 20px height
+    });
+
+    it('should work with different hour heights', () => {
+      const position = calculateEventPosition('09:00', '10:00', 50);
+      expect(position.top).toBe(450); // 9 * 50
+      expect(position.height).toBe(50); // 1 hour * 50px
+    });
+
+    it('should handle overnight events correctly', () => {
+      const position = calculateEventPosition('23:00', '23:30', 60);
+      expect(position.top).toBe(1380); // 23 * 60
+      expect(position.height).toBe(30); // 0.5 hours * 60px
     });
   });
 });

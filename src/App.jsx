@@ -86,8 +86,6 @@ function App() {
 
   return (
     <div className="app">
-
-
       <div className="calendar-container">
         <MobileCalendar
           initialDate={new Date()}
@@ -97,8 +95,6 @@ function App() {
           onEventDelete={handleEventDelete}
         />
       </div>
-
-
     </div>
   )
 }

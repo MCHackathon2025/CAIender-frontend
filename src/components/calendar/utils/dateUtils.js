@@ -185,3 +185,48 @@ export function getWeekNumber(date) {
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 }
+
+/**
+ * Convert time string to minutes from midnight
+ * @param {string} timeString - Time in format "HH:MM" (24-hour)
+ * @returns {number} - Minutes from midnight
+ */
+export function timeToMinutes(timeString) {
+  if (!timeString) return 0;
+  const [hours, minutes] = timeString.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+/**
+ * Get the current hour height based on screen size
+ * This must match the CSS media query breakpoints exactly
+ * @returns {number} - Hour height in pixels
+ */
+export function getHourHeight() {
+  // Match the CSS media query: @media (max-width: 480px)
+  return window.innerWidth <= 480 ? 50 : 60;
+}
+
+/**
+ * Calculate event position and height based on start and end times
+ * @param {string} startTime - Start time in "HH:MM" format
+ * @param {string} endTime - End time in "HH:MM" format
+ * @param {number} hourHeight - Height of one hour in pixels (auto-detected if not provided)
+ * @returns {Object} - Object with top position and height in pixels
+ */
+export function calculateEventPosition(startTime, endTime, hourHeight = null) {
+  // Auto-detect hour height if not provided
+  const actualHourHeight = hourHeight !== null ? hourHeight : getHourHeight();
+  
+  if (!startTime) {
+    return { top: 0, height: actualHourHeight };
+  }
+
+  const startMinutes = timeToMinutes(startTime);
+  const endMinutes = endTime ? timeToMinutes(endTime) : startMinutes + 60; // Default 1 hour duration
+  
+  const top = (startMinutes / 60) * actualHourHeight;
+  const height = Math.max(((endMinutes - startMinutes) / 60) * actualHourHeight, 20); // Minimum 20px height
+  
+  return { top, height };
+}

@@ -11,7 +11,8 @@ import DayCell from './DayCell';
 // Mock the dateUtils module
 vi.mock('./utils/dateUtils', () => ({
   formatDayName: vi.fn((date) => date.toLocaleDateString('en-US', { weekday: 'short' })),
-  formatDayNumber: vi.fn((date) => date.getDate().toString())
+  formatDayNumber: vi.fn((date) => date.getDate().toString()),
+  calculateEventPosition: vi.fn((startTime, endTime) => ({ top: 0, height: 60 }))
 }));
 
 // Mock EventItem component
@@ -69,19 +70,14 @@ describe('DayCell Component', () => {
   test('applies today class when isToday is true', () => {
     render(<DayCell date={mockDate} isToday={true} />);
 
-    const dayCell = screen.getByRole('generic', {
-      name: (name, element) => element.className.includes('day-cell')
-    });
-
+    const dayCell = document.querySelector('.day-cell');
     expect(dayCell).toHaveClass('day-cell--today');
   });
 
   test('applies selected class when isSelected is true', () => {
     render(<DayCell date={mockDate} isSelected={true} />);
 
-    const dayCell = screen.getByRole('generic', {
-      name: (name, element) => element.className.includes('day-cell')
-    });
+    const dayCell = document.querySelector('.day-cell');
 
     expect(dayCell).toHaveClass('day-cell--selected');
   });
@@ -120,49 +116,46 @@ describe('DayCell Component', () => {
     expect(container.querySelector('.day-indicator--info')).toBeInTheDocument();
   });
 
-  test('handles overflow when more than 3 events', () => {
+  test('renders all events with time-based positioning', () => {
     const { container } = render(<DayCell date={mockDate} events={manyEvents} />);
 
-    // Should render only first 3 events
+    // Should render all events with time-based positioning
     expect(screen.getByTestId('event-1')).toBeInTheDocument();
     expect(screen.getByTestId('event-2')).toBeInTheDocument();
     expect(screen.getByTestId('event-3')).toBeInTheDocument();
+    expect(screen.getByTestId('event-4')).toBeInTheDocument();
+    expect(screen.getByTestId('event-5')).toBeInTheDocument();
 
-    // Should not render events 4 and 5 directly
-    expect(screen.queryByTestId('event-4')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('event-5')).not.toBeInTheDocument();
+    // Should have positioned-event containers
+    const positionedEvents = container.querySelectorAll('.positioned-event');
+    expect(positionedEvents).toHaveLength(5);
 
-    // Should show overflow indicator
-    expect(screen.getByText('+2 more')).toBeInTheDocument();
-
-    // Should apply overflow class
+    // Should apply has-events class
     const dayCell = container.querySelector('.day-cell');
-    expect(dayCell).toHaveClass('day-cell--overflow');
+    expect(dayCell).toHaveClass('day-cell--has-events');
   });
 
-  test('handles overflow click', () => {
-    const mockOnDateClick = vi.fn();
-    render(<DayCell date={mockDate} events={manyEvents} onDateClick={mockOnDateClick} />);
+  test('renders time grid background', () => {
+    const { container } = render(<DayCell date={mockDate} events={manyEvents} />);
 
-    const overflowElement = screen.getByText('+2 more');
-    fireEvent.click(overflowElement);
-
-    expect(mockOnDateClick).toHaveBeenCalledWith(mockDate);
+    // Should have time grid with 24 hour slots
+    const timeGrid = container.querySelector('.time-grid');
+    expect(timeGrid).toBeInTheDocument();
+    
+    const timeGridHours = container.querySelectorAll('.time-grid-hour');
+    expect(timeGridHours).toHaveLength(24);
   });
 
-  test('handles overflow keyboard interaction', () => {
-    const mockOnDateClick = vi.fn();
-    render(<DayCell date={mockDate} events={manyEvents} onDateClick={mockOnDateClick} />);
+  test('positions events with correct styling', () => {
+    const { container } = render(<DayCell date={mockDate} events={manyEvents} />);
 
-    const overflowElement = screen.getByText('+2 more');
-
-    // Test Enter key
-    fireEvent.keyDown(overflowElement, { key: 'Enter' });
-    expect(mockOnDateClick).toHaveBeenCalledWith(mockDate);
-
-    // Test Space key
-    fireEvent.keyDown(overflowElement, { key: ' ' });
-    expect(mockOnDateClick).toHaveBeenCalledTimes(2);
+    const positionedEvents = container.querySelectorAll('.positioned-event');
+    
+    // Each positioned event should have inline styles for positioning
+    positionedEvents.forEach(event => {
+      expect(event).toHaveStyle('top: 0px');
+      expect(event).toHaveStyle('height: 60px');
+    });
   });
 
   test('displays empty state when no events', () => {

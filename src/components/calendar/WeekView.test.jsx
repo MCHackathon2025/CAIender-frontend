@@ -50,9 +50,9 @@ describe('WeekView with Touch Gestures', () => {
     const weekView = screen.getByTestId('week-view');
     expect(weekView).toHaveClass('week-view');
     
-    // Should render 7 day cells
-    const dayCells = document.querySelectorAll('.day-cell');
-    expect(dayCells).toHaveLength(7);
+    // Should render 7 day header cells
+    const dayHeaders = document.querySelectorAll('.day-header-cell');
+    expect(dayHeaders).toHaveLength(7);
   });
 
   it('should apply correct CSS classes based on state', async () => {
@@ -156,7 +156,7 @@ describe('WeekView with Touch Gestures', () => {
   it('should handle date selection', () => {
     render(<WeekView {...defaultProps} />);
     
-    const mondayCell = screen.getByText('15').closest('.day-cell');
+    const mondayCell = screen.getByText('15').closest('.day-header-cell');
     fireEvent.click(mondayCell);
     
     expect(mockOnDateSelect).toHaveBeenCalledWith(
@@ -225,8 +225,8 @@ describe('WeekView with Touch Gestures', () => {
     
     render(<WeekView {...propsWithoutWeekDays} />);
     
-    // Should still render 7 day cells using current week
-    const dayCells = document.querySelectorAll('.day-cell');
-    expect(dayCells).toHaveLength(7);
+    // Should still render 7 day header cells using current week
+    const dayHeaders = document.querySelectorAll('.day-header-cell');
+    expect(dayHeaders).toHaveLength(7);
   });
 });

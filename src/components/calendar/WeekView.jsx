@@ -2,9 +2,9 @@
  * WeekView component for displaying 7-day calendar layout
  * Implements mobile-first design with CSS Flexbox and touch gestures
  */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import DayCell from './DayCell';
-import { getWeekDays } from './utils/dateUtils';
+import { getWeekDays, calculateEventPosition, getHourHeight } from './utils/dateUtils';
 import { useTouchGestures } from './hooks/useTouchGestures';
 import './styles/index.css';
 
@@ -22,6 +22,19 @@ const WeekView = ({
   // If weekDays is not provided, generate from current week
   const days = weekDays || getWeekDays(new Date());
 
+  // Track window size changes to ensure alignment stays correct
+  const [, forceUpdate] = useState({});
+  
+  useEffect(() => {
+    const handleResize = () => {
+      // Force re-render when window size changes to recalculate positions
+      forceUpdate({});
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Set up touch gesture handling
   const { touchHandlers, isGesturing, gestureDirection } = useTouchGestures({
     onSwipeLeft,
@@ -29,31 +42,104 @@ const WeekView = ({
     disabled: gesturesDisabled || isNavigating
   });
 
+  // Generate time slots for 24-hour format
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let hour = 0; hour < 24; hour++) {
+      slots.push(`${hour.toString().padStart(2, '0')}:00`);
+    }
+    return slots;
+  };
+
+  const timeSlots = generateTimeSlots();
+
   return (
     <div 
       className={`week-view ${isNavigating ? 'week-view--navigating' : ''} ${isGesturing ? 'week-view--gesturing' : ''} ${gestureDirection ? `week-view--gesture-${gestureDirection}` : ''}`}
       data-testid="week-view"
       {...touchHandlers}
     >
-      {days.map((date, index) => {
-        // Filter events for this specific date
-        const dayEvents = events.filter(event => {
-          const eventDate = new Date(event.startDate);
-          return eventDate.toDateString() === date.toDateString();
-        });
+      {/* Headers Row - Sticky */}
+      <div className="week-headers">
+        <div className="time-scale-header"></div>
+        <div className="day-headers">
+          {days.map((date, index) => (
+            <div 
+              key={`header-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
+              className={`day-header-cell ${date.toDateString() === new Date().toDateString() ? 'day-header-cell--today' : ''} ${selectedDate && date.toDateString() === selectedDate.toDateString() ? 'day-header-cell--selected' : ''}`}
+              onClick={() => onDateSelect && onDateSelect(date)}
+            >
+              <div className="day-name">{date.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+              <div className="day-number">{date.getDate()}</div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-        return (
-          <DayCell
-            key={`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
-            date={date}
-            events={dayEvents}
-            isToday={date.toDateString() === new Date().toDateString()}
-            isSelected={selectedDate && date.toDateString() === selectedDate.toDateString()}
-            onDateClick={onDateSelect}
-            onEventClick={onEventClick}
-          />
-        );
-      })}
+      {/* Scrollable Content */}
+      <div className="week-content">
+        {/* Time Scale Column */}
+        <div className="time-scale-slots">
+          {timeSlots.map((time, index) => (
+            <div key={time} className="time-slot">
+              {time}
+            </div>
+          ))}
+        </div>
+
+        {/* Days Content */}
+        <div className="days-content">
+          {days.map((date, index) => {
+            // Filter events for this specific date
+            const dayEvents = events.filter(event => {
+              const eventDate = new Date(event.startDate);
+              return eventDate.toDateString() === date.toDateString();
+            });
+
+            return (
+              <div 
+                key={`content-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
+                className="day-content"
+              >
+                {/* Time Grid Background */}
+                <div className="time-grid">
+                  {Array.from({ length: 24 }, (_, hour) => (
+                    <div key={hour} className="time-grid-hour" />
+                  ))}
+                </div>
+                
+                {/* Events */}
+                {dayEvents.map((event) => {
+                  const position = calculateEventPosition(event.startTime, event.endTime);
+                  return (
+                    <div
+                      key={event.id}
+                      className="positioned-event"
+                      style={{
+                        top: `${position.top}px`,
+                        height: `${position.height}px`,
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEventClick && onEventClick(event);
+                      }}
+                    >
+                      <div className="event-item event-item--main">
+                        <div className="event-item__time">
+                          {event.startTime} - {event.endTime}
+                        </div>
+                        <div className="event-item__title">
+                          {event.title}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
