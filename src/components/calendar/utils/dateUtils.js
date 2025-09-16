@@ -1,0 +1,187 @@
+/**
+ * Date utility functions for the mobile calendar component
+ * Handles week calculations, date formatting, and navigation
+ */
+
+/**
+ * Get the start of the week (Monday) for a given date
+ * @param {Date} date - The date to get the week start for
+ * @returns {Date} - The start of the week (Monday)
+ */
+export function getWeekStart(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+  return new Date(d.setDate(diff));
+}
+
+/**
+ * Get the end of the week (Sunday) for a given date
+ * @param {Date} date - The date to get the week end for
+ * @returns {Date} - The end of the week (Sunday)
+ */
+export function getWeekEnd(date) {
+  const weekStart = getWeekStart(date);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  return weekEnd;
+}
+
+/**
+ * Get the week range (start and end dates) for a given date
+ * @param {Date} date - The date to get the week range for
+ * @returns {Object} - Object with startDate, endDate, weekNumber, and year
+ */
+export function getWeekRange(date) {
+  const startDate = getWeekStart(date);
+  const endDate = getWeekEnd(date);
+  const weekNumber = getWeekNumber(date);
+  const year = date.getFullYear();
+  
+  return {
+    startDate,
+    endDate,
+    weekNumber,
+    year
+  };
+}
+
+/**
+ * Get the current week range
+ * @returns {Object} - Current week range object
+ */
+export function getCurrentWeek() {
+  return getWeekRange(new Date());
+}
+
+/**
+ * Get all days in a week as an array of Date objects
+ * @param {Date} date - Any date within the desired week
+ * @returns {Date[]} - Array of 7 Date objects representing the week
+ */
+export function getWeekDays(date) {
+  const weekStart = getWeekStart(date);
+  const days = [];
+  
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(weekStart);
+    day.setDate(weekStart.getDate() + i);
+    days.push(day);
+  }
+  
+  return days;
+}
+
+/**
+ * Navigate to the previous week
+ * @param {Date} currentDate - Current date
+ * @returns {Date} - Date in the previous week
+ */
+export function getPreviousWeek(currentDate) {
+  const prevWeek = new Date(currentDate);
+  prevWeek.setDate(currentDate.getDate() - 7);
+  return prevWeek;
+}
+
+/**
+ * Navigate to the next week
+ * @param {Date} currentDate - Current date
+ * @returns {Date} - Date in the next week
+ */
+export function getNextWeek(currentDate) {
+  const nextWeek = new Date(currentDate);
+  nextWeek.setDate(currentDate.getDate() + 7);
+  return nextWeek;
+}/**
+ 
+* Format a date range for display (e.g., "Dec 9-15, 2024")
+ * @param {Date} startDate - Start date of the range
+ * @param {Date} endDate - End date of the range
+ * @returns {string} - Formatted date range string
+ */
+export function formatWeekRange(startDate, endDate) {
+  const startMonth = startDate.toLocaleDateString('en-US', { month: 'short' });
+  const endMonth = endDate.toLocaleDateString('en-US', { month: 'short' });
+  const startDay = startDate.getDate();
+  const endDay = endDate.getDate();
+  const year = endDate.getFullYear();
+  
+  // If both dates are in the same month
+  if (startMonth === endMonth) {
+    return `${startMonth} ${startDay}-${endDay}, ${year}`;
+  }
+  
+  // If dates span different months
+  return `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${year}`;
+}
+
+/**
+ * Format a date for day header display (e.g., "Mon", "Tue")
+ * @param {Date} date - Date to format
+ * @returns {string} - Short day name
+ */
+export function formatDayName(date) {
+  return date.toLocaleDateString('en-US', { weekday: 'short' });
+}
+
+/**
+ * Format a date number for day header display (e.g., "9", "15")
+ * @param {Date} date - Date to format
+ * @returns {string} - Date number as string
+ */
+export function formatDayNumber(date) {
+  return date.getDate().toString();
+}
+
+/**
+ * Format time for event display (e.g., "9:00 AM", "2:30 PM")
+ * @param {string} timeString - Time in 24-hour format (e.g., "09:00", "14:30")
+ * @returns {string} - Formatted time string
+ */
+export function formatTime(timeString) {
+  const [hours, minutes] = timeString.split(':');
+  const hour = parseInt(hours, 10);
+  const minute = parseInt(minutes, 10);
+  
+  const date = new Date();
+  date.setHours(hour, minute);
+  
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+}
+
+/**
+ * Check if a date is today
+ * @param {Date} date - Date to check
+ * @returns {boolean} - True if the date is today
+ */
+export function isToday(date) {
+  const today = new Date();
+  return date.toDateString() === today.toDateString();
+}
+
+/**
+ * Check if two dates are the same day
+ * @param {Date} date1 - First date
+ * @param {Date} date2 - Second date
+ * @returns {boolean} - True if dates are the same day
+ */
+export function isSameDay(date1, date2) {
+  return date1.toDateString() === date2.toDateString();
+}
+
+/**
+ * Get the week number for a given date (ISO week)
+ * @param {Date} date - Date to get week number for
+ * @returns {number} - Week number (1-53)
+ */
+export function getWeekNumber(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
