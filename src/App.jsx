@@ -86,13 +86,7 @@ function App() {
 
   return (
     <div className="app">
-      <div className="app-header">
-        <h1>Mobile Calendar with Touch Gestures</h1>
-        <p>
-          Try swiping left/right on the calendar to navigate between weeks,
-          or use the navigation buttons and "Today" button.
-        </p>
-      </div>
+
 
       <div className="calendar-container">
         <MobileCalendar
