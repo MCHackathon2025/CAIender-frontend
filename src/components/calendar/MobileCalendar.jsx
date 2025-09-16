@@ -5,6 +5,7 @@
 import React, { useState, useCallback } from 'react';
 import NavigationHeader from './NavigationHeader';
 import WeekView from './WeekView';
+import EventModal from './EventModal';
 import { 
   getCurrentWeek, 
   getWeekRange, 
@@ -27,6 +28,12 @@ const MobileCalendar = ({
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isNavigating, setIsNavigating] = useState(false);
+  
+  // Modal state
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [selectedDateForEvent, setSelectedDateForEvent] = useState(null);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [suggestedTimes, setSuggestedTimes] = useState(null);
 
   // Get current week range and days
   const currentWeek = getWeekRange(currentDate);
@@ -76,20 +83,93 @@ const MobileCalendar = ({
   }, [isNavigating]);
 
   /**
-   * Handle date selection
+   * Handle date selection - opens event creation modal
    */
-  const handleDateSelect = useCallback((date) => {
+  const handleDateSelect = useCallback((date, suggestedTimes = null) => {
     setSelectedDate(date);
-    onEventCreate?.(date);
-  }, [onEventCreate]);
+    setSelectedDateForEvent(date);
+    setEditingEvent(null); // Clear any editing event
+    
+    // Store suggested times for the modal
+    if (suggestedTimes) {
+      setSuggestedTimes(suggestedTimes);
+    } else {
+      setSuggestedTimes(null);
+    }
+    
+    setIsEventModalOpen(true);
+  }, []);
 
   /**
-   * Handle event click
+   * Handle event click - opens event editing modal
    */
   const handleEventClick = useCallback((event) => {
-    // This will be implemented in later tasks
-    console.log('Event clicked:', event);
+    setSelectedDate(event.startDate);
+    setSelectedDateForEvent(event.startDate);
+    setEditingEvent(event);
+    setIsEventModalOpen(true);
   }, []);
+
+  /**
+   * Handle event creation/update
+   */
+  const handleEventSave = useCallback(async (eventData) => {
+    try {
+      if (editingEvent) {
+        // Call external update handler
+        if (onEventUpdate) {
+          await onEventUpdate(eventData);
+        }
+      } else {
+        // Call external create handler
+        if (onEventCreate) {
+          await onEventCreate(eventData);
+        }
+      }
+      
+      // Close modal and reset state
+      setIsEventModalOpen(false);
+      setEditingEvent(null);
+      setSelectedDateForEvent(null);
+      setSuggestedTimes(null);
+    } catch (error) {
+      console.error('Error saving event:', error);
+      throw error; // Re-throw to let modal handle the error
+    }
+  }, [editingEvent, onEventCreate, onEventUpdate]);
+
+  /**
+   * Handle event deletion
+   */
+  const handleEventDelete = useCallback(async (eventId) => {
+    try {
+      // Call external delete handler
+      if (onEventDelete) {
+        await onEventDelete(eventId);
+      }
+      
+      // Close modal and reset state
+      setIsEventModalOpen(false);
+      setEditingEvent(null);
+      setSelectedDateForEvent(null);
+      setSuggestedTimes(null);
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      throw error; // Re-throw to let modal handle the error
+    }
+  }, [onEventDelete]);
+
+  /**
+   * Handle modal cancel
+   */
+  const handleEventModalCancel = useCallback(() => {
+    setIsEventModalOpen(false);
+    setEditingEvent(null);
+    setSelectedDateForEvent(null);
+    setSuggestedTimes(null);
+  }, []);
+
+
 
   return (
     <div className="mobile-calendar">
@@ -111,6 +191,17 @@ const MobileCalendar = ({
         onSwipeRight={handlePreviousWeek}
         isNavigating={isNavigating}
         gesturesDisabled={false}
+      />
+
+      {/* Event Creation/Editing Modal */}
+      <EventModal
+        isOpen={isEventModalOpen}
+        selectedDate={selectedDateForEvent}
+        event={editingEvent}
+        suggestedTimes={suggestedTimes}
+        onSave={handleEventSave}
+        onCancel={handleEventModalCancel}
+        onDelete={editingEvent ? handleEventDelete : null}
       />
     </div>
   );

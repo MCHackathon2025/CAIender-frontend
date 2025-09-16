@@ -207,18 +207,18 @@ describe('Date Formatting Functions', () => {
 
   describe('formatTime', () => {
     it('should format morning times correctly', () => {
-      expect(formatTime('09:00')).toBe('9:00 AM');
-      expect(formatTime('09:30')).toBe('9:30 AM');
+      expect(formatTime('09:00')).toBe('09:00');
+      expect(formatTime('09:30')).toBe('09:30');
     });
 
     it('should format afternoon times correctly', () => {
-      expect(formatTime('14:30')).toBe('2:30 PM');
-      expect(formatTime('18:00')).toBe('6:00 PM');
+      expect(formatTime('14:30')).toBe('14:30');
+      expect(formatTime('18:00')).toBe('18:00');
     });
 
     it('should handle midnight and noon', () => {
-      expect(formatTime('00:00')).toBe('12:00 AM');
-      expect(formatTime('12:00')).toBe('12:00 PM');
+      expect(formatTime('00:00')).toBe('00:00');
+      expect(formatTime('12:00')).toBe('12:00');
     });
   });
 });

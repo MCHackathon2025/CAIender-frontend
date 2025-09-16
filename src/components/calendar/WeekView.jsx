@@ -96,10 +96,43 @@ const WeekView = ({
               return eventDate.toDateString() === date.toDateString();
             });
 
+            // Handle click on day content to create event at specific time
+            const handleDayContentClick = (e) => {
+              if (!onDateSelect) return;
+              
+              // Don't create event if clicking on an existing event
+              if (e.target.closest('.positioned-event')) {
+                return;
+              }
+              
+              // Get the click position relative to the day content
+              const rect = e.currentTarget.getBoundingClientRect();
+              const clickY = e.clientY - rect.top;
+              
+              // Calculate the hour based on click position
+              // Each hour takes up rect.height / 24 pixels
+              const hourHeight = rect.height / 24;
+              const clickedHour = Math.floor(clickY / hourHeight);
+              
+              // Ensure hour is within valid range (0-23)
+              const hour = Math.max(0, Math.min(23, clickedHour));
+              
+              // Create time strings
+              const startTime = `${hour.toString().padStart(2, '0')}:00`;
+              const endHour = hour < 23 ? hour + 1 : 23;
+              const endMinute = hour < 23 ? 0 : 30;
+              const endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+              
+              // Call onDateSelect with date and suggested times
+              onDateSelect(date, { startTime, endTime });
+            };
+
             return (
               <div 
                 key={`content-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
                 className="day-content"
+                onClick={handleDayContentClick}
+                style={{ cursor: 'pointer' }}
               >
                 {/* Time Grid Background */}
                 <div className="time-grid">
@@ -124,7 +157,7 @@ const WeekView = ({
                         onEventClick && onEventClick(event);
                       }}
                     >
-                      <div className="event-item event-item--main">
+                      <div className={`event-item event-item--${event.theme || 'main'}`}>
                         <div className="event-item__time">
                           {event.startTime} - {event.endTime}
                         </div>

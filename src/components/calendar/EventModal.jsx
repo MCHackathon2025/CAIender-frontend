@@ -10,6 +10,7 @@ const EventModal = ({
   isOpen,
   selectedDate,
   event = null, // For editing existing events
+  suggestedTimes = null, // For time-based event creation
   onSave,
   onCancel,
   onDelete = null
@@ -18,6 +19,7 @@ const EventModal = ({
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    date: '',
     startTime: '09:00',
     endTime: '10:00',
     theme: 'main',
@@ -36,24 +38,41 @@ const EventModal = ({
 
   // Initialize form data when modal opens or event changes
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && selectedDate) {
+      const dateString = selectedDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+
       if (event) {
         // Editing existing event
+        let eventDateString = dateString; // fallback to selectedDate
+        try {
+          const eventDate = new Date(event.startDate);
+          if (!isNaN(eventDate.getTime())) {
+            eventDateString = eventDate.toISOString().split('T')[0];
+          }
+        } catch (error) {
+          console.warn('Invalid event date, using selectedDate as fallback');
+        }
+
         setFormData({
           title: event.title || '',
           description: event.description || '',
+          date: eventDateString,
           startTime: event.startTime || '09:00',
           endTime: event.endTime || '10:00',
           theme: event.theme || 'main',
           isAllDay: event.isAllDay || false
         });
       } else {
-        // Creating new event
+        // Creating new event - use suggested times if available
+        const defaultStartTime = suggestedTimes?.startTime || '09:00';
+        const defaultEndTime = suggestedTimes?.endTime || '10:00';
+
         setFormData({
           title: '',
           description: '',
-          startTime: '09:00',
-          endTime: '10:00',
+          date: dateString,
+          startTime: defaultStartTime,
+          endTime: defaultEndTime,
           theme: 'main',
           isAllDay: false
         });
@@ -61,7 +80,7 @@ const EventModal = ({
       setErrors({});
       setIsSubmitting(false);
     }
-  }, [isOpen, event]);
+  }, [isOpen, event, suggestedTimes, selectedDate]);
 
   // Focus management when modal opens
   useEffect(() => {
@@ -99,6 +118,11 @@ const EventModal = ({
       newErrors.title = 'Event title is required';
     }
 
+    // Date is required
+    if (!formData.date) {
+      newErrors.date = 'Event date is required';
+    }
+
     // Time validation for non-all-day events
     if (!formData.isAllDay) {
       const startTime = formData.startTime;
@@ -124,7 +148,7 @@ const EventModal = ({
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -132,12 +156,15 @@ const EventModal = ({
     setIsSubmitting(true);
 
     try {
+      // Use the date from the form instead of selectedDate
+      const eventDate = new Date(formData.date);
+
       const eventData = {
         id: event?.id || `event_${Date.now()}`,
         title: formData.title.trim(),
         description: formData.description.trim(),
-        startDate: selectedDate,
-        endDate: selectedDate,
+        startDate: eventDate,
+        endDate: eventDate,
         startTime: formData.isAllDay ? '00:00' : formData.startTime,
         endTime: formData.isAllDay ? '23:59' : formData.endTime,
         theme: formData.theme,
@@ -171,7 +198,7 @@ const EventModal = ({
       const focusableElements = modalRef.current?.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       );
-      
+
       if (focusableElements?.length > 0) {
         const firstElement = focusableElements[0];
         const lastElement = focusableElements[focusableElements.length - 1];
@@ -201,7 +228,7 @@ const EventModal = ({
 
   return (
     <div className="event-modal-overlay" onClick={onCancel}>
-      <div 
+      <div
         className="event-modal"
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
@@ -225,11 +252,26 @@ const EventModal = ({
         </div>
 
         <div className="event-modal-content">
-          <div className="event-date-display">
-            {formatDate(selectedDate)}
-          </div>
-
           <form onSubmit={handleSubmit} className="event-form">
+            {/* Date Input */}
+            <div className="form-group">
+              <label htmlFor="event-date" className="form-label">
+                Date *
+              </label>
+              <input
+                id="event-date"
+                type="date"
+                className={`form-input ${errors.date ? 'error' : ''}`}
+                value={formData.date}
+                onChange={(e) => handleInputChange('date', e.target.value)}
+              />
+              {errors.date && (
+                <span className="error-message" role="alert">
+                  {errors.date}
+                </span>
+              )}
+            </div>
+
             {/* Title Input */}
             <div className="form-group">
               <label htmlFor="event-title" className="form-label">
@@ -268,7 +310,7 @@ const EventModal = ({
                   maxLength={500}
                 />
               </div>
-              
+
               <div className="form-group checkbox-row">
                 <label className="checkbox-label">
                   <input
@@ -367,7 +409,7 @@ const EventModal = ({
                   Delete
                 </button>
               )}
-              
+
               <div className="primary-actions">
                 <button
                   type="button"

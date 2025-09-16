@@ -7,7 +7,7 @@ import './App.css'
 function App() {
   // Sample events to demonstrate the calendar functionality
   // Current week: September 15-21, 2025 (Monday-Sunday)
-  const [events] = useState([
+  const [events, setEvents] = useState([
     {
       id: '1',
       title: 'Team Standup',
@@ -70,19 +70,25 @@ function App() {
     },
   ])
 
-  const handleEventCreate = (date) => {
-    console.log('Create event for date:', date)
-    // In a real app, this would open an event creation modal
+  const handleEventCreate = (event) => {
+    console.log('Creating event:', event)
+    setEvents(prevEvents => [...prevEvents, event])
   }
 
-  const handleEventUpdate = (event) => {
-    console.log('Update event:', event)
-    // In a real app, this would update the event in state/database
+  const handleEventUpdate = (updatedEvent) => {
+    console.log('Updating event:', updatedEvent)
+    setEvents(prevEvents => 
+      prevEvents.map(event => 
+        event.id === updatedEvent.id ? updatedEvent : event
+      )
+    )
   }
 
   const handleEventDelete = (eventId) => {
-    console.log('Delete event:', eventId)
-    // In a real app, this would remove the event from state/database
+    console.log('Deleting event:', eventId)
+    setEvents(prevEvents => 
+      prevEvents.filter(event => event.id !== eventId)
+    )
   }
 
   return (

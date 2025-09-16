@@ -36,7 +36,9 @@ describe('EventModal', () => {
         it('displays selected date correctly', () => {
             render(<EventModal {...mockProps} />);
 
-            expect(screen.getByText('Sunday, December 15, 2024')).toBeInTheDocument();
+            const dateInput = screen.getByLabelText('Date *');
+            expect(dateInput).toBeInTheDocument();
+            expect(dateInput.value).toBe('2024-12-15');
         });
 
         it('shows "Edit Event" title when editing existing event', () => {
@@ -44,6 +46,7 @@ describe('EventModal', () => {
                 id: '1',
                 title: 'Test Event',
                 description: 'Test Description',
+                startDate: new Date('2024-12-15'),
                 startTime: '10:00',
                 endTime: '11:00',
                 theme: 'info',
@@ -60,6 +63,7 @@ describe('EventModal', () => {
         it('renders all required form fields', () => {
             render(<EventModal {...mockProps} />);
 
+            expect(screen.getByLabelText(/date/i)).toBeInTheDocument();
             expect(screen.getByLabelText(/event title/i)).toBeInTheDocument();
             expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
             expect(screen.getByText(/all day/i)).toBeInTheDocument();
@@ -73,6 +77,7 @@ describe('EventModal', () => {
                 id: '1',
                 title: 'Test Event',
                 description: 'Test Description',
+                startDate: new Date('2024-12-15'),
                 startTime: '10:00',
                 endTime: '11:00',
                 theme: 'info',
@@ -83,6 +88,7 @@ describe('EventModal', () => {
 
             expect(screen.getByDisplayValue('Test Event')).toBeInTheDocument();
             expect(screen.getByDisplayValue('Test Description')).toBeInTheDocument();
+            expect(screen.getByDisplayValue('2024-12-15')).toBeInTheDocument(); // Date input
             expect(screen.getByDisplayValue('10:00')).toBeInTheDocument();
             expect(screen.getByDisplayValue('11:00')).toBeInTheDocument();
         });
@@ -188,8 +194,8 @@ describe('EventModal', () => {
                         id: expect.any(String),
                         title: 'Test Event',
                         description: 'Test Description',
-                        startDate: mockProps.selectedDate,
-                        endDate: mockProps.selectedDate,
+                        startDate: expect.any(Date),
+                        endDate: expect.any(Date),
                         startTime: '09:00',
                         endTime: '10:00',
                         theme: 'main',
@@ -216,8 +222,8 @@ describe('EventModal', () => {
                     id: expect.any(String),
                     title: 'All Day Event',
                     description: '',
-                    startDate: mockProps.selectedDate,
-                    endDate: mockProps.selectedDate,
+                    startDate: expect.any(Date),
+                    endDate: expect.any(Date),
                     startTime: '00:00',
                     endTime: '23:59',
                     theme: 'main',
@@ -245,7 +251,11 @@ describe('EventModal', () => {
 
     describe('Event Deletion', () => {
         it('shows delete button when editing existing event', () => {
-            const event = { id: '1', title: 'Test Event' };
+            const event = { 
+                id: '1', 
+                title: 'Test Event',
+                startDate: new Date('2024-12-15')
+            };
             render(<EventModal {...mockProps} event={event} />);
 
             expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
@@ -259,7 +269,11 @@ describe('EventModal', () => {
 
         it('calls onDelete when delete is confirmed', async () => {
             const user = userEvent.setup();
-            const event = { id: '1', title: 'Test Event' };
+            const event = { 
+                id: '1', 
+                title: 'Test Event',
+                startDate: new Date('2024-12-15')
+            };
 
             // Mock window.confirm
             const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);

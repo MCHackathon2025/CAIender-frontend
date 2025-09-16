@@ -148,9 +148,9 @@ export function formatDayNumber(date) {
 }
 
 /**
- * Format time for event display (e.g., "9:00 AM", "2:30 PM")
+ * Format time for event display (e.g., "09:00", "14:30")
  * @param {string} timeString - Time in 24-hour format (e.g., "09:00", "14:30")
- * @returns {string} - Formatted time string
+ * @returns {string} - Formatted time string in 24-hour format
  */
 export function formatTime(timeString) {
   const [hours, minutes] = timeString.split(':');
@@ -161,9 +161,9 @@ export function formatTime(timeString) {
   date.setHours(hour, minute);
   
   return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
+    hour: '2-digit',
     minute: '2-digit',
-    hour12: true
+    hour12: false
   });
 }
 
