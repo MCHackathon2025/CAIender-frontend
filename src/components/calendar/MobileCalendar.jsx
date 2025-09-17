@@ -6,10 +6,10 @@ import React, { useState, useCallback } from 'react';
 import NavigationHeader from './NavigationHeader';
 import WeekView from './WeekView';
 import EventModal from './EventModal';
-import { 
-  getCurrentWeek, 
-  getWeekRange, 
-  getPreviousWeek, 
+import {
+  getCurrentWeek,
+  getWeekRange,
+  getPreviousWeek,
   getNextWeek,
   getWeekDays,
   isToday,
@@ -17,7 +17,7 @@ import {
 } from './utils/dateUtils';
 import './styles/index.css';
 
-const MobileCalendar = ({ 
+const MobileCalendar = ({
   initialDate = new Date(),
   events = [],
   onEventCreate,
@@ -30,7 +30,7 @@ const MobileCalendar = ({
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isNavigating, setIsNavigating] = useState(false);
-  
+
   // Modal state
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [selectedDateForEvent, setSelectedDateForEvent] = useState(null);
@@ -46,11 +46,11 @@ const MobileCalendar = ({
    */
   const handlePreviousWeek = useCallback(() => {
     if (isNavigating) return;
-    
+
     setIsNavigating(true);
     const prevWeekDate = getPreviousWeek(currentDate);
     setCurrentDate(prevWeekDate);
-    
+
     // Reset navigation state after animation
     setTimeout(() => setIsNavigating(false), 300);
   }, [currentDate, isNavigating]);
@@ -60,11 +60,11 @@ const MobileCalendar = ({
    */
   const handleNextWeek = useCallback(() => {
     if (isNavigating) return;
-    
+
     setIsNavigating(true);
     const nextWeekDate = getNextWeek(currentDate);
     setCurrentDate(nextWeekDate);
-    
+
     // Reset navigation state after animation
     setTimeout(() => setIsNavigating(false), 300);
   }, [currentDate, isNavigating]);
@@ -74,12 +74,12 @@ const MobileCalendar = ({
    */
   const handleTodayClick = useCallback(() => {
     if (isNavigating) return;
-    
+
     setIsNavigating(true);
     const today = new Date();
     setCurrentDate(today);
     setSelectedDate(today);
-    
+
     // Reset navigation state after animation
     setTimeout(() => setIsNavigating(false), 300);
   }, [isNavigating]);
@@ -91,14 +91,14 @@ const MobileCalendar = ({
     setSelectedDate(date);
     setSelectedDateForEvent(date);
     setEditingEvent(null); // Clear any editing event
-    
+
     // Store suggested times for the modal
     if (suggestedTimes) {
       setSuggestedTimes(suggestedTimes);
     } else {
       setSuggestedTimes(null);
     }
-    
+
     setIsEventModalOpen(true);
   }, []);
 
@@ -135,7 +135,7 @@ const MobileCalendar = ({
           await onEventCreate(eventData);
         }
       }
-      
+
       // Close modal and reset state
       setIsEventModalOpen(false);
       setEditingEvent(null);
@@ -156,7 +156,7 @@ const MobileCalendar = ({
       if (onEventDelete) {
         await onEventDelete(eventId);
       }
-      
+
       // Close modal and reset state
       setIsEventModalOpen(false);
       setEditingEvent(null);
@@ -189,19 +189,21 @@ const MobileCalendar = ({
         onTodayClick={handleTodayClick}
         isNavigating={isNavigating}
       />
-      
-      <WeekView
-        weekDays={weekDays}
-        events={events}
-        selectedDate={selectedDate}
-        onDateSelect={handleDateSelect}
-        onDateClick={handleDateClick}
-        onEventClick={handleEventClick}
-        onSwipeLeft={handleNextWeek}
-        onSwipeRight={handlePreviousWeek}
-        isNavigating={isNavigating}
-        gesturesDisabled={false}
-      />
+
+      <div className="calendar-scroll">
+        <WeekView
+          weekDays={weekDays}
+          events={events}
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+          onDateClick={handleDateClick}
+          onEventClick={handleEventClick}
+          onSwipeLeft={handleNextWeek}
+          onSwipeRight={handlePreviousWeek}
+          isNavigating={isNavigating}
+          gesturesDisabled={false}
+        />
+      </div>
 
       {/* Event Creation/Editing Modal */}
       <EventModal

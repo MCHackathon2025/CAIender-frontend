@@ -55,6 +55,17 @@ body {
   /* Allow horizontal scrolling for the entire calendar */
   overflow-y: hidden;
   box-sizing: border-box;
+  min-height: 0;
+}
+
+/* Dedicated horizontal scroll area for content under sticky header */
+.calendar-scroll {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Week View - Synchronized Scrolling Layout */
@@ -218,8 +229,7 @@ body {
   min-width: 740px;
   /* Fixed width: 40px (time-scale) + 700px (days-content) */
   width: 740px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   /* Remove horizontal scrolling from content - handled by parent */
   -webkit-overflow-scrolling: touch;
   /* Smooth scrolling on iOS */
