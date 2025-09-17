@@ -166,23 +166,59 @@ describe('Date Formatting Functions', () => {
   });
 
   describe('formatWeekRange', () => {
-    it('should format week range in same month correctly', () => {
-      const formatted = formatWeekRange(startDate, endDate);
+    it('should format week range in same month correctly with year', () => {
+      const formatted = formatWeekRange(startDate, endDate, true);
       expect(formatted).toBe('Dec 9-15, 2024');
     });
 
-    it('should format week range across different months', () => {
+    it('should format week range in same month correctly without year', () => {
+      const formatted = formatWeekRange(startDate, endDate, false);
+      expect(formatted).toBe('Dec 9-15');
+    });
+
+    it('should format week range across different months with year', () => {
       const startDate = createDate(2024, 11, 25); // November 25
       const endDate = createDate(2024, 12, 1); // December 1
-      const formatted = formatWeekRange(startDate, endDate);
+      const formatted = formatWeekRange(startDate, endDate, true);
       expect(formatted).toBe('Nov 25 - Dec 1, 2024');
+    });
+
+    it('should format week range across different months without year', () => {
+      const startDate = createDate(2024, 11, 25); // November 25
+      const endDate = createDate(2024, 12, 1); // December 1
+      const formatted = formatWeekRange(startDate, endDate, false);
+      expect(formatted).toBe('Nov 25 - Dec 1');
     });
 
     it('should handle year boundaries', () => {
       const startDate = createDate(2024, 12, 30); // December 30, 2024
       const endDate = createDate(2025, 1, 5); // January 5, 2025
-      const formatted = formatWeekRange(startDate, endDate);
+      const formatted = formatWeekRange(startDate, endDate, true);
       expect(formatted).toBe('Dec 30 - Jan 5, 2025');
+    });
+
+    it('should use responsive behavior when includeYear is not specified', () => {
+      // Mock window.innerWidth for large screen
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 800, // Large screen
+      });
+      
+      const formatted = formatWeekRange(startDate, endDate);
+      expect(formatted).toBe('Dec 9-15, 2024');
+      
+      // Mock window.innerWidth for small screen
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 400, // Small screen
+      });
+      
+      const formattedSmall = formatWeekRange(startDate, endDate);
+      expect(formattedSmall).toBe('Dec 9-15');
+      
+      vi.restoreAllMocks();
     });
   });
 

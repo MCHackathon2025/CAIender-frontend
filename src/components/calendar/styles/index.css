@@ -3,16 +3,22 @@
  * Mobile-first responsive design with proper touch targets
  */
 
-/* Global reset for full height */
+/* Global reset for full height and width */
 html,
 body {
   height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: auto;
+  /* Allow horizontal scrolling when needed */
 }
 
 #root {
   height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* CSS Custom Properties for theming */
@@ -34,45 +40,68 @@ body {
 /* Mobile Calendar Container */
 .mobile-calendar {
   width: 100%;
-  max-width: 100%;
+  max-width: none;
+  /* Remove max-width constraint */
   height: 100vh;
-  /* Full viewport height */
-  min-height: 100vh;
-  /* Ensure minimum full height */
+  min-height: 600px;
+  /* Minimum height to prevent over-shrinking */
+  margin: 0;
+  padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--calendar-background);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  /* Prevent scrolling on the main container */
+  overflow-x: auto;
+  /* Allow horizontal scrolling for the entire calendar */
+  overflow-y: hidden;
+  box-sizing: border-box;
 }
 
 /* Week View - Synchronized Scrolling Layout */
 .week-view {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 740px;
+  min-width: 740px;
+  /* Fixed width to match calendar content */
   flex: 1;
   background-color: #e0e0e0;
   position: relative;
   overflow: hidden;
+  /* Remove scrolling from week-view - handled by parent */
   transition: transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
-  touch-action: pan-y;
-  min-height: 0;
+  touch-action: pan-x pan-y;
+  /* Allow both horizontal and vertical panning */
+  min-height: 400px;
+  /* Minimum height to show content properly */
 }
 
 /* Headers Row - Sticky */
 .week-headers {
   display: flex;
   flex-direction: row;
+  min-width: 740px;
+  /* Fixed width: 40px (time-scale) + 700px (day-headers) */
+  width: 740px;
   background-color: #ffffff;
   border-bottom: 2px solid #e0e0e0;
   z-index: 10;
+  flex-shrink: 0;
+  /* Prevent headers from shrinking */
+  overflow: hidden;
+  /* Remove individual scrolling from headers */
+  position: sticky;
+  top: 0;
+  /* Keep headers at top during vertical scrolling */
 }
 
 .time-scale-header {
-  width: 60px;
+  width: 40px;
+  min-width: 40px;
+  /* Prevent shrinking */
   height: 60px;
+  min-height: 60px;
+  /* Prevent shrinking */
   border-right: 2px solid #e0e0e0;
   background-color: #fafafa;
   flex-shrink: 0;
@@ -80,14 +109,21 @@ body {
 
 .day-headers {
   display: flex;
-  flex: 1;
+  min-width: 700px;
+  /* Fixed width: 7 days * 100px each */
+  width: 700px;
   gap: 1px;
   background-color: #e0e0e0;
+  flex-shrink: 0;
 }
 
 .day-header-cell {
-  flex: 1;
+  width: 100px;
+  min-width: 100px;
+  /* Fixed width per day for horizontal scrolling */
   height: 60px;
+  min-height: 60px;
+  /* Prevent shrinking */
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -95,6 +131,7 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: background-color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  flex-shrink: 0;
 }
 
 .day-header-cell:hover {
@@ -181,15 +218,34 @@ body {
   display: flex;
   flex-direction: row;
   flex: 1;
+  min-height: 300px;
+  min-width: 740px;
+  /* Fixed width: 40px (time-scale) + 700px (days-content) */
+  width: 740px;
   overflow-y: auto;
   overflow-x: hidden;
+  /* Remove horizontal scrolling from content - handled by parent */
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling on iOS */
+  position: relative;
+  padding-bottom: 20px;
+  /* Add bottom padding for better scrolling experience */
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  /* Smooth scrolling behavior */
 }
 
 .time-scale-slots {
-  width: 60px;
+  width: 40px;
+  min-width: 40px;
+  /* Prevent shrinking */
   flex-shrink: 0;
   background-color: #fafafa;
   border-right: 2px solid #e0e0e0;
+  height: calc(24 * 60px + 140px);
+  /* Fixed height: 24 hours * 60px + padding for scrolling */
+  overflow: hidden;
+  /* Prevent individual scrolling - handled by parent */
 }
 
 .time-slot {
@@ -213,18 +269,31 @@ body {
 /* Days Content */
 .days-content {
   display: flex;
-  flex: 1;
+  min-width: 700px;
+  /* Fixed width: 7 days * 100px each */
+  width: 700px;
   gap: 1px;
   background-color: #e0e0e0;
+  flex-shrink: 0;
+  height: calc(24 * 60px + 140px);
+  /* Fixed height: 24 hours * 60px + padding for scrolling */
+  overflow: hidden;
+  /* Prevent individual scrolling - handled by parent */
 }
 
 .day-content {
-  flex: 1;
+  width: 100px;
+  min-width: 100px;
+  /* Fixed width per day to match headers */
   position: relative;
   background-color: #ffffff;
-  min-height: calc(24 * 60px);
+  height: calc(24 * 60px + 100px);
+  /* Fixed height: 24 hours * 60px + padding for scrolling */
   box-sizing: border-box;
   transition: background-color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  flex-shrink: 0;
+  overflow: hidden;
+  /* Prevent individual scrolling - handled by parent */
 }
 
 .day-content--today {
@@ -481,7 +550,8 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 100%;
+  height: calc(24 * 60px + 140px);
+  /* Fixed height: 24 hours * 60px + padding for scrolling */
   z-index: 0;
 }
 
@@ -913,13 +983,7 @@ body {
   }
 }
 
-.navigation-header {
-  /* Styles will be added during implementation */
-}
-
-.event-modal {
-  /* Styles will be added during implementation */
-}
+/* Navigation header and event modal styles are in separate files */
 
 /* F
 loating Action Button for Event Creation */
@@ -1006,6 +1070,7 @@ input[type="time"] {
   /* Force 24-hour format display */
   -webkit-appearance: none;
   -moz-appearance: textfield;
+  appearance: none;
 }
 
 /* Ensure time inputs display in 24-hour format across browsers */
@@ -1090,6 +1155,7 @@ input[type="time"][data-format="24"] {
   .current-time-line__line {
     height: 1.5px;
   }
+
 }
 
 /* High contrast mode support */
@@ -1160,5 +1226,41 @@ input[type="time"][data-format="24"] {
     font-size: 13px;
     padding: 6px 2px;
     min-width: 45px;
+  }
+}
+
+/* Ensure horizontal scrolling works on mobile devices */
+@media (max-width: 768px) {
+  .mobile-calendar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .week-view {
+    width: 740px;
+    min-width: 740px;
+    flex-shrink: 0;
+  }
+
+  /* Adjust padding and heights for mobile */
+  .week-content {
+    padding-bottom: 80px;
+    padding-top: 15px;
+  }
+
+  .time-scale-slots {
+    height: calc(24 * 50px + 95px);
+  }
+
+  .days-content {
+    height: calc(24 * 50px + 95px);
+  }
+
+  .day-content {
+    height: calc(24 * 50px + 95px);
+  }
+
+  .time-grid {
+    height: calc(24 * 50px + 95px);
   }
 }

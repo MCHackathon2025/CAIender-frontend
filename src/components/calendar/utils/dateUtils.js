@@ -108,25 +108,33 @@ export function getNextWeek(currentDate) {
   return nextWeek;
 }/**
  
-* Format a date range for display (e.g., "Dec 9-15, 2024")
+* Format a date range for display (e.g., "Dec 9-15, 2024" or "Dec 9-15" on small screens)
  * @param {Date} startDate - Start date of the range
  * @param {Date} endDate - End date of the range
+ * @param {boolean} includeYear - Whether to include the year (optional, defaults to responsive behavior)
  * @returns {string} - Formatted date range string
  */
-export function formatWeekRange(startDate, endDate) {
+export function formatWeekRange(startDate, endDate, includeYear = null) {
   const startMonth = startDate.toLocaleDateString('en-US', { month: 'short' });
   const endMonth = endDate.toLocaleDateString('en-US', { month: 'short' });
   const startDay = startDate.getDate();
   const endDay = endDate.getDate();
   const year = endDate.getFullYear();
   
+  // Determine whether to show year based on screen size if not explicitly set
+  const shouldIncludeYear = includeYear !== null ? includeYear : window.innerWidth > 480;
+  
   // If both dates are in the same month
   if (startMonth === endMonth) {
-    return `${startMonth} ${startDay}-${endDay}, ${year}`;
+    return shouldIncludeYear 
+      ? `${startMonth} ${startDay}-${endDay}, ${year}`
+      : `${startMonth} ${startDay}-${endDay}`;
   }
   
   // If dates span different months
-  return `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${year}`;
+  return shouldIncludeYear
+    ? `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${year}`
+    : `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
 }
 
 /**

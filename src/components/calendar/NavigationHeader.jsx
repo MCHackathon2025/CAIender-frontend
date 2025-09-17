@@ -39,17 +39,17 @@ const NavigationHeader = ({
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="4"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <polyline points="15,18 9,12 15,6"></polyline>
+            <polyline points="18,22 4,12 18,2"></polyline>
           </svg>
         </button>
 
         {/* Week Range Display */}
         <div className="navigation-header__week-range">
-          <h2 
+          <h2
             className={`navigation-header__week-text ${isNavigating ? 'navigation-header__week-text--transitioning' : ''}`}
           >
             {weekRangeText}
@@ -68,11 +68,11 @@ const NavigationHeader = ({
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="4"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <polyline points="9,18 15,12 9,6"></polyline>
+            <polyline points="6,22 20,12 6,2"></polyline>
           </svg>
         </button>
       </div>
