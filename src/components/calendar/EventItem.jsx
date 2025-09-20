@@ -37,15 +37,15 @@ const EventItem = ({ event, onClick, isCompact = false, className = '' }) => {
     if (isAllDay) {
       return 'All day';
     }
-    
+
     if (!startTime) {
       return '';
     }
-    
+
     if (endTime && endTime !== startTime) {
       return `${startTime} - ${endTime}`;
     }
-    
+
     return startTime;
   };
 
@@ -88,20 +88,20 @@ const EventItem = ({ event, onClick, isCompact = false, className = '' }) => {
         '--event-contrast': themeColors.contrast
       }}
     >
-      {/* Time display */}
-      {timeDisplay && (
-        <div className="event-item__time" aria-hidden="true">
-          {timeDisplay}
-        </div>
-      )}
-      
-      {/* Event title with truncation */}
-      <div 
+      {/* Event title with truncation - more important, shown first */}
+      <div
         className="event-item__title"
         title={title} // Show full title on hover
       >
         {title}
       </div>
+
+      {/* Time display - secondary information, shown below title */}
+      {timeDisplay && (
+        <div className="event-item__time" aria-hidden="true">
+          {timeDisplay}
+        </div>
+      )}
     </div>
   );
 };

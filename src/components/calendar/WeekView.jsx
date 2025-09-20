@@ -171,11 +171,11 @@ const WeekView = ({
                       }}
                     >
                       <div className={`event-item event-item--${event.theme || 'main'}`}>
-                        <div className="event-item__time">
-                          {event.startTime} - {event.endTime}
-                        </div>
                         <div className="event-item__title">
                           {event.title}
+                        </div>
+                        <div className="event-item__time">
+                          {event.startTime} - {event.endTime}
                         </div>
                       </div>
                     </div>

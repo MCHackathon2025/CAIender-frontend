@@ -668,10 +668,12 @@ body {
   margin: 0;
   border-radius: 4px;
   box-sizing: border-box;
-  padding: 4px 6px;
+  padding: 2px 6px;
+  /* Minimal top padding to align at very top */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  /* Align content to top instead of center */
 }
 
 /* Empty state for days without events */
@@ -814,36 +816,59 @@ body {
   color: #1565c0;
 }
 
-/* Event Time and Title */
+/* Event Title and Time - Title first, Time below */
+.event-title {
+  font-weight: 600;
+  overflow: visible;
+  /* Allow text to wrap */
+  white-space: normal;
+  /* Allow text wrapping */
+  word-wrap: break-word;
+  /* Break long words if necessary */
+  margin: 0 0 1px 0;
+  /* Minimal margin below title */
+  padding: 0;
+  flex: 0 0 auto;
+  min-height: 1.3em;
+}
+
 .event-time {
   font-weight: 600;
   font-size: 10px;
   opacity: 0.8;
-  margin-bottom: 1px;
+  margin: 0;
+  /* No margins to follow title immediately */
+  padding: 0;
+  transition: opacity 0.2s ease;
+  flex: 0 0 auto;
+  min-height: 1.2em;
 }
 
-.event-title {
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* Hide event preview time only when space is very limited */
+@media (max-width: 400px) {
+  .event-time {
+    display: none;
+  }
+}
+
+@media (max-width: 500px) {
+  .event-time {
+    opacity: 0.6;
+    font-size: 9px;
+  }
 }
 
 /* Apply horizontal layout event styling for all screen sizes */
 .event-preview {
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 2px 6px;
+  /* Minimal top padding to align content at very top */
+  min-height: 32px;
 }
 
-.event-time {
-  margin-bottom: 1px;
-  flex-shrink: 0;
-}
-
-.event-title {
-  flex: 1;
-}
 
 /* Responsive Typography */
 @media (max-width: 480px) {
@@ -891,6 +916,7 @@ body {
 
   .event-time {
     font-size: 9px;
+    margin-top: 1px;
   }
 }
 
@@ -976,60 +1002,95 @@ body {
   color: #ffffff;
 }
 
-/* Event time display */
+/* Event time display - positioned directly below title */
 .event-item__time {
   font-size: 10px;
   font-weight: 600;
   opacity: 0.8;
-  margin-bottom: 2px;
+  margin: 0;
+  /* No margins to follow title immediately */
+  padding: 0;
+  /* No padding */
   line-height: 1.2;
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  /* Don't grow/shrink, maintain natural size */
+  transition: opacity 0.2s ease;
+  min-height: 1.2em;
+  /* Ensure time has minimum height */
 }
 
-/* Event title with text truncation */
+/* Fade out time when space is very limited */
+@media (max-width: 500px) {
+  .event-item__time {
+    opacity: 0.6;
+    font-size: 9px;
+  }
+}
+
+/* Event title with text wrapping - now primary, shown first */
 .event-item__title {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
+  overflow: visible;
+  /* Allow text to wrap */
+  white-space: normal;
+  /* Allow text wrapping */
+  word-wrap: break-word;
+  /* Break long words if necessary */
+  flex: 0 0 auto;
+  /* Don't grow/shrink, maintain natural size */
+  margin: 0 0 1px 0;
+  /* Minimal margin below title */
+  padding: 0;
+  /* No padding to align at top */
+  min-height: 1.3em;
+  /* Ensure title has minimum height */
 }
 
 /* Compact mode for smaller displays */
 .event-item--compact {
-  padding: 4px 6px;
+  padding: 1px 6px;
+  /* Minimal padding to align at very top */
   min-height: 28px;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
+  /* Align to top instead of center */
   gap: 6px;
 }
 
 .event-item--compact .event-item__time {
-  margin-bottom: 0;
-  font-size: 9px;
+  display: none;
 }
 
 .event-item--compact .event-item__title {
-  font-size: 11px;
+  margin-bottom: 0;
+  font-size: 10px;
+  flex: 0 0 auto;
 }
+
+
 
 /* Apply horizontal layout event item styling for all screen sizes */
 .event-item {
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
-  padding: 6px 8px;
+  justify-content: flex-start;
+  /* Align content to top */
+  gap: 0;
+  /* Remove gap, use margins instead */
+  padding: 2px 8px;
+  /* Minimal top padding to align title at very top */
+  min-height: 32px;
+  /* Ensure minimum height for touch targets */
+  height: auto;
+  /* Allow height to grow with content */
 }
 
-.event-item__time {
-  margin-bottom: 2px;
-  flex-shrink: 0;
-}
 
 .event-item__title {
-  flex: 1;
+  flex: 0 0 auto;
+  /* Don't grow, maintain natural size */
 }
 
 /* Small mobile screens */
@@ -1038,15 +1099,61 @@ body {
     font-size: 11px;
     padding: 4px 6px;
     min-height: 32px;
-    /* Maintain minimum touch target */
   }
 
   .event-item__time {
     font-size: 9px;
+    margin-top: 1px;
   }
 
   .event-item__title {
     font-size: 11px;
+    margin: 0 0 1px 0;
+    padding: 0;
+    flex: 0 0 auto;
+  }
+}
+
+
+/* Large mobile screens - show time with good visibility */
+@media (max-width: 768px) and (min-width: 481px) {
+  .event-item__time {
+    opacity: 0.8;
+    font-size: 10px;
+  }
+}
+
+/* Narrow day columns - events will be more constrained */
+@media (max-width: 768px) {
+  /* Day columns become narrower, affecting event display space */
+}
+
+/* Medium mobile - reduce time visibility */
+@media (max-width: 480px) {
+  .event-item__time {
+    opacity: 0.5;
+    font-size: 9px;
+  }
+
+  .event-item__title {
+    margin: 0 0 1px 0;
+    padding: 0;
+    font-size: 11px;
+    flex: 0 0 auto;
+  }
+}
+
+/* Small mobile - hide time when space is very limited */
+@media (max-width: 360px) {
+  .event-item__time {
+    display: none;
+  }
+
+  .event-item__title {
+    margin: 0;
+    padding: 0;
+    font-size: 10px;
+    flex: 0 0 auto;
   }
 }
 
