@@ -11,10 +11,11 @@ import { CALENDAR_THEMES } from './theme.js';
  * @param {Object} props - Component props
  * @param {Object} props.event - Event object containing id, title, startTime, endTime, theme
  * @param {Function} props.onClick - Callback function when event is clicked
+ * @param {Function} [props.onDelete] - Callback function when delete button is clicked
  * @param {boolean} [props.isCompact=false] - Whether to render in compact mode
  * @param {string} [props.className] - Additional CSS classes
  */
-const EventItem = ({ event, onClick, isCompact = false, className = '' }) => {
+const EventItem = ({ event, onClick, onDelete, isCompact = false, className = '' }) => {
   // Handle missing event data gracefully
   if (!event) {
     return null;
@@ -65,6 +66,18 @@ const EventItem = ({ event, onClick, isCompact = false, className = '' }) => {
     }
   };
 
+  // Handle delete button click
+  const handleDeleteClick = (e) => {
+    e.stopPropagation(); // Prevent event bubbling to parent elements
+    e.preventDefault();
+    if (onDelete) {
+      onDelete(event);
+    }
+  };
+
+  // Check if event should show delete button (suggestion or info themes)
+  const shouldShowDeleteButton = theme === 'suggestion' || theme === 'info';
+
   const timeDisplay = formatTimeRange();
   const eventItemClasses = [
     'event-item',
@@ -88,6 +101,19 @@ const EventItem = ({ event, onClick, isCompact = false, className = '' }) => {
         '--event-contrast': themeColors.contrast
       }}
     >
+      {/* Delete button for suggestion and info events */}
+      {shouldShowDeleteButton && onDelete && (
+        <button
+          className="event-item__delete"
+          onClick={handleDeleteClick}
+          aria-label={`Delete ${title}`}
+          title={`Delete ${title}`}
+          type="button"
+        >
+          ×
+        </button>
+      )}
+
       {/* Event title with truncation - more important, shown first */}
       <div
         className="event-item__title"
@@ -116,6 +142,7 @@ EventItem.propTypes = {
     isAllDay: PropTypes.bool
   }).isRequired,
   onClick: PropTypes.func,
+  onDelete: PropTypes.func,
   isCompact: PropTypes.bool,
   className: PropTypes.string
 };

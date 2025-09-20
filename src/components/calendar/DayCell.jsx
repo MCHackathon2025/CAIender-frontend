@@ -7,12 +7,13 @@ import { formatDayName, formatDayNumber, calculateEventPosition, getHourHeight, 
 import EventItem from './EventItem';
 import './styles/index.css';
 
-const DayCell = ({ 
-  date, 
-  events = [], 
+const DayCell = ({
+  date,
+  events = [],
   selectedDate,
-  onDateClick, 
-  onEventClick 
+  onDateClick,
+  onEventClick,
+  onEventDelete
 }) => {
   // Calculate today and selected states
   const dayIsToday = isToday(date);
@@ -45,7 +46,7 @@ const DayCell = ({
 
   const dayName = formatDayName(date);
   const dayNumber = formatDayNumber(date);
-  
+
   // Build CSS classes for different states
   const cellClasses = [
     'day-cell',
@@ -69,7 +70,7 @@ const DayCell = ({
             {events.length > 0 && (
               <div className="day-indicators">
                 {eventThemes.map((theme, index) => (
-                  <div 
+                  <div
                     key={theme}
                     className={`day-indicator day-indicator--${theme}`}
                     aria-hidden="true"
@@ -80,7 +81,7 @@ const DayCell = ({
           </div>
         </div>
       </div>
-      
+
       <div className="day-cell-content">
         <div className="day-events">
           {/* Time grid background */}
@@ -89,7 +90,7 @@ const DayCell = ({
               <div key={hour} className="time-grid-hour" />
             ))}
           </div>
-          
+
           {events.length === 0 ? (
             // Empty state display
             <div className="day-events-empty" aria-label="No events scheduled">
@@ -112,6 +113,7 @@ const DayCell = ({
                     <EventItem
                       event={event}
                       onClick={(event) => handleEventClick(event)}
+                      onDelete={onEventDelete}
                       isCompact={false}
                       className="day-cell-event"
                     />
