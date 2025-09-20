@@ -1,60 +1,167 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import './App.css';
 
-const ProtectedRoute = ({ children, requireAuth = true }) => {
-  const { isAuthenticated, loading } = useAuth();
+/**
+ * ProtectedRoute component - Route protection with authentication checks
+ * Provides loading states, error handling, and proper navigation flow
+ */
+const ProtectedRoute = ({
+  children,
+  requireAuth = true,
+  redirectTo = '/login',
+  fallbackComponent: FallbackComponent = null
+}) => {
+  const { isAuthenticated, loading, user } = useAuth();
   const location = useLocation();
 
-  // Show loading spinner while checking authentication
+  // Log authentication state changes for debugging
+  useEffect(() => {
+    console.log('ProtectedRoute: Auth state changed', {
+      isAuthenticated,
+      loading,
+      requireAuth,
+      user: user?.username || 'No user'
+    });
+  }, [isAuthenticated, loading, requireAuth, user]);
+
+  // Enhanced loading state with better UX
   if (loading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f8fafc'
-      }}>
-        <div style={{
-          textAlign: 'center',
-          color: '#64748b'
-        }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            border: '4px solid #e2e8f0',
-            borderTop: '4px solid #3b82f6',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 16px'
-          }}></div>
-          <p>Loading...</p>
+      <div
+        className="auth-loading-container"
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'var(--surface-color)',
+          flexDirection: 'column',
+          gap: 'var(--spacing-lg)'
+        }}
+      >
+        <div className="loading-spinner" />
+        <div
+          style={{
+            textAlign: 'center',
+            color: 'var(--text-secondary)'
+          }}
+        >
+          <p style={{ margin: 0, fontSize: 'var(--font-size-base)' }}>
+            Checking authentication...
+          </p>
+          <p style={{
+            margin: '8px 0 0 0',
+            fontSize: 'var(--font-size-sm)',
+            opacity: 0.7
+          }}>
+            Please wait while we verify your credentials
+          </p>
         </div>
-        <style jsx>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     );
   }
 
-  // If authentication is required but user is not authenticated
+  // Authentication required but user not authenticated
   if (requireAuth && !isAuthenticated) {
     // Save the attempted location for redirecting after login
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const from = location.pathname + location.search;
+
+    console.log('ProtectedRoute: Redirecting to login', { from, redirectTo });
+
+    return (
+      <Navigate
+        to={redirectTo}
+        state={{ from }}
+        replace
+      />
+    );
   }
 
-  // If user is authenticated but trying to access login page
+  // User is authenticated but trying to access auth-only pages (login/register)
   if (!requireAuth && isAuthenticated) {
-    // Redirect to home or intended destination
-    const from = location.state?.from?.pathname || '/';
-    return <Navigate to={from} replace />;
+    const from = location.state?.from || '/';
+
+    console.log('ProtectedRoute: Authenticated user redirected', { from });
+
+    return (
+      <Navigate
+        to={from}
+        replace
+      />
+    );
   }
 
-  return children;
+  // Custom fallback component for specific scenarios
+  if (FallbackComponent) {
+    return <FallbackComponent />;
+  }
+
+  // Render protected content
+  console.log('ProtectedRoute: Rendering protected content', {
+    isAuthenticated,
+    requireAuth,
+    user: user?.username || 'No user'
+  });
+
+  return (
+    <div className="protected-content">
+      {children}
+    </div>
+  );
+};
+
+/**
+ * Higher-order component for creating protected routes
+ * @param {React.Component} Component - Component to protect
+ * @param {Object} options - Protection options
+ * @returns {React.Component} Protected component
+ */
+export const withProtection = (Component, options = {}) => {
+  const ProtectedComponent = (props) => (
+    <ProtectedRoute {...options}>
+      <Component {...props} />
+    </ProtectedRoute>
+  );
+
+  ProtectedComponent.displayName = `withProtection(${Component.displayName || Component.name})`;
+
+  return ProtectedComponent;
+};
+
+/**
+ * Hook for checking authentication status in components
+ * @returns {Object} Authentication state and helpers
+ */
+export const useAuthGuard = () => {
+  const { isAuthenticated, loading, user } = useAuth();
+  const location = useLocation();
+
+  const requireAuth = () => {
+    if (loading) return 'loading';
+    if (!isAuthenticated) return 'unauthenticated';
+    return 'authenticated';
+  };
+
+  const canAccess = (requireAuthFlag = true) => {
+    if (loading) return false;
+    return requireAuthFlag ? isAuthenticated : !isAuthenticated;
+  };
+
+  const redirectToLogin = () => {
+    const from = location.pathname + location.search;
+    return `/login?from=${encodeURIComponent(from)}`;
+  };
+
+  return {
+    isAuthenticated,
+    loading,
+    user,
+    requireAuth: requireAuth(),
+    canAccess,
+    redirectToLogin
+  };
 };
 
 export default ProtectedRoute;

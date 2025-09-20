@@ -1,189 +1,217 @@
-import { useState, useEffect } from 'react'
-import MobileCalendar from './calendar/MobileCalendar'
-import { createDate } from './calendar/utils/dateUtils'
-import calendarApi from '../services/calendarApi.js'
-import './calendar/styles/index.css'
-import './App.css'
+import React, { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '../contexts/AuthContext.jsx';
+import MobileCalendar from './calendar/MobileCalendar';
+import { useCalendarEvents } from '../hooks/useCalendarEvents.js';
+import './calendar/styles/index.css';
+import './App.css';
 
+/**
+ * CalendarPage component - A protected page for calendar functionality
+ * This component requires authentication and provides calendar management
+ * within the context of a larger application.
+ */
 function CalendarPage() {
-  const [events, setEvents] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
+  const {
+    events,
+    loading: calendarLoading,
+    error: calendarError,
+    loadEvents,
+    handleEventCreate,
+    handleEventUpdate,
+    handleEventDelete
+  } = useCalendarEvents(isAuthenticated);
 
-  // Load events from API on component mount
+  // Local state for component-level error handling
+  const [localError, setLocalError] = useState(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+
+  // Clear local error when new events are loaded successfully
   useEffect(() => {
-    loadEvents()
-  }, [])
+    if (events.length > 0 && localError) {
+      setLocalError(null);
+    }
+  }, [events, localError]);
 
-  const loadEvents = async () => {
+  // Enhanced retry function with loading state
+  const handleRetry = useCallback(async () => {
+    setIsRetrying(true);
+    setLocalError(null);
     try {
-      setLoading(true)
-      setError(null)
-      const result = await calendarApi.getEvents()
-
-      if (result.success) {
-        setEvents(result.events)
-      } else {
-        setError(result.error)
-        console.error('Failed to load events:', result.error)
-      }
+      await loadEvents();
     } catch (err) {
-      const errorMessage = 'Failed to load events. Please try again.'
-      setError(errorMessage)
-      console.error('Error loading events:', err)
+      setLocalError('Failed to load events. Please check your connection and try again.');
+      console.error('Retry failed:', err);
     } finally {
-      setLoading(false)
+      setIsRetrying(false);
     }
-  }
+  }, [loadEvents]);
 
-  const handleEventCreate = async (eventData) => {
+  // Enhanced event handlers with better error management
+  const handleEventCreateWithErrorHandling = useCallback(async (eventData) => {
     try {
-      console.log('Creating event:', eventData)
-      const result = await calendarApi.createEvent(eventData)
-
-      if (result.success) {
-        setEvents(prevEvents => [...prevEvents, result.event])
-        console.log('Event created successfully')
-      } else {
-        setError(result.error)
-        console.error('Failed to create event:', result.error)
-      }
+      setLocalError(null);
+      await handleEventCreate(eventData);
     } catch (err) {
-      const errorMessage = 'Failed to create event. Please try again.'
-      setError(errorMessage)
-      console.error('Error creating event:', err)
+      const errorMessage = 'Failed to create event. Please try again.';
+      setLocalError(errorMessage);
+      console.error('Event creation error:', err);
     }
-  }
+  }, [handleEventCreate]);
 
-  const handleEventUpdate = async (updatedEvent) => {
+  const handleEventUpdateWithErrorHandling = useCallback(async (updatedEvent) => {
     try {
-      console.log('Updating event:', updatedEvent)
-      const result = await calendarApi.updateEvent(updatedEvent.id, updatedEvent)
-
-      if (result.success) {
-        setEvents(prevEvents =>
-          prevEvents.map(event =>
-            event.id === updatedEvent.id ? result.event : event
-          )
-        )
-        console.log('Event updated successfully')
-      } else {
-        setError(result.error)
-        console.error('Failed to update event:', result.error)
-      }
+      setLocalError(null);
+      await handleEventUpdate(updatedEvent);
     } catch (err) {
-      const errorMessage = 'Failed to update event. Please try again.'
-      setError(errorMessage)
-      console.error('Error updating event:', err)
+      const errorMessage = 'Failed to update event. Please try again.';
+      setLocalError(errorMessage);
+      console.error('Event update error:', err);
     }
-  }
+  }, [handleEventUpdate]);
 
-  const handleEventDelete = async (eventId) => {
+  const handleEventDeleteWithErrorHandling = useCallback(async (eventId) => {
     try {
-      console.log('Deleting event:', eventId)
-      const result = await calendarApi.deleteEvent(eventId)
-
-      if (result.success) {
-        setEvents(prevEvents =>
-          prevEvents.filter(event => event.id !== eventId)
-        )
-        console.log('Event deleted successfully')
-      } else {
-        setError(result.error)
-        console.error('Failed to delete event:', result.error)
-      }
+      setLocalError(null);
+      await handleEventDelete(eventId);
     } catch (err) {
-      const errorMessage = 'Failed to delete event. Please try again.'
-      setError(errorMessage)
-      console.error('Error deleting event:', err)
+      const errorMessage = 'Failed to delete event. Please try again.';
+      setLocalError(errorMessage);
+      console.error('Event deletion error:', err);
     }
-  }
+  }, [handleEventDelete]);
 
-  // Show loading state
-  if (loading) {
+  // Determine the current error state
+  const currentError = localError || calendarError;
+  const isLoading = authLoading || calendarLoading;
+
+  // Authentication loading state
+  if (authLoading) {
     return (
       <div className="app">
-        <div className="calendar-container" style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          flexDirection: 'column',
-          gap: '16px'
-        }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            border: '4px solid #e2e8f0',
-            borderTop: '4px solid #3b82f6',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}></div>
-          <p style={{ color: '#64748b', fontSize: '16px' }}>Loading your calendar...</p>
-          <style jsx>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
+        <div className="loading-container">
+          <div className="loading-spinner" />
+          <p className="loading-text">Checking authentication...</p>
         </div>
       </div>
-    )
+    );
   }
 
-  // Show error state
-  if (error) {
+  // Not authenticated state
+  if (!isAuthenticated) {
     return (
       <div className="app">
-        <div className="calendar-container" style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          flexDirection: 'column',
-          gap: '16px',
-          padding: '20px',
-          textAlign: 'center'
-        }}>
-          <div style={{
-            color: '#dc2626',
-            fontSize: '48px',
-            marginBottom: '16px'
-          }}>⚠️</div>
-          <h3 style={{ color: '#dc2626', marginBottom: '8px' }}>Error Loading Calendar</h3>
-          <p style={{ color: '#64748b', marginBottom: '16px' }}>{error}</p>
+        <div className="error-container">
+          <div className="error-icon">🔒</div>
+          <h3 className="error-title">Authentication Required</h3>
+          <p className="error-message">
+            Please log in to access your calendar.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Calendar loading state
+  if (calendarLoading && !isRetrying) {
+    return (
+      <div className="app">
+        <div className="loading-container">
+          <div className="loading-spinner" />
+          <p className="loading-text">
+            Loading {user?.username ? `${user.username}'s` : 'your'} calendar...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Calendar error state
+  if (currentError && events.length === 0) {
+    return (
+      <div className="app">
+        <div className="error-container">
+          <div className="error-icon">⚠️</div>
+          <h3 className="error-title">Error Loading Calendar</h3>
+          <p className="error-message">{currentError}</p>
           <button
-            onClick={loadEvents}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
+            className="retry-button"
+            onClick={handleRetry}
+            disabled={isRetrying}
+            aria-label="Retry loading calendar"
           >
-            Try Again
+            {isRetrying ? (
+              <>
+                <div className="loading-spinner" style={{
+                  width: '16px',
+                  height: '16px',
+                  marginRight: '8px',
+                  display: 'inline-block'
+                }} />
+                Retrying...
+              </>
+            ) : (
+              'Try Again'
+            )}
           </button>
         </div>
       </div>
-    )
+    );
   }
 
+  // Success state with calendar
   return (
     <div className="app">
       <div className="calendar-container">
         <MobileCalendar
           initialDate={new Date()}
           events={events}
-          onEventCreate={handleEventCreate}
-          onEventUpdate={handleEventUpdate}
-          onEventDelete={handleEventDelete}
+          onEventCreate={handleEventCreateWithErrorHandling}
+          onEventUpdate={handleEventUpdateWithErrorHandling}
+          onEventDelete={handleEventDeleteWithErrorHandling}
         />
+        {/* Local error notification */}
+        {localError && (
+          <div
+            className="error-notification"
+            style={{
+              position: 'fixed',
+              top: '20px',
+              right: '20px',
+              backgroundColor: 'var(--error-color)',
+              color: 'white',
+              padding: '12px 16px',
+              borderRadius: 'var(--border-radius)',
+              boxShadow: 'var(--shadow-md)',
+              zIndex: 1000,
+              animation: 'fadeIn 0.3s ease-out'
+            }}
+            role="alert"
+            aria-live="polite"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>⚠️</span>
+              <span>{localError}</span>
+              <button
+                onClick={() => setLocalError(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  marginLeft: '8px'
+                }}
+                aria-label="Dismiss error"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
-export default CalendarPage
+export default CalendarPage;

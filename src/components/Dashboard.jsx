@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useIsMobile } from '../hooks/useIsMobile.js';
@@ -7,9 +7,11 @@ import NavigationHeader from './navigation/NavigationHeader.jsx';
 import DefaultPage from '../pages/DefaultPage.jsx';
 import MobileCalendar from './calendar/MobileCalendar';
 import '../components/calendar/styles/index.css';
+import './App.css';
 
 /**
  * Main Dashboard component
+ * Provides a comprehensive interface with navigation and page management
  */
 const Dashboard = () => {
   const { user, isAuthenticated, logout, loading } = useAuth();
@@ -27,68 +29,40 @@ const Dashboard = () => {
     handleEventDelete
   } = useCalendarEvents(isAuthenticated);
 
-  const handleLogout = () => {
+  // Navigation handlers
+  const handleLogout = useCallback(() => {
     logout();
-  };
+  }, [logout]);
 
-  const handleLogin = () => {
+  const handleLogin = useCallback(() => {
     navigate('/login');
-  };
+  }, [navigate]);
 
+  const handlePageChange = useCallback((page) => {
+    setCurrentPage(page);
+  }, []);
+
+  // Calendar rendering with proper error handling
   const renderCalendarContent = () => {
     if (calendarLoading) {
       return (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '400px',
-          flexDirection: 'column',
-          gap: '16px'
-        }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            border: '4px solid #e2e8f0',
-            borderTop: '4px solid #3b82f6',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}></div>
-          <p style={{ color: '#64748b', fontSize: '16px' }}>Loading your calendar...</p>
+        <div className="loading-container" style={{ minHeight: '400px' }}>
+          <div className="loading-spinner" />
+          <p className="loading-text">Loading your calendar...</p>
         </div>
       );
     }
 
     if (calendarError) {
       return (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '400px',
-          flexDirection: 'column',
-          gap: '16px',
-          padding: '20px',
-          textAlign: 'center'
-        }}>
-          <div style={{
-            color: '#dc2626',
-            fontSize: '48px',
-            marginBottom: '16px'
-          }}>⚠️</div>
-          <h3 style={{ color: '#dc2626', marginBottom: '8px' }}>Error Loading Calendar</h3>
-          <p style={{ color: '#64748b', marginBottom: '16px' }}>{calendarError}</p>
+        <div className="error-container" style={{ minHeight: '400px' }}>
+          <div className="error-icon">⚠️</div>
+          <h3 className="error-title">Error Loading Calendar</h3>
+          <p className="error-message">{calendarError}</p>
           <button
+            className="retry-button"
             onClick={loadEvents}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
+            aria-label="Retry loading calendar"
           >
             Try Again
           </button>
@@ -107,16 +81,39 @@ const Dashboard = () => {
     );
   };
 
+  // Page content rendering
+  const renderPageContent = () => {
+    switch (currentPage) {
+      case 'calendar':
+        return (
+          <div className="app">
+            <div className="calendar-container">
+              {renderCalendarContent()}
+            </div>
+          </div>
+        );
+      case 'default':
+      default:
+        return <DefaultPage />;
+    }
+  };
+
+  // Main dashboard layout
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#f5f5f5',
-      fontFamily: 'Arial, sans-serif'
-    }}>
+    <div
+      className="dashboard"
+      style={{
+        minHeight: '100vh',
+        backgroundColor: 'var(--surface-color)',
+        fontFamily: 'inherit',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
       {/* Header with Navigation */}
       <NavigationHeader
         currentPage={currentPage}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
         isAuthenticated={isAuthenticated}
         user={user}
         onLogout={handleLogout}
@@ -125,17 +122,35 @@ const Dashboard = () => {
         isMobile={isMobile}
       />
 
-      {/* Page Content */}
-      <div style={{ padding: '24px' }}>
-        {currentPage === 'default' && <DefaultPage />}
-        {currentPage === 'calendar' && (
-          <div className="app">
-            <div className="calendar-container">
-              {renderCalendarContent()}
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Main Content Area */}
+      <main
+        className="dashboard-content"
+        style={{
+          flex: 1,
+          padding: isMobile ? '16px' : '24px',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        {renderPageContent()}
+      </main>
+
+      {/* Footer (optional) */}
+      <footer
+        className="dashboard-footer"
+        style={{
+          backgroundColor: 'var(--background-color)',
+          borderTop: '1px solid var(--border-color)',
+          padding: '16px 24px',
+          textAlign: 'center',
+          fontSize: 'var(--font-size-sm)',
+          color: 'var(--text-secondary)'
+        }}
+      >
+        <p style={{ margin: 0 }}>
+          © 2024 Calendar App. Built with React and GraphQL.
+        </p>
+      </footer>
     </div>
   );
 };
