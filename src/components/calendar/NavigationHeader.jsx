@@ -4,6 +4,7 @@
  */
 import React from 'react';
 import { formatWeekRange } from './utils/dateUtils.js';
+import LLMRecommandationButton from './LLMRecommandationButton';
 import './styles/NavigationHeader.css';
 
 /**
@@ -33,6 +34,7 @@ const NavigationHeader = ({
           onClick={onPreviousWeek}
           disabled={isNavigating}
           aria-label="Previous week"
+          title="Go to previous week"
         >
           <svg
             className="navigation-header__icon"
@@ -62,6 +64,7 @@ const NavigationHeader = ({
           onClick={onNextWeek}
           disabled={isNavigating}
           aria-label="Next week"
+          title="Go to next week"
         >
           <svg
             className="navigation-header__icon"
@@ -77,15 +80,17 @@ const NavigationHeader = ({
         </button>
       </div>
 
-      {/* Today Button */}
+      {/* Today Button and LLM Button */}
       <div className="navigation-header__today-container">
         <button
           className="navigation-header__today-button"
           onClick={onTodayClick}
           disabled={isNavigating}
+          title="Go to current day"
         >
           Today
         </button>
+        <LLMRecommandationButton />
       </div>
     </header>
   );

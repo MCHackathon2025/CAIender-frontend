@@ -1,0 +1,491 @@
+/* Modal Overlay */
+.schedule-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 16px;
+  animation: modalOverlayFadeIn 200ms ease-out;
+}
+
+@keyframes modalOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal Container */
+.schedule-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
+  animation: modalSlideIn 200ms ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Close Button */
+.schedule-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 24px;
+  font-weight: 300;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.schedule-modal-close:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.schedule-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Description */
+.schedule-modal-description {
+  margin: 0 0 20px 0;
+  color: #374151;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Quick Prompts Container */
+.quick-prompts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+/* Quick Prompt Buttons */
+.quick-prompt-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 200ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.quick-prompt-btn:hover:not(:disabled) {
+  border-color: #d1d5db;
+  background-color: #f9fafb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.quick-prompt-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.quick-prompt-btn.selected {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.quick-prompt-btn.custom-prompt-btn.active {
+  border-color: #8b5cf6;
+  background-color: #f3f4f6;
+  color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.quick-prompt-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.prompt-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Custom Input Container */
+.custom-input-container {
+  margin-top: 8px;
+  animation: expandDown 200ms ease-out;
+  padding: 0 16px;
+  /* Match the button's horizontal padding */
+}
+
+@keyframes expandDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    max-height: 200px;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Input Textarea */
+.custom-input-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  color: #374151;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 200ms ease;
+  outline: none;
+  box-sizing: border-box;
+  /* Ensure padding is included in width calculation */
+}
+
+.custom-input-textarea:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.custom-input-textarea:disabled {
+  background-color: #f9fafb;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.custom-input-textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* Action Buttons */
+.schedule-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.action-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cancel-btn {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.submit-btn {
+  background: #3b82f6;
+  color: white;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.submit-btn.enabled:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.submit-btn.disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Time Preferences Section */
+.time-preferences-section {
+  margin-top: 12px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.time-preferences-title {
+  margin: 0 0 8px 0;
+  color: #374151;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.time-preferences-description {
+  margin: 0 0 16px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.time-preferences-tree {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  padding: 12px;
+}
+
+.time-preference-item {
+  margin-bottom: 4px;
+}
+
+.time-preference-item:last-child {
+  margin-bottom: 0;
+}
+
+.time-preference-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: background-color 150ms ease;
+  border-radius: 4px;
+  -webkit-tap-highlight-color: transparent;
+  flex: 1;
+}
+
+.time-preference-label:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.time-preference-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.time-preference-text {
+  font-size: 14px;
+  color: #374151;
+  user-select: none;
+}
+
+/* Toggle button styling */
+.toggle-button {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: #f3f4f6;
+  color: #6b7280;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 150ms ease;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.toggle-button:hover:not(:disabled) {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.toggle-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Time slots container */
+.time-slots-container {
+  margin-left: 20px;
+  animation: slideDown 200ms ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
+  }
+}
+
+/* Level-based indentation */
+.time-preference-item.level-0 .time-preference-text {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.time-preference-item.level-1 {
+  margin-left: 0;
+}
+
+.time-preference-item.level-1 .time-preference-text {
+  font-weight: 500;
+  color: #374151;
+}
+
+.time-preference-item.level-2 {
+  margin-left: 0;
+}
+
+.time-preference-item.level-2 .time-preference-text {
+  font-weight: 400;
+  color: #6b7280;
+}
+
+/* Indeterminate state styling */
+.time-preference-label input[type="checkbox"]:indeterminate {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* Disabled state */
+.time-preference-label:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.time-preference-label:has(input:disabled):hover {
+  background-color: transparent;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .schedule-modal {
+    margin: 16px;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .schedule-modal-description {
+    font-size: 15px;
+    margin-bottom: 18px;
+  }
+
+  .quick-prompt-btn {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .prompt-text {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: initial;
+  }
+
+  .custom-input-textarea {
+    font-size: 16px;
+    /* Prevents zoom on iOS */
+    min-height: 90px;
+  }
+
+  .schedule-modal-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .action-btn {
+    width: 100%;
+    padding: 12px 20px;
+    justify-content: center;
+  }
+
+  .time-preferences-tree {
+    max-height: 250px;
+  }
+
+  .time-slots-container {
+    margin-left: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .schedule-modal-overlay {
+    padding: 8px;
+  }
+
+  .schedule-modal {
+    padding: 16px;
+  }
+
+  .time-slots-container {
+    margin-left: 12px;
+  }
+}

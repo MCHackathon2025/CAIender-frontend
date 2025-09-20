@@ -1,0 +1,186 @@
+/* Split button container */
+.llm-recommandation-button {
+  display: flex;
+  height: 36px;
+  border-radius: 18px;
+  background-color: white;
+  color: #ffd700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+  transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.llm-recommandation-button.processing {
+  background-color: white;
+  color: #ffd700;
+}
+
+.llm-recommandation-button.dropdown-open {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+/* Main button (left side) */
+.main-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: #000000;
+  /* Black icon by default */
+  cursor: pointer;
+  transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.main-button:hover:not(:disabled) {
+  background-color: rgba(255, 215, 0, 0.1);
+  color: #ffd700;
+  /* Yellow icon on hover */
+}
+
+.main-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Dropdown button (right side) */
+.dropdown-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 36px;
+  border: none;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  background: transparent;
+  color: #000000;
+  cursor: pointer;
+  transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.dropdown-button:focus {
+  outline: none;
+}
+
+.dropdown-button:focus-visible {
+  outline: none;
+}
+
+.dropdown-button:hover:not(:disabled) {
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+.dropdown-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Processing state for split button */
+.llm-recommandation-button.processing .dropdown-button {
+  border-left-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Button icon styling */
+.button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  transition: transform 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.main-button:hover .button-icon {
+  transform: scale(1.1);
+}
+
+/* Portal dropdown menu */
+.dropdown-menu-portal {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  overflow: visible;
+  animation: dropdownFadeIn 150ms ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dropdown item */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: var(--calendar-text-primary, #212121);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dropdown-item:hover {
+  background-color: var(--calendar-primary-light, #ffffff);
+}
+
+.dropdown-item:active {
+  background-color: var(--calendar-primary, #ffffff);
+  color: white;
+}
+
+.dropdown-item svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.dropdown-item span {
+  white-space: nowrap;
+}
+
+/* Spinning animation for loading state */
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dropdown-menu {
+    right: 0;
+    min-width: 180px;
+  }
+
+  .dropdown-item {
+    padding: 14px 16px;
+    font-size: 16px;
+  }
+}

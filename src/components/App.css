@@ -9,14 +9,33 @@
 }
 
 .app-header {
-  text-align: center;
-  margin-bottom: 2rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+  margin-bottom: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.app-header h1 {
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+}
+
+.header-left h1 {
   color: #2c3e50;
   font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
 }
 
 .app-header p {
@@ -81,12 +100,23 @@
   /* Ensure full viewport height */
 }
 
-.app-header h1 {
+.header-left h1 {
   font-size: 1.3rem;
 }
 
 .app-header p {
   font-size: 0.85rem;
+}
+
+/* Mobile header adjustments */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .header-left h1 {
+    font-size: 1.2rem;
+  }
 }
 
 .calendar-container {
