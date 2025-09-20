@@ -512,7 +512,7 @@ function Dashboard() {
               }}
             >
               <Home size={16} />
-              Default Page
+              Home
             </button>
 
             <button
