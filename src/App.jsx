@@ -1,4 +1,3 @@
-import CalendarPage from './components/CalendarPage';
 import React, { useState, useEffect } from 'react';
 import { Clock, MapPin, CheckCircle, X, AlertTriangle, Calendar, Home } from 'lucide-react';
 import MobileCalendar from './components/calendar/MobileCalendar';
