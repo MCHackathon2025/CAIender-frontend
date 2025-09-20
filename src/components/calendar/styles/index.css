@@ -37,7 +37,7 @@ body {
   --calendar-text-disabled: #bdbdbd;
 }
 
-/* Mobile Calendar Container */
+/* Mobile Calendar Container - Responsive */
 .mobile-calendar {
   width: 100%;
   max-width: none;
@@ -52,10 +52,20 @@ body {
   display: flex;
   flex-direction: column;
   overflow-x: auto;
-  /* Allow horizontal scrolling for the entire calendar */
+  /* Allow horizontal scrolling for mobile */
   overflow-y: hidden;
   box-sizing: border-box;
   min-height: 0;
+}
+
+/* Desktop responsive calendar container */
+@media (min-width: 1024px) {
+  .mobile-calendar {
+    overflow-x: hidden;
+    /* Disable horizontal scrolling on desktop */
+    overflow-y: auto;
+    /* Enable vertical scrolling on desktop */
+  }
 }
 
 /* Dedicated horizontal scroll area for content under sticky header */
@@ -68,13 +78,22 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Week View - Synchronized Scrolling Layout */
+/* Desktop responsive calendar scroll */
+@media (min-width: 1024px) {
+  .calendar-scroll {
+    overflow-x: hidden;
+    /* Disable horizontal scrolling on desktop */
+  }
+}
+
+/* Week View - Responsive Layout */
 .week-view {
   display: flex;
   flex-direction: column;
-  width: 740px;
+  width: 100%;
+  /* Responsive width - scales with container */
   min-width: 740px;
-  /* Fixed width to match calendar content */
+  /* Minimum width for mobile */
   flex: 1;
   background-color: #e0e0e0;
   position: relative;
@@ -87,13 +106,23 @@ body {
   /* Minimum height to show content properly */
 }
 
-/* Headers Row - Sticky */
+/* Desktop responsive scaling */
+@media (min-width: 1024px) {
+  .week-view {
+    width: 100%;
+    min-width: 100%;
+    /* Allow full width on desktop */
+  }
+}
+
+/* Headers Row - Responsive Sticky */
 .week-headers {
   display: flex;
   flex-direction: row;
   min-width: 740px;
-  /* Fixed width: 40px (time-scale) + 700px (day-headers) */
-  width: 740px;
+  /* Minimum width for mobile */
+  width: 100%;
+  /* Responsive width */
   background-color: #ffffff;
   border-bottom: 2px solid #e0e0e0;
   z-index: 10;
@@ -104,6 +133,14 @@ body {
   position: sticky;
   top: 0;
   /* Keep headers at top during vertical scrolling */
+}
+
+/* Desktop responsive headers */
+@media (min-width: 1024px) {
+  .week-headers {
+    min-width: 100%;
+    /* Allow full width on desktop */
+  }
 }
 
 .time-scale-header {
@@ -121,17 +158,26 @@ body {
 .day-headers {
   display: flex;
   min-width: 700px;
-  /* Fixed width: 7 days * 100px each */
-  width: 700px;
+  /* Minimum width for mobile */
+  width: 100%;
+  /* Responsive width */
   gap: 1px;
   background-color: #e0e0e0;
   flex-shrink: 0;
 }
 
+/* Desktop responsive day headers */
+@media (min-width: 1024px) {
+  .day-headers {
+    min-width: calc(100% - 40px);
+    /* Full width minus time scale */
+  }
+}
+
 .day-header-cell {
   width: 100px;
   min-width: 100px;
-  /* Fixed width per day for horizontal scrolling */
+  /* Fixed width per day for mobile */
   height: 60px;
   min-height: 60px;
   /* Prevent shrinking */
@@ -143,6 +189,16 @@ body {
   cursor: pointer;
   transition: background-color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
   flex-shrink: 0;
+}
+
+/* Desktop responsive day header cells */
+@media (min-width: 1024px) {
+  .day-header-cell {
+    width: calc((100% - 6px) / 7);
+    /* Equal width distribution minus gaps */
+    min-width: 100px;
+    /* Maintain minimum width */
+  }
 }
 
 .day-header-cell:hover {
@@ -220,15 +276,16 @@ body {
   box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
 }
 
-/* Scrollable Content */
+/* Scrollable Content - Responsive */
 .week-content {
   display: flex;
   flex-direction: row;
   flex: 1;
   min-height: 300px;
   min-width: 740px;
-  /* Fixed width: 40px (time-scale) + 700px (days-content) */
-  width: 740px;
+  /* Minimum width for mobile */
+  width: 100%;
+  /* Responsive width */
   overflow: hidden;
   /* Remove horizontal scrolling from content - handled by parent */
   -webkit-overflow-scrolling: touch;
@@ -241,6 +298,14 @@ body {
   /* Smooth scrolling behavior */
 }
 
+/* Desktop responsive week content */
+@media (min-width: 1024px) {
+  .week-content {
+    min-width: 100%;
+    /* Allow full width on desktop */
+  }
+}
+
 .time-scale-slots {
   width: 40px;
   min-width: 40px;
@@ -248,8 +313,8 @@ body {
   flex-shrink: 0;
   background-color: #fafafa;
   border-right: 2px solid #e0e0e0;
-  height: calc(24 * 60px + 140px);
-  /* Fixed height: 24 hours * 60px + padding for scrolling */
+  height: calc(24 * 60px + 100px);
+  /* Match day content height: 24 hours * 60px + 100px padding */
   overflow: hidden;
   /* Prevent individual scrolling - handled by parent */
 }
@@ -272,34 +337,53 @@ body {
   background-color: #fafafa;
 }
 
-/* Days Content */
+/* Days Content - Responsive */
 .days-content {
   display: flex;
   min-width: 700px;
-  /* Fixed width: 7 days * 100px each */
-  width: 700px;
+  /* Minimum width for mobile */
+  width: 100%;
+  /* Responsive width */
   gap: 1px;
   background-color: #e0e0e0;
   flex-shrink: 0;
-  height: calc(24 * 60px + 140px);
-  /* Fixed height: 24 hours * 60px + padding for scrolling */
+  height: calc(24 * 60px + 100px);
+  /* Match time scale height: 24 hours * 60px + 100px padding */
   overflow: hidden;
   /* Prevent individual scrolling - handled by parent */
+}
+
+/* Desktop responsive days content */
+@media (min-width: 1024px) {
+  .days-content {
+    min-width: calc(100% - 40px);
+    /* Full width minus time scale */
+  }
 }
 
 .day-content {
   width: 100px;
   min-width: 100px;
-  /* Fixed width per day to match headers */
+  /* Fixed width per day for mobile */
   position: relative;
   background-color: #ffffff;
   height: calc(24 * 60px + 100px);
-  /* Fixed height: 24 hours * 60px + padding for scrolling */
+  /* Match time scale height: 24 hours * 60px + 100px padding */
   box-sizing: border-box;
   transition: background-color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
   flex-shrink: 0;
   overflow: hidden;
   /* Prevent individual scrolling - handled by parent */
+}
+
+/* Desktop responsive day content */
+@media (min-width: 1024px) {
+  .day-content {
+    width: calc((100% - 6px) / 7);
+    /* Equal width distribution minus gaps */
+    min-width: 100px;
+    /* Maintain minimum width */
+  }
 }
 
 .day-content--today {
@@ -367,8 +451,8 @@ body {
 .day-cell-content {
   flex: 1;
   position: relative;
-  min-height: calc(24 * 60px);
-  /* 24 hours * 60px per hour */
+  min-height: calc(24 * 60px + 100px);
+  /* Match other components: 24 hours * 60px + 100px padding */
   box-sizing: border-box;
 }
 
@@ -552,8 +636,8 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: calc(24 * 60px + 140px);
-  /* Fixed height: 24 hours * 60px + padding for scrolling */
+  height: calc(24 * 60px + 100px);
+  /* Match day content height: 24 hours * 60px + 100px padding */
   z-index: 0;
 }
 
@@ -781,7 +865,7 @@ body {
   }
 
   .day-content {
-    min-height: calc(24 * 50px);
+    min-height: calc(24 * 50px + 50px);
   }
 
   .day-header-cell {
@@ -1231,8 +1315,8 @@ input[type="time"][data-format="24"] {
   }
 }
 
-/* Ensure horizontal scrolling works on mobile devices */
-@media (max-width: 768px) {
+/* Mobile devices - maintain fixed width and horizontal scrolling */
+@media (max-width: 1023px) {
   .mobile-calendar {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -1244,25 +1328,55 @@ input[type="time"][data-format="24"] {
     flex-shrink: 0;
   }
 
-  /* Adjust padding and heights for mobile */
+  .week-headers {
+    width: 740px;
+    min-width: 740px;
+  }
+
   .week-content {
+    width: 740px;
+    min-width: 740px;
     padding-bottom: 80px;
     padding-top: 15px;
   }
 
-  .time-scale-slots {
-    height: calc(24 * 50px + 95px);
+  .day-headers {
+    width: 700px;
+    min-width: 700px;
   }
 
   .days-content {
-    height: calc(24 * 50px + 95px);
+    width: 700px;
+    min-width: 700px;
+  }
+
+  .day-header-cell {
+    width: 100px;
+    min-width: 100px;
   }
 
   .day-content {
-    height: calc(24 * 50px + 95px);
+    width: 100px;
+    min-width: 100px;
+  }
+
+  .time-scale-slots {
+    height: calc(24 * 50px + 50px);
+    /* Match day content height: 24 hours * 50px + 50px padding */
+  }
+
+  .days-content {
+    height: calc(24 * 50px + 50px);
+    /* Match time scale height: 24 hours * 50px + 50px padding */
+  }
+
+  .day-content {
+    height: calc(24 * 50px + 50px);
+    /* Match other components height: 24 hours * 50px + 50px padding */
   }
 
   .time-grid {
-    height: calc(24 * 50px + 95px);
+    height: calc(24 * 50px + 50px);
+    /* Match day content height: 24 hours * 50px + 50px padding */
   }
 }
