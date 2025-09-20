@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { fetchWeather } from '../services/weatherAPI';
-import './App.css';
+import { fetchWeather } from '../../services/weatherAPI';
+import '../../styles/App.css';
 
 /**
  * WeatherCard component - Displays weather information for a specific region

@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import MobileCalendar from './calendar/MobileCalendar';
-import { useCalendarEvents } from '../hooks/useCalendarEvents.js';
-import './calendar/styles/index.css';
-import './App.css';
+import MobileCalendar from './MobileCalendar';
+import { useCalendarEvents } from '../../hooks/useCalendarEvents.js';
+import './styles/index.css';
+import '../../styles/App.css';
 
 /**
- * Main App component - A standalone calendar application
+ * CalendarApp component - A standalone calendar application
  * This component manages the calendar state and provides a simple interface
  * for viewing and managing calendar events.
  */
-function App() {
+function CalendarApp() {
   const {
     events,
     loading,
@@ -189,4 +189,4 @@ function App() {
   return <CalendarState />;
 }
 
-export default App;
+export default CalendarApp;

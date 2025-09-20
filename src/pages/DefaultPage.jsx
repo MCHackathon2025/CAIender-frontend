@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, CheckCircle, X } from 'lucide-react';
 import { fetchAllEvents } from '../services/eventApi.js';
-import WeatherCard from '../components/WeatherCard';
+import WeatherCard from '../components/weather/WeatherCard';
 
 /**
  * Default page component showing time, weather, and schedule

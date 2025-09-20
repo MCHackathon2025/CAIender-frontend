@@ -7,7 +7,7 @@ import NavigationHeader from './navigation/NavigationHeader.jsx';
 import DefaultPage from '../pages/DefaultPage.jsx';
 import MobileCalendar from './calendar/MobileCalendar';
 import '../components/calendar/styles/index.css';
-import './App.css';
+import '../styles/App.css';
 
 /**
  * Main Dashboard component

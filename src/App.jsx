@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage.jsx';
-import ProtectedRoute from './components/ProtectedRoute.jsx';
+import ProtectedRoute from './components/routing/ProtectedRoute.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import './components/calendar/styles/index.css';
-import './components/App.css';
+import './styles/App.css';
 
 
 // Main App component with routing

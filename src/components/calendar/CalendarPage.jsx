@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import MobileCalendar from './calendar/MobileCalendar';
-import { useCalendarEvents } from '../hooks/useCalendarEvents.js';
-import './calendar/styles/index.css';
-import './App.css';
+import { useAuth } from '../../contexts/AuthContext.jsx';
+import MobileCalendar from './MobileCalendar';
+import { useCalendarEvents } from '../../hooks/useCalendarEvents.js';
+import './styles/index.css';
+import '../../styles/App.css';
 
 /**
  * CalendarPage component - A protected page for calendar functionality
