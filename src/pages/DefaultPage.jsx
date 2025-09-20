@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, CheckCircle, X } from 'lucide-react';
-import { fetchAllEvents } from '../services/eventApi.js';
+import { fetchAllEvents, updateEvent, deleteEvent } from '../services/eventApi.js';
 import WeatherCard from '../components/weather/WeatherCard';
 
 /**
@@ -115,6 +115,12 @@ const DefaultPage = () => {
           color: '#8b5cf6',
           showCheck: true
         };
+      case 'AI_SUGGESTION':
+      case 'AI_RECOMMENDATION':
+        return {
+          color: '#fbbf24',
+          showCheck: true
+        };
       default:
         return {
           color: '#fbbf24',
@@ -123,17 +129,48 @@ const DefaultPage = () => {
     }
   };
 
-  // Hide event
-  const hideEvent = (eventId) => {
-    setVisibleEvents(prev => ({
-      ...prev,
-      [eventId]: false
-    }));
+  // Delete event - call GraphQL delete mutation
+  const deleteSuggestedEvent = async (eventId) => {
+    try {
+      console.log('Deleting event:', eventId);
+      await deleteEvent(eventId);
+
+      // Remove the event from local state
+      setEvents(prevEvents =>
+        prevEvents.filter(event => event.eventId !== eventId)
+      );
+
+      console.log('Event deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete event:', error);
+      // On error, just hide it locally as fallback
+      setVisibleEvents(prev => ({
+        ...prev,
+        [eventId]: false
+      }));
+    }
   };
 
-  // Mark event completed
-  const markCompleted = (eventId) => {
-    console.log('Mark completed:', eventId);
+  // Accept suggested event - update type to USER_CREATE (main theme)
+  const acceptEvent = async (eventId) => {
+    try {
+      console.log('Accepting event:', eventId);
+      const updatedEvent = await updateEvent({
+        eventID: eventId,
+        type: 'USER_CREATE'
+      });
+
+      // Update the local events state with the updated event
+      setEvents(prevEvents =>
+        prevEvents.map(event =>
+          event.eventId === eventId ? { ...event, type: 'USER_CREATE' } : event
+        )
+      );
+
+      console.log('Event accepted successfully:', updatedEvent);
+    } catch (error) {
+      console.error('Failed to accept event:', error);
+    }
   };
 
   return (
@@ -210,11 +247,11 @@ const DefaultPage = () => {
                             size={20}
                             color={style.color}
                             style={{ cursor: 'pointer' }}
-                            onClick={() => markCompleted(event.eventId)}
+                            onClick={() => acceptEvent(event.eventId)}
                           />
                         )}
                         <button
-                          onClick={() => hideEvent(event.eventId)}
+                          onClick={() => deleteSuggestedEvent(event.eventId)}
                           style={{
                             background: 'none',
                             border: 'none',

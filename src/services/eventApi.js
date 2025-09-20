@@ -65,3 +65,61 @@ export async function fetchAllEvents() {
       return new Date(a.startTime) - new Date(b.startTime);
     });
 }
+
+// 更新 event
+export async function updateEvent(input) {
+  const mutation = `
+    mutation($input: UpdateEventInput!) {
+      updateEvent(input: $input) {
+        eventId
+        title
+        description
+        startTime
+        endTime
+        type
+        location
+      }
+    }
+  `;
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-token": TOKEN,
+    },
+    body: JSON.stringify({
+      query: mutation,
+      variables: { input },
+    }),
+  });
+  const json = await res.json();
+  if (json.errors) {
+    throw new Error(json.errors[0].message);
+  }
+  return json.data.updateEvent;
+}
+
+// 刪除 event
+export async function deleteEvent(eventId) {
+  const mutation = `
+    mutation($input: DeleteEventInput!) {
+      deleteEvent(input: $input)
+    }
+  `;
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-token": TOKEN,
+    },
+    body: JSON.stringify({
+      query: mutation,
+      variables: { input: { eventId } },
+    }),
+  });
+  const json = await res.json();
+  if (json.errors) {
+    throw new Error(json.errors[0].message);
+  }
+  return json.data.deleteEvent;
+}
