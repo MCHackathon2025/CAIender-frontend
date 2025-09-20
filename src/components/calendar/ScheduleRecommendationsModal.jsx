@@ -15,7 +15,6 @@ const ScheduleRecommendationsModal = ({ isOpen, onClose }) => {
   const quickPrompts = [
     { text: 'Reschedule today\'s schedule' },
     { text: 'Schedule a 1-hour meeting today' },
-    { text: 'Block focus time for deep work today' },
     { text: 'Add workout sessions to today\'s schedule' },
     { text: 'Reschedule conflicting meetings' }
   ]
