@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CALENDAR_THEMES, ANIMATIONS, TOUCH_TARGETS } from './theme';
+import { ANIMATIONS, TOUCH_TARGETS } from './theme';
 import './styles/EventModal.css';
 
 /**
@@ -22,7 +22,7 @@ const EventModal = ({
     date: '',
     startTime: '09:00',
     endTime: '10:00',
-    theme: 'main',
+    theme: 'main', // Always use green theme
     isAllDay: false,
     location: ''
   });
@@ -60,7 +60,7 @@ const EventModal = ({
           date: eventDateString,
           startTime: event.startTime || '09:00',
           endTime: event.endTime || '10:00',
-          theme: event.theme || 'main',
+          theme: 'main', // Always use green theme
           isAllDay: event.isAllDay || false,
           location: event.location || ''
         });
@@ -75,7 +75,7 @@ const EventModal = ({
           date: dateString,
           startTime: defaultStartTime,
           endTime: defaultEndTime,
-          theme: 'main',
+          theme: 'main', // Always use green theme
           isAllDay: false,
           location: ''
         });
@@ -383,31 +383,6 @@ const EventModal = ({
               </div>
             )}
 
-            {/* Theme Selection */}
-            <div className="form-group theme-section">
-              <label className="form-label">Color</label>
-              <div className="theme-selector">
-                {Object.entries(CALENDAR_THEMES).map(([themeKey, themeColors]) => (
-                  <button
-                    key={themeKey}
-                    type="button"
-                    className={`theme-option ${formData.theme === themeKey ? 'selected' : ''}`}
-                    onClick={() => handleInputChange('theme', themeKey)}
-                    style={{
-                      backgroundColor: themeColors.primary,
-                      borderColor: themeColors.dark
-                    }}
-                    aria-label={`Select ${themeKey} theme`}
-                  >
-                    {formData.theme === themeKey && (
-                      <span className="theme-check" style={{ color: themeColors.contrast }}>
-                        ✓
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             {/* Submit Error */}
             {errors.submit && (

@@ -165,7 +165,7 @@ export const calendarApi = {
    */
   async getEvents() {
     try {
-      console.log('📅 Fetching user events...');
+      console.log('Fetching user events...');
 
       // Ensure auth token is set
       const token = ensureAuthToken();
@@ -177,13 +177,13 @@ export const calendarApi = {
 
       if (data.me?.events) {
         const transformedEvents = data.me.events.map(transformToFrontendFormat);
-        console.log('✅ Events fetched successfully:', transformedEvents.length);
+        console.log('Events fetched successfully:', transformedEvents.length);
         return { success: true, events: transformedEvents };
       }
 
       return { success: true, events: [] };
     } catch (error) {
-      console.error('❌ Error fetching events:', error);
+      console.error('Error fetching events:', error);
       return {
         success: false,
         error: error.response?.errors?.[0]?.message || error.message || 'Failed to fetch events'
@@ -198,7 +198,7 @@ export const calendarApi = {
    */
   async getEvent(eventId) {
     try {
-      console.log('📅 Fetching event:', eventId);
+      console.log('Fetching event:', eventId);
 
       // Ensure auth token is set
       const token = ensureAuthToken();
@@ -212,13 +212,13 @@ export const calendarApi = {
 
       if (data.getEvent) {
         const transformedEvent = transformToFrontendFormat(data.getEvent);
-        console.log('✅ Event fetched successfully:', transformedEvent);
+        console.log('Event fetched successfully:', transformedEvent);
         return { success: true, event: transformedEvent };
       }
 
       return { success: false, error: 'Event not found' };
     } catch (error) {
-      console.error('❌ Error fetching event:', error);
+      console.error('Error fetching event:', error);
       return {
         success: false,
         error: error.response?.errors?.[0]?.message || error.message || 'Failed to fetch event'
@@ -233,7 +233,7 @@ export const calendarApi = {
    */
   async createEvent(eventData) {
     try {
-      console.log('📅 Creating event:', eventData);
+      console.log('Creating event:', eventData);
 
       // Ensure auth token is set
       const token = ensureAuthToken();
@@ -249,13 +249,13 @@ export const calendarApi = {
 
       if (data.createEvent) {
         const transformedEvent = transformToFrontendFormat(data.createEvent);
-        console.log('✅ Event created successfully:', transformedEvent);
+        console.log('Event created successfully:', transformedEvent);
         return { success: true, event: transformedEvent };
       }
 
       return { success: false, error: 'Failed to create event' };
     } catch (error) {
-      console.error('❌ Error creating event:', error);
+      console.error('Error creating event:', error);
       return {
         success: false,
         error: error.response?.errors?.[0]?.message || error.message || 'Failed to create event'

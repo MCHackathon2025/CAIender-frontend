@@ -43,7 +43,7 @@ export const authService = {
         }
       };
 
-      console.log('📤 Sending login request with variables:', {
+      console.log('Sending login request with variables:', {
         username,
         password: '***masked***'
       });

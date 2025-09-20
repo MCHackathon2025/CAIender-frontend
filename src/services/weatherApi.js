@@ -14,7 +14,7 @@ export async function fetchWeather(region = "Hsinchu", time = null) {
     }
   `;
 
-  // 改成呼叫 Vite proxy 的 /api/graphql
+  // Call Vite proxy's /api/graphql
   const response = await fetch("/api/graphql", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

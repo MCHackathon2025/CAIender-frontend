@@ -69,7 +69,7 @@ describe('EventModal', () => {
             expect(screen.getByText(/all day/i)).toBeInTheDocument();
             expect(screen.getByLabelText(/start time/i)).toBeInTheDocument();
             expect(screen.getByLabelText(/end time/i)).toBeInTheDocument();
-            expect(screen.getByText(/color/i)).toBeInTheDocument();
+            // Color selection has been removed - events always use green theme
         });
 
         it('populates form with existing event data', () => {
@@ -153,24 +153,7 @@ describe('EventModal', () => {
         });
     });
 
-    describe('Theme Selection', () => {
-        it('renders all theme options', () => {
-            render(<EventModal {...mockProps} />);
 
-            const themeButtons = screen.getAllByRole('button', { name: /select .* theme/i });
-            expect(themeButtons).toHaveLength(4);
-        });
-
-        it('allows theme selection', async () => {
-            const user = userEvent.setup();
-            render(<EventModal {...mockProps} />);
-
-            const infoThemeButton = screen.getByRole('button', { name: /select info theme/i });
-            await user.click(infoThemeButton);
-
-            expect(infoThemeButton).toHaveClass('selected');
-        });
-    });
 
     describe('Form Submission', () => {
         it('calls onSave with correct data for new event', async () => {
@@ -184,7 +167,7 @@ describe('EventModal', () => {
             // Type into the fields (they should be empty initially)
             await user.type(titleInput, 'Test Event');
             await user.type(descriptionInput, 'Test Description');
-            
+
             // Submit the form
             await user.click(submitButton);
 
@@ -199,7 +182,8 @@ describe('EventModal', () => {
                         startTime: '09:00',
                         endTime: '10:00',
                         theme: 'main',
-                        isAllDay: false
+                        isAllDay: false,
+                        location: ''
                     })
                 );
             });
@@ -227,7 +211,8 @@ describe('EventModal', () => {
                     startTime: '00:00',
                     endTime: '23:59',
                     theme: 'main',
-                    isAllDay: true
+                    isAllDay: true,
+                    location: ''
                 });
             });
         });
@@ -251,8 +236,8 @@ describe('EventModal', () => {
 
     describe('Event Deletion', () => {
         it('shows delete button when editing existing event', () => {
-            const event = { 
-                id: '1', 
+            const event = {
+                id: '1',
                 title: 'Test Event',
                 startDate: new Date('2024-12-15')
             };
@@ -269,8 +254,8 @@ describe('EventModal', () => {
 
         it('calls onDelete when delete is confirmed', async () => {
             const user = userEvent.setup();
-            const event = { 
-                id: '1', 
+            const event = {
+                id: '1',
                 title: 'Test Event',
                 startDate: new Date('2024-12-15')
             };
