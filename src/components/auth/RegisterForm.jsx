@@ -109,7 +109,7 @@ const RegisterForm = ({ onToggleMode, onSuccess }) => {
           fontWeight: '700',
           color: '#1f2937',
           margin: '0 0 8px 0'
-        }}>Create Account</h2>
+        }}>Join Us</h2>
         <p style={{
           color: '#6b7280',
           fontSize: '16px',

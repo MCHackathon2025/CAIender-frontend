@@ -62,57 +62,11 @@ const LoginPage = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      backgroundColor: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)',
+      background: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)',
       display: 'flex',
       flexDirection: 'column'
     }}>
-      {/* Header */}
-      <div style={{
-        padding: '20px 24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-      }}>
-        <button
-          onClick={handleBackToApp}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            color: 'white',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            borderRadius: '8px',
-            padding: '8px 16px',
-            cursor: 'pointer',
-            fontSize: '14px',
-            transition: 'all 0.2s',
-            backdropFilter: 'blur(10px)'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-          }}
-        >
-          <ArrowLeft size={16} />
-          Back to App
-        </button>
-
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          color: 'white',
-          fontSize: '18px',
-          fontWeight: '600'
-        }}>
-          <Calendar size={24} />
-          Calendar App
-        </div>
-      </div>
 
       {/* Main Content */}
       <div style={{
@@ -138,27 +92,21 @@ const LoginPage = () => {
               margin: '0 0 16px 0',
               textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
             }}>
-              {mode === 'login' ? 'Welcome Back!' : 'Join Us Today!'}
+              CAIendar
             </h1>
             <p style={{
               fontSize: '18px',
               margin: 0,
               opacity: 0.9
             }}>
-              {mode === 'login'
-                ? 'Sign in to access your personalized calendar and schedule'
-                : 'Create your account to start organizing your schedule'
-              }
+              An AI-powered calendar app powering your life
             </p>
           </div>
 
           {/* Auth Form */}
           <div style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            borderRadius: '16px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)'
+            backgroundColor: 'transparent',
+
           }}>
             {mode === 'login' ? (
               <LoginForm
@@ -172,34 +120,9 @@ const LoginPage = () => {
               />
             )}
           </div>
-
-          {/* Additional Info */}
-          <div style={{
-            textAlign: 'center',
-            marginTop: '32px',
-            color: 'white',
-            fontSize: '14px',
-            opacity: 0.8
-          }}>
-            <p style={{ margin: 0 }}>
-              Secure authentication powered by GraphQL
-            </p>
-          </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <div style={{
-        padding: '20px 24px',
-        textAlign: 'center',
-        color: 'white',
-        fontSize: '12px',
-        opacity: 0.6
-      }}>
-        <p style={{ margin: 0 }}>
-          © 2025 Calendar App. Built with React and GraphQL.
-        </p>
-      </div>
 
       {/* CSS Animation */}
       <style jsx>{`
