@@ -148,7 +148,7 @@ const MobileCalendar = ({
   }, [editingEvent, onEventCreate, onEventUpdate]);
 
   /**
-   * Handle event deletion
+   * Handle event deletion from modal
    */
   const handleEventDelete = useCallback(async (eventId) => {
     try {
@@ -165,6 +165,22 @@ const MobileCalendar = ({
     } catch (error) {
       console.error('Error deleting event:', error);
       throw error; // Re-throw to let modal handle the error
+    }
+  }, [onEventDelete]);
+
+  /**
+   * Handle direct event deletion from delete button
+   */
+  const handleDirectEventDelete = useCallback(async (event) => {
+    try {
+      // Call external delete handler with event ID
+      if (onEventDelete) {
+        await onEventDelete(event.id);
+      }
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      // For direct deletion, we can show an alert or toast
+      alert('Failed to delete event. Please try again.');
     }
   }, [onEventDelete]);
 
@@ -198,6 +214,7 @@ const MobileCalendar = ({
           onDateSelect={handleDateSelect}
           onDateClick={handleDateClick}
           onEventClick={handleEventClick}
+          onEventDelete={handleDirectEventDelete}
           onSwipeLeft={handleNextWeek}
           onSwipeRight={handlePreviousWeek}
           isNavigating={isNavigating}

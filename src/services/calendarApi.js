@@ -81,10 +81,51 @@ const DELETE_EVENT_MUTATION = gql`
  * @returns {Object} Event in backend format
  */
 const transformToBackendFormat = (frontendEvent) => {
+  // Helper function to convert date/time to full datetime string for backend storage
+  const formatDateTimeForBackend = (timeValue, dateValue) => {
+    if (!timeValue) return '';
+
+    // If it's already in HH:MM format, combine with date
+    if (typeof timeValue === 'string' && /^\d{2}:\d{2}$/.test(timeValue)) {
+      if (dateValue) {
+        // Create a Date object from the date and time
+        const eventDate = dateValue instanceof Date ? dateValue : new Date(dateValue);
+        const [hours, minutes] = timeValue.split(':');
+        eventDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+        return eventDate.toISOString();
+      }
+      // Fallback to time-only if no date available
+      return timeValue;
+    }
+
+    // If it's a Date object, convert to ISO string
+    if (timeValue instanceof Date) {
+      return timeValue.toISOString();
+    }
+
+    // If it's a datetime string, try to parse and return as ISO
+    if (typeof timeValue === 'string') {
+      try {
+        const date = new Date(timeValue);
+        if (!isNaN(date.getTime())) {
+          return date.toISOString();
+        }
+      } catch (e) {
+        console.warn('Failed to parse time value:', timeValue);
+      }
+    }
+
+    // Fallback - return original value as string
+    return String(timeValue);
+  };
+
+  // Extract date from startDate or endDate if available
+  const eventDate = frontendEvent.startDate || frontendEvent.endDate;
+
   return {
     title: frontendEvent.title,
-    startTime: frontendEvent.startTime,
-    endTime: frontendEvent.endTime,
+    startTime: formatDateTimeForBackend(frontendEvent.startTime, eventDate),
+    endTime: formatDateTimeForBackend(frontendEvent.endTime, eventDate),
     description: frontendEvent.description || '',
     type: frontendEvent.type || 'USER_CREATE',
     location: frontendEvent.location || null
@@ -97,20 +138,69 @@ const transformToBackendFormat = (frontendEvent) => {
  * @returns {Object} Event in frontend format
  */
 const transformToFrontendFormat = (backendEvent) => {
+  // Helper function to extract time from datetime string or return time as-is
+  const extractTimeFromDateTime = (timeString) => {
+    if (!timeString) return '00:00';
+
+    // If it's already in HH:MM format, return as-is
+    if (typeof timeString === 'string' && /^\d{2}:\d{2}$/.test(timeString)) {
+      return timeString;
+    }
+
+    // If it's a datetime string, extract time
+    try {
+      const date = new Date(timeString);
+      if (!isNaN(date.getTime())) {
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+      }
+    } catch (e) {
+      console.warn('Failed to parse datetime string:', timeString);
+    }
+
+    return '00:00'; // Fallback
+  };
+
+  // Helper function to extract date from datetime string or use today as fallback
+  const extractDateFromDateTime = (timeString) => {
+    if (!timeString) return new Date();
+
+    // If it's a datetime string, parse it
+    try {
+      const date = new Date(timeString);
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    } catch (e) {
+      console.warn('Failed to parse datetime string for date:', timeString);
+    }
+
+    // Fallback: use today with the time component if it's in HH:MM format
+    if (typeof timeString === 'string' && /^\d{2}:\d{2}$/.test(timeString)) {
+      const today = new Date();
+      const [hours, minutes] = timeString.split(':');
+      today.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+      return today;
+    }
+
+    return new Date(); // Final fallback
+  };
+
   return {
     id: backendEvent.eventId,
     title: backendEvent.title,
-    startTime: backendEvent.startTime,
-    endTime: backendEvent.endTime,
+    startTime: extractTimeFromDateTime(backendEvent.startTime),
+    endTime: extractTimeFromDateTime(backendEvent.endTime),
     description: backendEvent.description,
     theme: mapEventTypeToTheme(backendEvent.type),
     type: backendEvent.type,
     location: backendEvent.location,
     createTime: backendEvent.createTime,
     ownerId: backendEvent.ownerId,
-    // Add default values for frontend compatibility
-    startDate: parseEventDate(backendEvent.startTime),
-    endDate: parseEventDate(backendEvent.endTime),
+    // Extract dates from datetime strings
+    startDate: extractDateFromDateTime(backendEvent.startTime),
+    endDate: extractDateFromDateTime(backendEvent.endTime),
     isAllDay: false
   };
 };
@@ -130,19 +220,6 @@ const mapEventTypeToTheme = (eventType) => {
   return themeMap[eventType] || 'main';
 };
 
-/**
- * Parse event date from time string
- * @param {string} timeString - Time string in format "HH:MM"
- * @returns {Date} Parsed date
- */
-const parseEventDate = (timeString) => {
-  // For now, we'll use today's date since backend only stores time
-  // In a real app, you'd want to store full datetime
-  const today = new Date();
-  const [hours, minutes] = timeString.split(':');
-  today.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-  return today;
-};
 
 /**
  * Ensure auth token is set before making requests
@@ -271,7 +348,7 @@ export const calendarApi = {
    */
   async updateEvent(eventId, eventData) {
     try {
-      console.log('📅 Updating event:', eventId, eventData);
+      console.log('Updating event:', eventId, eventData);
 
       // Ensure auth token is set
       const token = ensureAuthToken();
@@ -290,13 +367,13 @@ export const calendarApi = {
 
       if (data.updateEvent) {
         const transformedEvent = transformToFrontendFormat(data.updateEvent);
-        console.log('✅ Event updated successfully:', transformedEvent);
+        console.log('Event updated successfully:', transformedEvent);
         return { success: true, event: transformedEvent };
       }
 
       return { success: false, error: 'Failed to update event' };
     } catch (error) {
-      console.error('❌ Error updating event:', error);
+      console.error('Error updating event:', error);
       return {
         success: false,
         error: error.response?.errors?.[0]?.message || error.message || 'Failed to update event'
@@ -311,7 +388,7 @@ export const calendarApi = {
    */
   async deleteEvent(eventId) {
     try {
-      console.log('📅 Deleting event:', eventId);
+      console.log('Deleting event:', eventId);
 
       // Ensure auth token is set
       const token = ensureAuthToken();
@@ -324,13 +401,13 @@ export const calendarApi = {
       });
 
       if (data.deleteEvent) {
-        console.log('✅ Event deleted successfully:', data.deleteEvent);
+        console.log('Event deleted successfully:', data.deleteEvent);
         return { success: true, message: data.deleteEvent };
       }
 
       return { success: false, error: 'Failed to delete event' };
     } catch (error) {
-      console.error('❌ Error deleting event:', error);
+      console.error('Error deleting event:', error);
       return {
         success: false,
         error: error.response?.errors?.[0]?.message || error.message || 'Failed to delete event'

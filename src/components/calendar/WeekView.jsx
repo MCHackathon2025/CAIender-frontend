@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import DayCell from './DayCell';
 import CurrentTimeLine from './CurrentTimeLine';
+import EventItem from './EventItem';
 import { getWeekDays, calculateEventPosition, getHourHeight, isToday, isSameDay } from './utils/dateUtils';
 import { useTouchGestures } from './hooks/useTouchGestures';
 import './styles/index.css';
@@ -16,6 +17,7 @@ const WeekView = ({
   onDateSelect,
   onDateClick,
   onEventClick,
+  onEventDelete,
   onSwipeLeft,
   onSwipeRight,
   isNavigating = false,
@@ -165,19 +167,14 @@ const WeekView = ({
                         top: `${position.top}px`,
                         height: `${position.height}px`,
                       }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEventClick && onEventClick(event);
-                      }}
                     >
-                      <div className={`event-item event-item--${event.theme || 'main'}`}>
-                        <div className="event-item__title">
-                          {event.title}
-                        </div>
-                        <div className="event-item__time">
-                          {event.startTime} - {event.endTime}
-                        </div>
-                      </div>
+                      <EventItem
+                        event={event}
+                        onClick={onEventClick}
+                        onDelete={onEventDelete}
+                        isCompact={false}
+                        className="day-cell-event"
+                      />
                     </div>
                   );
                 })}

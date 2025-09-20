@@ -765,6 +765,69 @@ body {
   margin-bottom: 0;
 }
 
+/* Delete button for recommendation events */
+.event-item__delete {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #666;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  z-index: 2;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.event-item__delete:hover {
+  background-color: #f44336;
+  color: #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 2px 4px rgba(244, 67, 54, 0.3);
+}
+
+.event-item__delete:active {
+  transform: scale(0.95);
+}
+
+.event-item__delete:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.3);
+}
+
+/* Ensure event item has relative positioning for absolute delete button */
+.event-item--suggestion,
+.event-item--info {
+  position: relative;
+  padding-right: 24px;
+  /* Make room for delete button */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+  .event-item__delete {
+    width: 18px;
+    height: 18px;
+    font-size: 13px;
+    top: 1px;
+    right: 1px;
+  }
+
+  .event-item--suggestion,
+  .event-item--info {
+    padding-right: 26px;
+  }
+}
+
 /* Event Preview Styles */
 .event-preview {
   background-color: #f5f5f5;
@@ -800,8 +863,8 @@ body {
 
 .event-preview--suggestion {
   background-color: #fff3c4;
-  border-left-color: #ffc107;
   color: #f57f17;
+  border: 2px dashed #ffc107;
 }
 
 .event-preview--announcement {
@@ -812,8 +875,8 @@ body {
 
 .event-preview--info {
   background-color: #bbdefb;
-  border-left-color: #2196f3;
   color: #1565c0;
+  border: 2px dashed #2196f3;
 }
 
 /* Event Title and Time - Title first, Time below */
@@ -973,11 +1036,15 @@ body {
   background-color: #fff3c4;
   border-left-color: #ffc107;
   color: #f57f17;
+  border: 2px dashed #ffc107;
+  border-left: 3px solid #ffc107;
 }
 
 .event-item--suggestion:hover {
   background-color: #ffc107;
   color: #000000;
+  border: 2px dashed #f57f17;
+  border-left: 3px solid #f57f17;
 }
 
 .event-item--announcement {
@@ -995,11 +1062,15 @@ body {
   background-color: #bbdefb;
   border-left-color: #2196f3;
   color: #1565c0;
+  border: 2px dashed #2196f3;
+  border-left: 3px solid #2196f3;
 }
 
 .event-item--info:hover {
   background-color: #2196f3;
   color: #ffffff;
+  border: 2px dashed #1565c0;
+  border-left: 3px solid #1565c0;
 }
 
 /* Event time display - positioned directly below title */
