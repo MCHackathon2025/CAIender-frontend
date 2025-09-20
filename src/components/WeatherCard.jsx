@@ -1,6 +1,6 @@
 // src/components/WeatherCard.jsx
 import React, { useEffect, useState } from "react";
-import { fetchWeather } from "../services/weatherApi";
+import { fetchWeather } from "../services/weatherAPI";
 
 const WeatherCard = ({ region }) => {
   const [weather, setWeather] = useState(null);
