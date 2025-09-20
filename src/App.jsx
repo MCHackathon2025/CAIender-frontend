@@ -77,29 +77,6 @@ const DefaultPage = () => {
           left: '16px',
           color: '#374151'
         }}>
-          <span style={{ fontSize: '14px' }}>Default Page</span>
-        </div>
-        <div style={{
-          position: 'absolute',
-          top: '16px',
-          right: '16px'
-        }}>
-          <div style={{
-            width: '24px',
-            height: '24px',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '2px'
-          }}>
-            {[...Array(9)].map((_, i) => (
-              <div key={i} style={{
-                width: '4px',
-                height: '4px',
-                backgroundColor: '#4b5563',
-                borderRadius: '50%'
-              }}></div>
-            ))}
-          </div>
         </div>
 
         <div style={{ marginTop: "32px" }}>
