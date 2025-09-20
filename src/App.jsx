@@ -4,6 +4,8 @@ import MobileCalendar from './components/calendar/MobileCalendar';
 import { createDate } from './components/calendar/utils/dateUtils';
 import './components/calendar/styles/index.css';
 import './components/App.css';
+import WeatherCard from "./components/WeatherCard";
+
 
 // Default Page component
 const DefaultPage = () => {
@@ -96,35 +98,18 @@ const DefaultPage = () => {
           </div>
         </div>
 
-        <div style={{ marginTop: '32px' }}>
-          <div style={{
-            color: '#374151',
-            fontSize: '14px',
-            marginBottom: '8px'
-          }}>{formatDate(currentTime)}</div>
-          <div style={{
-            fontSize: '60px',
-            fontWeight: '300',
-            color: '#374151',
-            marginBottom: '16px'
-          }}>{formatTime(currentTime)}</div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            color: '#374151'
-          }}>
-            <span>33°C</span>
-            <div style={{
-              width: '24px',
-              height: '24px',
-              backgroundColor: '#4b5563',
-              borderRadius: '4px'
-            }}></div>
-            <span>20%</span>
+        <div style={{ marginTop: "32px" }}>
+          <div style={{ color: "#374151", fontSize: "14px", marginBottom: "8px" }}>
+            {formatDate(currentTime)}
           </div>
+          <div style={{ fontSize: "60px", fontWeight: "300", color: "#374151", marginBottom: "16px" }}>
+            {formatTime(currentTime)}
+          </div>
+
+          {/* WeatherCard (維持原本的橫向樣式) */}
+          <WeatherCard region="Hsinchu" />
         </div>
+
       </div>
 
       {/* Schedule Section */}
