@@ -34,6 +34,7 @@ const NavigationHeader = ({
           onClick={onPreviousWeek}
           disabled={isNavigating}
           aria-label="Previous week"
+          title="Go to previous week"
         >
           <svg
             className="navigation-header__icon"
@@ -63,6 +64,7 @@ const NavigationHeader = ({
           onClick={onNextWeek}
           disabled={isNavigating}
           aria-label="Next week"
+          title="Go to next week"
         >
           <svg
             className="navigation-header__icon"
@@ -84,6 +86,7 @@ const NavigationHeader = ({
           className="navigation-header__today-button"
           onClick={onTodayClick}
           disabled={isNavigating}
+          title="Go to current day"
         >
           Today
         </button>

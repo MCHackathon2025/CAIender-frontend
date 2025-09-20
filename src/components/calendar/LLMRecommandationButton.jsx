@@ -1,13 +1,57 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import './LLMRecommandationButton.css'
 
 const LLMRecommandationButton = () => {
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 })
+  const buttonRef = useRef(null)
+  const dropdownRef = useRef(null)
+
+  // Calculate dropdown position and close when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    const updateDropdownPosition = () => {
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect()
+        setDropdownPosition({
+          top: rect.bottom + window.scrollY + 4,
+          right: window.innerWidth - rect.right - window.scrollX
+        })
+      }
+    }
+
+    if (isDropdownOpen) {
+      updateDropdownPosition()
+      window.addEventListener('resize', updateDropdownPosition)
+      window.addEventListener('scroll', updateDropdownPosition)
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      window.removeEventListener('resize', updateDropdownPosition)
+      window.removeEventListener('scroll', updateDropdownPosition)
+    }
+  }, [isDropdownOpen])
 
   const handleLLMRequest = async () => {
     if (isProcessing) return
 
     setIsProcessing(true)
+    setIsDropdownOpen(false) // Close dropdown if open
 
     try {
       // Simulate API request to backend (since we're not implementing backend)
@@ -21,6 +65,17 @@ const LLMRecommandationButton = () => {
     } finally {
       setIsProcessing(false)
     }
+  }
+
+  const handleDropdownToggle = () => {
+    if (isProcessing) return
+    setIsDropdownOpen(!isDropdownOpen)
+  }
+
+  const handleScheduleRecommendations = () => {
+    setIsDropdownOpen(false)
+    console.log('Opening Schedule Recommendations modal')
+    // TODO: Implement modal for schedule recommendations
   }
 
   const getButtonText = () => {
@@ -50,16 +105,60 @@ const LLMRecommandationButton = () => {
   }
 
   return (
-    <button
-      className={`llm-recommandation-button ${isProcessing ? 'processing' : ''}`}
-      onClick={handleLLMRequest}
-      disabled={isProcessing}
-      title={isProcessing ? 'Processing...' : 'Get AI Recommendations'}
-    >
-      <span className="button-icon">
-        {getButtonIcon()}
-      </span>
-    </button>
+    <>
+      {/* Split Button */}
+      <div
+        className={`llm-recommandation-button ${isProcessing ? 'processing' : ''} ${isDropdownOpen ? 'dropdown-open' : ''}`}
+        ref={buttonRef}
+      >
+        {/* Main Button */}
+        <button
+          className="main-button"
+          onClick={handleLLMRequest}
+          disabled={isProcessing}
+          title={isProcessing ? 'Processing...' : 'Get AI Recommendations'}
+        >
+          <span className="button-icon">
+            {getButtonIcon()}
+          </span>
+        </button>
+
+        {/* Dropdown Button */}
+        <button
+          className="dropdown-button"
+          onClick={handleDropdownToggle}
+          disabled={isProcessing}
+          title="More options"
+        >
+          <span style={{ fontSize: '20px', color: '#000000' }}>⁝</span>
+        </button>
+      </div>
+
+      {/* Dropdown Menu - Portal */}
+      {isDropdownOpen && createPortal(
+        <div
+          className="dropdown-menu-portal"
+          ref={dropdownRef}
+          style={{
+            position: 'fixed',
+            top: dropdownPosition.top,
+            right: dropdownPosition.right,
+            zIndex: 99999
+          }}
+        >
+          <button
+            className="dropdown-item"
+            onClick={handleScheduleRecommendations}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>Schedule Recommendations</span>
+          </button>
+        </div>,
+        document.body
+      )}
+    </>
   )
 }
 
