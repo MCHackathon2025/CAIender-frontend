@@ -6,7 +6,7 @@ import { createDate } from './components/calendar/utils/dateUtils';
 import { useAuth } from './contexts/AuthContext.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
-import calendarAPI from './services/calendarAPI.js';
+import calendarApi from './services/calendarApi.js';
 import './components/calendar/styles/index.css';
 import './components/App.css';
 import WeatherCard from "./components/WeatherCard";

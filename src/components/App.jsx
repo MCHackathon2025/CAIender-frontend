@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import MobileCalendar from './calendar/MobileCalendar'
-import calendarAPI from '../services/calendarAPI.js'
+import calendarApi from '../services/calendarApi.js'
 import './calendar/styles/index.css'
 import './App.css'
 

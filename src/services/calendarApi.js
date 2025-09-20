@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import graphqlClient from './graphql.js';
+import graphqlClient, { setAuthToken } from './graphql.js';
 
 // GraphQL queries and mutations for calendar events
 const GET_USER_EVENTS_QUERY = gql`
@@ -145,27 +145,45 @@ const parseEventDate = (timeString) => {
 };
 
 /**
+ * Ensure auth token is set before making requests
+ */
+const ensureAuthToken = () => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    setAuthToken(token);
+  }
+  return token;
+};
+
+/**
  * Calendar API service for CRUD operations
  */
-export const calendarAPI = {
+export const calendarApi = {
   /**
    * Get all events for the current user
    * @returns {Promise<Array>} Array of events in frontend format
    */
   async getEvents() {
     try {
-      console.log('Fetching user events...');
+      console.log('📅 Fetching user events...');
+
+      // Ensure auth token is set
+      const token = ensureAuthToken();
+      if (!token) {
+        return { success: false, error: 'No authentication token found. Please log in.' };
+      }
+
       const data = await graphqlClient.request(GET_USER_EVENTS_QUERY);
 
       if (data.me?.events) {
         const transformedEvents = data.me.events.map(transformToFrontendFormat);
-        console.log('Events fetched successfully:', transformedEvents.length);
+        console.log('✅ Events fetched successfully:', transformedEvents.length);
         return { success: true, events: transformedEvents };
       }
 
       return { success: true, events: [] };
     } catch (error) {
-      console.error('Error fetching events:', error);
+      console.error('❌ Error fetching events:', error);
       return {
         success: false,
         error: error.response?.errors?.[0]?.message || error.message || 'Failed to fetch events'
@@ -180,20 +198,27 @@ export const calendarAPI = {
    */
   async getEvent(eventId) {
     try {
-      console.log('Fetching event:', eventId);
+      console.log('📅 Fetching event:', eventId);
+
+      // Ensure auth token is set
+      const token = ensureAuthToken();
+      if (!token) {
+        return { success: false, error: 'No authentication token found. Please log in.' };
+      }
+
       const data = await graphqlClient.request(GET_EVENT_QUERY, {
         input: { eventId }
       });
 
       if (data.getEvent) {
         const transformedEvent = transformToFrontendFormat(data.getEvent);
-        console.log('Event fetched successfully:', transformedEvent);
+        console.log('✅ Event fetched successfully:', transformedEvent);
         return { success: true, event: transformedEvent };
       }
 
       return { success: false, error: 'Event not found' };
     } catch (error) {
-      console.error('Error fetching event:', error);
+      console.error('❌ Error fetching event:', error);
       return {
         success: false,
         error: error.response?.errors?.[0]?.message || error.message || 'Failed to fetch event'
@@ -208,7 +233,14 @@ export const calendarAPI = {
    */
   async createEvent(eventData) {
     try {
-      console.log('Creating event:', eventData);
+      console.log('📅 Creating event:', eventData);
+
+      // Ensure auth token is set
+      const token = ensureAuthToken();
+      if (!token) {
+        return { success: false, error: 'No authentication token found. Please log in.' };
+      }
+
       const backendEvent = transformToBackendFormat(eventData);
 
       const data = await graphqlClient.request(CREATE_EVENT_MUTATION, {
@@ -217,13 +249,13 @@ export const calendarAPI = {
 
       if (data.createEvent) {
         const transformedEvent = transformToFrontendFormat(data.createEvent);
-        console.log('Event created successfully:', transformedEvent);
+        console.log('✅ Event created successfully:', transformedEvent);
         return { success: true, event: transformedEvent };
       }
 
       return { success: false, error: 'Failed to create event' };
     } catch (error) {
-      console.error('Error creating event:', error);
+      console.error('❌ Error creating event:', error);
       return {
         success: false,
         error: error.response?.errors?.[0]?.message || error.message || 'Failed to create event'
@@ -239,7 +271,14 @@ export const calendarAPI = {
    */
   async updateEvent(eventId, eventData) {
     try {
-      console.log('Updating event:', eventId, eventData);
+      console.log('📅 Updating event:', eventId, eventData);
+
+      // Ensure auth token is set
+      const token = ensureAuthToken();
+      if (!token) {
+        return { success: false, error: 'No authentication token found. Please log in.' };
+      }
+
       const backendEvent = transformToBackendFormat(eventData);
 
       const data = await graphqlClient.request(UPDATE_EVENT_MUTATION, {
@@ -251,13 +290,13 @@ export const calendarAPI = {
 
       if (data.updateEvent) {
         const transformedEvent = transformToFrontendFormat(data.updateEvent);
-        console.log('Event updated successfully:', transformedEvent);
+        console.log('✅ Event updated successfully:', transformedEvent);
         return { success: true, event: transformedEvent };
       }
 
       return { success: false, error: 'Failed to update event' };
     } catch (error) {
-      console.error('Error updating event:', error);
+      console.error('❌ Error updating event:', error);
       return {
         success: false,
         error: error.response?.errors?.[0]?.message || error.message || 'Failed to update event'
@@ -272,20 +311,26 @@ export const calendarAPI = {
    */
   async deleteEvent(eventId) {
     try {
-      console.log('Deleting event:', eventId);
+      console.log('📅 Deleting event:', eventId);
+
+      // Ensure auth token is set
+      const token = ensureAuthToken();
+      if (!token) {
+        return { success: false, error: 'No authentication token found. Please log in.' };
+      }
 
       const data = await graphqlClient.request(DELETE_EVENT_MUTATION, {
         input: { eventId }
       });
 
       if (data.deleteEvent) {
-        console.log('Event deleted successfully:', data.deleteEvent);
+        console.log('✅ Event deleted successfully:', data.deleteEvent);
         return { success: true, message: data.deleteEvent };
       }
 
       return { success: false, error: 'Failed to delete event' };
     } catch (error) {
-      console.error('Error deleting event:', error);
+      console.error('❌ Error deleting event:', error);
       return {
         success: false,
         error: error.response?.errors?.[0]?.message || error.message || 'Failed to delete event'
@@ -294,4 +339,4 @@ export const calendarAPI = {
   }
 };
 
-export default calendarAPI;
+export default calendarApi;
