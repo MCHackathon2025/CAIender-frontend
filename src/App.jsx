@@ -12,6 +12,28 @@ import './components/calendar/styles/index.css';
 import './components/App.css';
 import WeatherCard from "./components/WeatherCard";
 
+// Custom hook for mobile detection
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // Check on mount
+    checkIsMobile();
+
+    // Add event listener
+    window.addEventListener('resize', checkIsMobile);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  return isMobile;
+};
+
 // Default Page component
 const DefaultPage = () => {
   // Time state
@@ -41,9 +63,9 @@ const DefaultPage = () => {
       try {
         setLoading(true);
         const eventData = await fetchAllEvents();
-        console.log('Loaded events:', eventData); // Debug: 查看事件數據
+        console.log('Loaded events:', eventData);
         setEvents(eventData);
-        
+
         // Initialize all events as visible
         const initialVisibility = {};
         eventData.forEach(event => {
@@ -85,25 +107,23 @@ const DefaultPage = () => {
   // Format time from ISO string to HH:MM (Taiwan time)
   const formatTimeFromISO = (isoString) => {
     if (!isoString) return 'N/A';
-    
+
     try {
       const date = new Date(isoString);
-      console.log('UTC time:', date.toISOString()); // Debug: UTC 時間
-      
+      console.log('UTC time:', date.toISOString());
+
       if (isNaN(date.getTime())) {
         console.error('Invalid date string:', isoString);
         return isoString;
       }
-      
-      // 手動轉換為台灣時間 (UTC+8)
+
       const taiwanDate = new Date(date.getTime() + (8 * 60 * 60 * 1000));
-      console.log('Taiwan time:', taiwanDate.toISOString()); // Debug: 台灣時間
-      
+      console.log('Taiwan time:', taiwanDate.toISOString());
       const hours = taiwanDate.getUTCHours().toString().padStart(2, '0');
       const minutes = taiwanDate.getUTCMinutes().toString().padStart(2, '0');
       const result = `${hours}:${minutes}`;
-      
-      console.log('Formatted result:', result); // Debug
+
+      console.log('Formatted result:', result);
       return result;
     } catch (error) {
       console.error('Error parsing date:', error, isoString);
@@ -116,17 +136,17 @@ const DefaultPage = () => {
     switch (type) {
       case 'USER_CREATE':
         return {
-          color: '#10b981', // green
+          color: '#10b981',
           showCheck: false
         };
       case 'BROADCAST':
         return {
-          color: '#8b5cf6', // purple
+          color: '#8b5cf6',
           showCheck: true
         };
       default:
         return {
-          color: '#fbbf24', // yellow
+          color: '#fbbf24',
           showCheck: true
         };
     }
@@ -274,6 +294,7 @@ function Dashboard() {
   const { user, isAuthenticated, logout, loading } = useAuth();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState('default');
+  const isMobile = useIsMobile();
 
   // Calendar state management
   const [events, setEvents] = useState([]);
@@ -399,8 +420,8 @@ function Dashboard() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                padding: '8px 16px',
+                gap: isMobile ? '0px' : '8px',
+                padding: isMobile ? '8px' : '8px 16px',
                 backgroundColor: currentPage === 'default' ? '#1f2937' : 'transparent',
                 color: 'white',
                 border: '1px solid #4b5563',
@@ -421,7 +442,7 @@ function Dashboard() {
               }}
             >
               <Home size={16} />
-              Home
+              {!isMobile && 'Home'}
             </button>
 
             <button
@@ -429,8 +450,8 @@ function Dashboard() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                padding: '8px 16px',
+                gap: isMobile ? '0px' : '8px',
+                padding: isMobile ? '8px' : '8px 16px',
                 backgroundColor: currentPage === 'calendar' ? '#1f2937' : 'transparent',
                 color: 'white',
                 border: '1px solid #4b5563',
@@ -451,7 +472,7 @@ function Dashboard() {
               }}
             >
               <Calendar size={16} />
-              Calendar
+              {!isMobile && 'Calendar'}
             </button>
           </div>
 
@@ -485,8 +506,8 @@ function Dashboard() {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
+                    gap: isMobile ? '0px' : '8px',
+                    padding: isMobile ? '8px' : '8px 16px',
                     backgroundColor: 'transparent',
                     color: 'white',
                     border: '1px solid #4b5563',
@@ -503,7 +524,7 @@ function Dashboard() {
                   }}
                 >
                   <LogOut size={16} />
-                  Logout
+                  {!isMobile && 'Logout'}
                 </button>
               </>
             ) : (
@@ -512,8 +533,8 @@ function Dashboard() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
-                  padding: '8px 16px',
+                  gap: isMobile ? '0px' : '8px',
+                  padding: isMobile ? '8px' : '8px 16px',
                   backgroundColor: '#3b82f6',
                   color: 'white',
                   border: '1px solid #3b82f6',
@@ -530,7 +551,7 @@ function Dashboard() {
                 }}
               >
                 <LogIn size={16} />
-                Login
+                {!isMobile && 'Login'}
               </button>
             )}
           </div>

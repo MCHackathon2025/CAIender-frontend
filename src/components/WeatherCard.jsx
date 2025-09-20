@@ -15,7 +15,7 @@ const WeatherCard = ({ region }) => {
       });
   }, [region]);
 
-  if (error) return <div style={{ color: "red" }}>❌ {error}</div>;
+  if (error) return <div style={{ color: "red" }}> {error}</div>;
   if (!weather) return <div>Loading...</div>;
 
   return (
