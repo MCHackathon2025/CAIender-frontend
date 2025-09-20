@@ -23,7 +23,8 @@ const EventModal = ({
     startTime: '09:00',
     endTime: '10:00',
     theme: 'main',
-    isAllDay: false
+    isAllDay: false,
+    location: ''
   });
 
   // Validation state
@@ -60,7 +61,8 @@ const EventModal = ({
           startTime: event.startTime || '09:00',
           endTime: event.endTime || '10:00',
           theme: event.theme || 'main',
-          isAllDay: event.isAllDay || false
+          isAllDay: event.isAllDay || false,
+          location: event.location || ''
         });
       } else {
         // Creating new event - use suggested times if available
@@ -74,7 +76,8 @@ const EventModal = ({
           startTime: defaultStartTime,
           endTime: defaultEndTime,
           theme: 'main',
-          isAllDay: false
+          isAllDay: false,
+          location: ''
         });
       }
       setErrors({});
@@ -168,7 +171,8 @@ const EventModal = ({
         startTime: formData.isAllDay ? '00:00' : formData.startTime,
         endTime: formData.isAllDay ? '23:59' : formData.endTime,
         theme: formData.theme,
-        isAllDay: formData.isAllDay
+        isAllDay: formData.isAllDay,
+        location: formData.location.trim()
       };
 
       await onSave(eventData);
@@ -308,6 +312,21 @@ const EventModal = ({
                   placeholder="Optional description"
                   rows={2}
                   maxLength={500}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="event-location" className="form-label">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  id="event-location"
+                  className="form-input"
+                  value={formData.location}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  placeholder="Optional location (e.g., Conference Room A)"
+                  maxLength={100}
                 />
               </div>
 
