@@ -4,7 +4,7 @@ import { Clock, MapPin, CheckCircle, X, AlertTriangle, Calendar, Home } from 'lu
 import MobileCalendar from './components/calendar/MobileCalendar';
 import { createDate } from './components/calendar/utils/dateUtils';
 import './components/calendar/styles/index.css';
-import './App.css';
+import './components/App.css';
 
 // Default Page 組件
 const DefaultPage = () => {
