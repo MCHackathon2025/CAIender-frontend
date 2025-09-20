@@ -7,10 +7,10 @@ import { useAuth } from './contexts/AuthContext.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import calendarApi from './services/calendarApi.js';
+import { fetchAllEvents } from './services/eventApi.js';
 import './components/calendar/styles/index.css';
 import './components/App.css';
 import WeatherCard from "./components/WeatherCard";
-
 
 // Default Page component
 const DefaultPage = () => {
@@ -21,11 +21,10 @@ const DefaultPage = () => {
   const [showWeatherAlert, setShowWeatherAlert] = useState(true);
   const [showMeetingAlert, setShowMeetingAlert] = useState(true);
 
-  // State management: control whether schedule tasks are displayed
-  const [showSnackTime, setShowSnackTime] = useState(true);
-  const [showReport, setShowReport] = useState(true);
-  const [showDinner, setShowDinner] = useState(true);
-  const [showWorkOut, setShowWorkOut] = useState(true);
+  // State for API events
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [visibleEvents, setVisibleEvents] = useState({});
 
   // Auto-update time
   useEffect(() => {
@@ -34,6 +33,31 @@ const DefaultPage = () => {
     }, 1000);
 
     return () => clearInterval(timer);
+  }, []);
+
+  // Load events from API
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        setLoading(true);
+        const eventData = await fetchAllEvents();
+        console.log('Loaded events:', eventData); // Debug: 查看事件數據
+        setEvents(eventData);
+        
+        // Initialize all events as visible
+        const initialVisibility = {};
+        eventData.forEach(event => {
+          initialVisibility[event.eventId] = true;
+        });
+        setVisibleEvents(initialVisibility);
+      } catch (error) {
+        console.error('Failed to load events:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvents();
   }, []);
 
   // Format time display (HH:MM)
@@ -56,6 +80,69 @@ const DefaultPage = () => {
     const weekday = weekdays[date.getDay()];
 
     return `${month}. ${day} ${weekday}.`;
+  };
+
+  // Format time from ISO string to HH:MM (Taiwan time)
+  const formatTimeFromISO = (isoString) => {
+    if (!isoString) return 'N/A';
+    
+    try {
+      const date = new Date(isoString);
+      console.log('UTC time:', date.toISOString()); // Debug: UTC 時間
+      
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date string:', isoString);
+        return isoString;
+      }
+      
+      // 手動轉換為台灣時間 (UTC+8)
+      const taiwanDate = new Date(date.getTime() + (8 * 60 * 60 * 1000));
+      console.log('Taiwan time:', taiwanDate.toISOString()); // Debug: 台灣時間
+      
+      const hours = taiwanDate.getUTCHours().toString().padStart(2, '0');
+      const minutes = taiwanDate.getUTCMinutes().toString().padStart(2, '0');
+      const result = `${hours}:${minutes}`;
+      
+      console.log('Formatted result:', result); // Debug
+      return result;
+    } catch (error) {
+      console.error('Error parsing date:', error, isoString);
+      return isoString;
+    }
+  };
+
+  // Get color scheme based on event type
+  const getEventStyle = (type) => {
+    switch (type) {
+      case 'USER_CREATE':
+        return {
+          color: '#10b981', // green
+          showCheck: false
+        };
+      case 'BROADCAST':
+        return {
+          color: '#8b5cf6', // purple
+          showCheck: true
+        };
+      default:
+        return {
+          color: '#fbbf24', // yellow
+          showCheck: true
+        };
+    }
+  };
+
+  // Hide event
+  const hideEvent = (eventId) => {
+    setVisibleEvents(prev => ({
+      ...prev,
+      [eventId]: false
+    }));
+  };
+
+  // Mark event completed
+  const markCompleted = (eventId) => {
+    console.log('Mark completed:', eventId);
   };
 
   return (
@@ -88,10 +175,9 @@ const DefaultPage = () => {
             {formatTime(currentTime)}
           </div>
 
-          {/* WeatherCard (維持原本的橫向樣式) */}
+          {/* WeatherCard */}
           <WeatherCard region="Hsinchu" />
         </div>
-
       </div>
 
       {/* Schedule Section */}
@@ -103,269 +189,81 @@ const DefaultPage = () => {
           backgroundColor: '#374151',
           color: 'white'
         }}>
-          {/* Snack Time */}
-          {showSnackTime && (
-            <div style={{ marginBottom: '24px' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '12px'
-              }}>
-                <div style={{
-                  color: '#fbbf24',
-                  fontSize: '18px',
-                  fontWeight: '600'
-                }}>15:00 ~ 15:30 Snack Time</div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <CheckCircle
-                    size={20}
-                    color="#fbbf24"
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => console.log('Mark completed: Snack Time')}
-                  />
-                  <button
-                    onClick={() => setShowSnackTime(false)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0
-                    }}
-                  >
-                    <X size={20} color="#9ca3af" />
-                  </button>
-                </div>
-              </div>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                marginBottom: '12px',
-                color: '#d1d5db'
-              }}>
-                <MapPin size={16} />
-                <span>Break Area</span>
-                <div style={{
-                  width: '16px',
-                  height: '16px',
-                  backgroundColor: '#6b7280',
-                  borderRadius: '4px'
-                }}></div>
-              </div>
-              <div style={{
-                fontSize: '14px',
-                color: '#d1d5db',
-                marginBottom: '8px'
-              }}>
-                今天備受青茶準備茶點，放置在 Break Area，歡迎各位同仁前往享用。
-              </div>
-              <div style={{ fontSize: '14px', color: '#d1d5db' }}>
-                <div>• 點心：瑪士塔、奶凍捲、小蛋糕</div>
-                <div>• 飲料：五十嵐</div>
-              </div>
+          {loading ? (
+            <div style={{ color: '#d1d5db', textAlign: 'center' }}>
+              Loading events...
             </div>
-          )}
+          ) : (
+            events
+              .filter(event => visibleEvents[event.eventId])
+              .map(event => {
+                const style = getEventStyle(event.type);
+                return (
+                  <div key={event.eventId} style={{ marginBottom: '24px' }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '12px'
+                    }}>
+                      <div style={{
+                        color: style.color,
+                        fontSize: '18px',
+                        fontWeight: '600'
+                      }}>
+                        {/* {formatTimeFromISO(event.startTime)} ~ {formatTimeFromISO(event.endTime)} {event.title} */}
+                        {formatTimeFromISO(event.startTime)} ~ {formatTimeFromISO(event.endTime)} {event.title}
 
-          {/* Q3 Report */}
-          {showReport && (
-            <div style={{ marginBottom: '24px' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}>
-                <div style={{
-                  color: '#fbbf24',
-                  fontSize: '18px',
-                  fontWeight: '600'
-                }}>15:30 ~ 17:00 處理第三季 report</div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <CheckCircle
-                    size={20}
-                    color="#fbbf24"
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => console.log('Mark completed: Q3 Report')}
-                  />
-                  <button
-                    onClick={() => setShowReport(false)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0
-                    }}
-                  >
-                    <X size={20} color="#9ca3af" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Dinner */}
-          {showDinner && (
-            <div style={{ marginBottom: '24px' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '12px'
-              }}>
-                <div style={{
-                  color: '#fbbf24',
-                  fontSize: '18px',
-                  fontWeight: '600'
-                }}>17:30 ~ 18:15 晚餐</div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <CheckCircle
-                    size={20}
-                    color="#fbbf24"
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => console.log('Mark completed: Dinner')}
-                  />
-                  <button
-                    onClick={() => setShowDinner(false)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0
-                    }}
-                  >
-                    <X size={20} color="#9ca3af" />
-                  </button>
-                </div>
-              </div>
-              <div style={{ fontSize: '14px', color: '#d1d5db' }}>
-                晚餐推薦 — OOO：今日推薦菜單：韓式部隊鍋+洋蔥炸雞
-              </div>
-            </div>
-          )}
-
-          {/* Work Out */}
-          {showWorkOut && (
-            <div style={{ marginBottom: '24px' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '12px'
-              }}>
-                <div style={{
-                  color: 'white',
-                  fontSize: '18px',
-                  fontWeight: '600'
-                }}>19:00 ~ 20:00 Work Out</div>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <MapPin size={20} color="#9ca3af" />
-                  <span style={{ fontSize: '14px', color: '#d1d5db' }}>健身工廠</span>
-                  <button
-                    onClick={() => setShowWorkOut(false)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 0,
-                      marginLeft: '8px'
-                    }}
-                  >
-                    <X size={16} color="#9ca3af" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right Side - Notifications */}
-        <div style={{
-          width: '320px',
-          padding: '24px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '16px'
-        }}>
-          {/* Weather Alert */}
-          {showWeatherAlert && (
-            <div style={{
-              backgroundColor: '#f3f4f6',
-              borderRadius: '8px',
-              padding: '16px',
-              borderLeft: '4px solid #fbbf24'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <AlertTriangle size={20} color="#fbbf24" style={{ marginTop: '2px' }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{
-                    fontSize: '14px',
-                    color: '#374151',
-                    lineHeight: '1.5'
-                  }}>
-                    今晚有較大雨雨發生機率，交通易堵塞，建議您提早出發「Work Out」（預估交通時間：45分鐘）
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        {style.showCheck && (
+                          <CheckCircle
+                            size={20}
+                            color={style.color}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => markCompleted(event.eventId)}
+                          />
+                        )}
+                        <button
+                          onClick={() => hideEvent(event.eventId)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0
+                          }}
+                        >
+                          <X size={20} color="#9ca3af" />
+                        </button>
+                      </div>
+                    </div>
+                    {event.location && (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginBottom: '12px',
+                        color: '#d1d5db'
+                      }}>
+                        <MapPin size={16} />
+                        <span>{event.location}</span>
+                      </div>
+                    )}
+                    {event.description && (
+                      <div style={{
+                        fontSize: '14px',
+                        color: '#d1d5db',
+                        marginBottom: '8px'
+                      }}>
+                        {event.description}
+                      </div>
+                    )}
                   </div>
-                </div>
-                <button
-                  onClick={() => setShowWeatherAlert(false)}
-                  style={{
-                    width: '20px',
-                    height: '20px',
-                    backgroundColor: '#d1d5db',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <X size={12} color="#6b7280" />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Tomorrow Meeting */}
-          {showMeetingAlert && (
-            <div style={{
-              backgroundColor: '#f3f4f6',
-              borderRadius: '8px',
-              padding: '16px',
-              borderLeft: '4px solid #3b82f6'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <Clock size={20} color="#3b82f6" style={{ marginTop: '2px' }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{
-                    fontWeight: '500',
-                    color: '#1f2937',
-                    marginBottom: '4px'
-                  }}>明天（9/5）Daily Meeting</div>
-                  <div style={{
-                    fontSize: '14px',
-                    color: '#6b7280'
-                  }}>需準備 Q3 report</div>
-                </div>
-                <button
-                  onClick={() => setShowMeetingAlert(false)}
-                  style={{
-                    width: '20px',
-                    height: '20px',
-                    backgroundColor: '#d1d5db',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <X size={12} color="#6b7280" />
-                </button>
-              </div>
-            </div>
+                );
+              })
           )}
         </div>
+
       </div>
     </div>
   );
