@@ -4,6 +4,7 @@
  */
 import React from 'react';
 import { formatWeekRange } from './utils/dateUtils.js';
+import LLMRecommandationButton from './LLMRecommandationButton';
 import './styles/NavigationHeader.css';
 
 /**
@@ -77,7 +78,7 @@ const NavigationHeader = ({
         </button>
       </div>
 
-      {/* Today Button */}
+      {/* Today Button and LLM Button */}
       <div className="navigation-header__today-container">
         <button
           className="navigation-header__today-button"
@@ -86,6 +87,7 @@ const NavigationHeader = ({
         >
           Today
         </button>
+        <LLMRecommandationButton />
       </div>
     </header>
   );

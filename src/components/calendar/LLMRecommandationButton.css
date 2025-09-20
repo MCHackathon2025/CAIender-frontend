@@ -1,0 +1,71 @@
+.llm-recommandation-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 18px;
+  background-color: var(--calendar-surface, #fafafa);
+  color: var(--calendar-text-primary, #212121);
+  cursor: pointer;
+  transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.llm-recommandation-button:hover:not(:disabled) {
+  background-color: var(--calendar-primary-light, #c8e6c9);
+  transform: scale(1.05);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.llm-recommandation-button:active:not(:disabled) {
+  transform: scale(0.95);
+  transition-duration: 150ms;
+}
+
+.llm-recommandation-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.llm-recommandation-button:disabled:hover {
+  background-color: var(--calendar-surface, #fafafa);
+  transform: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.llm-recommandation-button.processing {
+  background-color: var(--calendar-primary, #4caf50);
+  color: var(--calendar-primary-contrast, #ffffff);
+}
+
+.button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  transition: transform 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.llm-recommandation-button:hover .button-icon {
+  transform: scale(1.1);
+}
+
+/* Spinning animation for loading state */
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

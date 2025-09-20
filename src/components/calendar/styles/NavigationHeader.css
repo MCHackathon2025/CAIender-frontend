@@ -98,10 +98,12 @@
   transform: scale(0.95);
 }
 
-/* Today Button */
+/* Today Button and LLM Button Container */
 .navigation-header__today-container {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 12px;
 }
 
 .navigation-header__today-button {
