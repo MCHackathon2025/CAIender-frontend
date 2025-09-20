@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import './ScheduleRecommendationsModal.css'
+import './styles/ScheduleRecommendationsModal.css'
 
 const ScheduleRecommendationsModal = ({ isOpen, onClose }) => {
   const [selectedPrompt, setSelectedPrompt] = useState('')

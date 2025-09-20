@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import ScheduleRecommendationsModal from './ScheduleRecommendationsModal'
-import './LLMRecommandationButton.css'
+import './styles/LLMRecommandationButton.css'
 
 const LLMRecommandationButton = () => {
   const [isProcessing, setIsProcessing] = useState(false)

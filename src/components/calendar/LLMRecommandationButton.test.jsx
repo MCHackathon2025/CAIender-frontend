@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import LLMRecommandationButton from './LLMRecommandationButton';
 
 // Mock the CSS import
-vi.mock('./LLMRecommandationButton.css', () => ({}));
+vi.mock('./styles/LLMRecommandationButton.css', () => ({}));
 
 // Mock the ScheduleRecommendationsModal component
 vi.mock('./ScheduleRecommendationsModal', () => ({

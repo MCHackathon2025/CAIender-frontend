@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ScheduleRecommendationsModal from './ScheduleRecommendationsModal';
 
 // Mock the CSS import
-vi.mock('./ScheduleRecommendationsModal.css', () => ({}));
+vi.mock('./styles/ScheduleRecommendationsModal.css', () => ({}));
 
 describe('ScheduleRecommendationsModal', () => {
   const mockProps = {
