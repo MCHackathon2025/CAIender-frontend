@@ -5,22 +5,22 @@ import { createDate } from './components/calendar/utils/dateUtils';
 import './components/calendar/styles/index.css';
 import './components/App.css';
 
-// Default Page 組件
+// Default Page component
 const DefaultPage = () => {
-  // 時間狀態
+  // Time state
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // 狀態管理：控制通知是否顯示
+  // State management: control whether notifications are displayed
   const [showWeatherAlert, setShowWeatherAlert] = useState(true);
   const [showMeetingAlert, setShowMeetingAlert] = useState(true);
 
-  // 狀態管理：控制日程任務是否顯示
+  // State management: control whether schedule tasks are displayed
   const [showSnackTime, setShowSnackTime] = useState(true);
   const [showReport, setShowReport] = useState(true);
   const [showDinner, setShowDinner] = useState(true);
   const [showWorkOut, setShowWorkOut] = useState(true);
 
-  // 自動更新時間
+  // Auto-update time
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -29,7 +29,7 @@ const DefaultPage = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // 格式化時間顯示 (HH:MM)
+  // Format time display (HH:MM)
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', {
       hour12: false,
@@ -38,7 +38,7 @@ const DefaultPage = () => {
     });
   };
 
-  // 格式化日期顯示 (Sep. 14 Thu.)
+  // Format date display (Sep. 14 Thu.)
   const formatDate = (date) => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -155,7 +155,7 @@ const DefaultPage = () => {
                     size={20}
                     color="#fbbf24"
                     style={{ cursor: 'pointer' }}
-                    onClick={() => console.log('標記完成: Snack Time')}
+                    onClick={() => console.log('Mark completed: Snack Time')}
                   />
                   <button
                     onClick={() => setShowSnackTime(false)}
@@ -218,7 +218,7 @@ const DefaultPage = () => {
                     size={20}
                     color="#fbbf24"
                     style={{ cursor: 'pointer' }}
-                    onClick={() => console.log('標記完成: Q3 Report')}
+                    onClick={() => console.log('Mark completed: Q3 Report')}
                   />
                   <button
                     onClick={() => setShowReport(false)}
@@ -255,7 +255,7 @@ const DefaultPage = () => {
                     size={20}
                     color="#fbbf24"
                     style={{ cursor: 'pointer' }}
-                    onClick={() => console.log('標記完成: 晚餐')}
+                    onClick={() => console.log('Mark completed: Dinner')}
                   />
                   <button
                     onClick={() => setShowDinner(false)}
@@ -377,7 +377,7 @@ const DefaultPage = () => {
                   <div style={{
                     fontSize: '14px',
                     color: '#6b7280'
-                  }}>需準行李報 report</div>
+                  }}>需準備 Q3 report</div>
                 </div>
                 <button
                   onClick={() => setShowMeetingAlert(false)}
@@ -404,7 +404,7 @@ const DefaultPage = () => {
   );
 };
 
-// 主應用組件
+// Main application component
 function App() {
   const [currentPage, setCurrentPage] = useState('default');
 
