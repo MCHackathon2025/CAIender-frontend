@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import ScheduleRecommendationsModal from './ScheduleRecommendationsModal'
 import './LLMRecommandationButton.css'
 
 const LLMRecommandationButton = () => {
   const [isProcessing, setIsProcessing] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 })
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
   const buttonRef = useRef(null)
   const dropdownRef = useRef(null)
 
@@ -74,8 +76,11 @@ const LLMRecommandationButton = () => {
 
   const handleScheduleRecommendations = () => {
     setIsDropdownOpen(false)
-    console.log('Opening Schedule Recommendations modal')
-    // TODO: Implement modal for schedule recommendations
+    setIsScheduleModalOpen(true)
+  }
+
+  const handleCloseScheduleModal = () => {
+    setIsScheduleModalOpen(false)
   }
 
   const getButtonText = () => {
@@ -158,6 +163,12 @@ const LLMRecommandationButton = () => {
         </div>,
         document.body
       )}
+
+      {/* Schedule Recommendations Modal */}
+      <ScheduleRecommendationsModal
+        isOpen={isScheduleModalOpen}
+        onClose={handleCloseScheduleModal}
+      />
     </>
   )
 }
