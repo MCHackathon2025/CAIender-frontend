@@ -52,35 +52,35 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      console.log('🔐 AuthContext: Starting login...');
+      console.log('AuthContext: Starting login...');
       setLoading(true);
       setError(null);
 
-      console.log('📞 AuthContext: Calling authService.login...');
+      console.log('AuthContext: Calling authService.login...');
       // Try fallback service if main service fails
       let result = await authService.login(credentials);
 
       if (!result.success && result.error?.includes('Network error')) {
-        console.log('🔄 Trying fallback auth service...');
+        console.log('Trying fallback auth service...');
         result = await authServiceFallback.login(credentials);
       }
-      console.log('📥 AuthContext: Login result received:', { success: result.success, hasError: !!result.error });
+      console.log('AuthContext: Login result received:', { success: result.success, hasError: !!result.error });
 
       if (result.success) {
-        console.log('✅ AuthContext: Login successful, getting user data...');
+        console.log('AuthContext: Login successful, getting user data...');
         // Get user data after successful login
         const userResult = await authService.getCurrentUser();
         if (userResult.success) {
-          console.log('✅ AuthContext: User data retrieved successfully');
+          console.log('AuthContext: User data retrieved successfully');
           setUser(userResult.user);
           return { success: true };
         } else {
-          console.error('❌ AuthContext: Failed to get user data after login');
+          console.error('AuthContext: Failed to get user data after login');
           setError('Failed to get user data after login');
           return { success: false, error: 'Failed to get user data' };
         }
       } else {
-        console.error('❌ AuthContext: Login failed:', result.error);
+        console.error('AuthContext: Login failed:', result.error);
         setError(result.error);
         return result;
       }
