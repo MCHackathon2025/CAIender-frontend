@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import './styles/ScheduleRecommendationsModal.css'
 
-const ScheduleRecommendationsModal = ({ isOpen, onClose }) => {
+const ScheduleRecommendationsModal = ({ isOpen, onClose, suggestedEvents = [] }) => {
   const [selectedPrompt, setSelectedPrompt] = useState('')
   const [showCustomInput, setShowCustomInput] = useState(false)
   const [customPrompt, setCustomPrompt] = useState('')
@@ -254,6 +254,31 @@ const ScheduleRecommendationsModal = ({ isOpen, onClose }) => {
         <p className="schedule-modal-description">
           Choose a suggestion:
         </p>
+
+        {/* Display suggested events if available */}
+        {suggestedEvents && suggestedEvents.length > 0 && (
+          <div className="suggested-events-container">
+            <h3 className="suggested-events-title">AI Suggested Events</h3>
+            <div className="suggested-events-list">
+              {suggestedEvents.map((event, index) => (
+                <div key={event.eventId || index} className="suggested-event-item">
+                  <div className="suggested-event-header">
+                    <span className="suggested-event-title">{event.title}</span>
+                    <span className="suggested-event-time">
+                      {new Date(parseInt(event.startTime)).toLocaleString()} - {new Date(parseInt(event.endTime)).toLocaleString()}
+                    </span>
+                  </div>
+                  {event.description && (
+                    <p className="suggested-event-description">{event.description}</p>
+                  )}
+                  {event.location && (
+                    <p className="suggested-event-location">📍 {event.location}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="quick-prompts-container">
           {quickPrompts.map((prompt, index) => (
