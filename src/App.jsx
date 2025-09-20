@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, MapPin, CheckCircle, X, AlertTriangle, Calendar, Home } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { Clock, MapPin, CheckCircle, X, AlertTriangle, Calendar, Home, LogIn, LogOut, User } from 'lucide-react';
 import MobileCalendar from './components/calendar/MobileCalendar';
 import { createDate } from './components/calendar/utils/dateUtils';
+import { useAuth } from './contexts/AuthContext.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 import './components/calendar/styles/index.css';
 import './components/App.css';
 import WeatherCard from "./components/WeatherCard";
@@ -389,8 +393,10 @@ const DefaultPage = () => {
   );
 };
 
-// Main application component
-function App() {
+// Main Dashboard component (formerly App)
+function Dashboard() {
+  const { user, isAuthenticated, logout, loading } = useAuth();
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState('default');
 
   // Sample events to demonstrate the calendar functionality
@@ -562,6 +568,86 @@ function App() {
               Calendar
             </button>
           </div>
+
+          {/* User Authentication Section */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+          }}>
+            {loading ? (
+              <div style={{
+                color: '#9ca3af',
+                fontSize: '14px'
+              }}>
+                Loading...
+              </div>
+            ) : isAuthenticated ? (
+              <>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'white',
+                  fontSize: '14px'
+                }}>
+                  <User size={16} />
+                  <span>Welcome, {user?.username}</span>
+                </div>
+                <button
+                  onClick={logout}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 16px',
+                    backgroundColor: 'transparent',
+                    color: 'white',
+                    border: '1px solid #4b5563',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = '#4b5563';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => navigate('/login')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  backgroundColor: '#3b82f6',
+                  color: 'white',
+                  border: '1px solid #3b82f6',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#2563eb';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#3b82f6';
+                }}
+              >
+                <LogIn size={16} />
+                Login
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -583,6 +669,35 @@ function App() {
         )}
       </div>
     </div>
+  );
+}
+
+// Main App component with routing
+function App() {
+  return (
+    <Router>
+      <Routes>
+        {/* Public route - Login page */}
+        <Route
+          path="/login"
+          element={
+            <ProtectedRoute requireAuth={false}>
+              <LoginPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected routes - Main application */}
+        <Route
+          path="/*"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
 
