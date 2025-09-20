@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import ScheduleRecommendationsModal from './ScheduleRecommendationsModal'
+import { getSuggestedEvents } from '../../services/getEvent.js'
 import './styles/LLMRecommandationButton.css'
 
 const LLMRecommandationButton = () => {
@@ -8,6 +9,8 @@ const LLMRecommandationButton = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 })
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
+  const [suggestedEvents, setSuggestedEvents] = useState([])
+  const [error, setError] = useState(null)
   const buttonRef = useRef(null)
   const dropdownRef = useRef(null)
 
@@ -54,16 +57,21 @@ const LLMRecommandationButton = () => {
 
     setIsProcessing(true)
     setIsDropdownOpen(false) // Close dropdown if open
+    setError(null) // Clear any previous errors
 
     try {
-      // Simulate API request to backend (since we're not implementing backend)
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      console.log('Fetching suggested events from backend...')
+      const events = await getSuggestedEvents()
+      setSuggestedEvents(events)
+      console.log('Successfully fetched suggested events:', events)
 
-      console.log('LLM request sent to backend')
-      // Here you would typically make an API call to your backend
-      // Example: await fetch('/api/llm-request', { method: 'POST' })
+      // If we have events, automatically open the schedule modal to show them
+      if (events && events.length > 0) {
+        setIsScheduleModalOpen(true)
+      }
     } catch (error) {
-      console.error('LLM request error:', error)
+      console.error('Error fetching suggested events:', error)
+      setError(error.message || 'Failed to fetch suggested events')
     } finally {
       setIsProcessing(false)
     }
@@ -168,7 +176,49 @@ const LLMRecommandationButton = () => {
       <ScheduleRecommendationsModal
         isOpen={isScheduleModalOpen}
         onClose={handleCloseScheduleModal}
+        suggestedEvents={suggestedEvents}
       />
+
+      {/* Error notification */}
+      {error && (
+        <div
+          className="error-notification"
+          style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            backgroundColor: '#ef4444',
+            color: 'white',
+            padding: '12px 16px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            zIndex: 100000,
+            animation: 'fadeIn 0.3s ease-out',
+            maxWidth: '300px'
+          }}
+          role="alert"
+          aria-live="polite"
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>⚠️</span>
+            <span style={{ fontSize: '14px' }}>{error}</span>
+            <button
+              onClick={() => setError(null)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                cursor: 'pointer',
+                fontSize: '18px',
+                marginLeft: '8px'
+              }}
+              aria-label="Dismiss error"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
     </>
   )
 }
