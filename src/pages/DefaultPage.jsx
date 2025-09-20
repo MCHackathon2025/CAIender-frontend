@@ -108,23 +108,27 @@ const DefaultPage = () => {
       case 'USER_CREATE':
         return {
           color: '#10b981',
-          showCheck: false
+          showCheck: false,
+          showDelete: false
         };
       case 'BROADCAST':
         return {
           color: '#8b5cf6',
-          showCheck: true
+          showCheck: true,
+          showDelete: true
         };
       case 'AI_SUGGESTION':
       case 'AI_RECOMMENDATION':
         return {
           color: '#fbbf24',
-          showCheck: true
+          showCheck: true,
+          showDelete: true
         };
       default:
         return {
           color: '#fbbf24',
-          showCheck: true
+          showCheck: true,
+          showDelete: true
         };
     }
   };
@@ -170,6 +174,83 @@ const DefaultPage = () => {
       console.log('Event accepted successfully:', updatedEvent);
     } catch (error) {
       console.error('Failed to accept event:', error);
+    }
+  };
+
+  // Filter events to only show future events (starting after current time)
+  const getFutureEvents = () => {
+    const now = new Date();
+    return events.filter(event => {
+      if (!event.startTime) return false;
+
+      try {
+        const eventStartTime = new Date(event.startTime);
+        return eventStartTime > now;
+      } catch (error) {
+        console.error('Error parsing event start time:', event.startTime, error);
+        return false;
+      }
+    });
+  };
+
+  // Group events by date and sort them
+  const getEventsByDate = () => {
+    const futureEvents = getFutureEvents()
+      .filter(event => visibleEvents[event.eventId])
+      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+
+    const eventsByDate = {};
+
+    futureEvents.forEach(event => {
+      if (!event.startTime) return;
+
+      try {
+        const eventDate = new Date(event.startTime);
+        const dateKey = eventDate.toDateString();
+
+        if (!eventsByDate[dateKey]) {
+          eventsByDate[dateKey] = [];
+        }
+        eventsByDate[dateKey].push(event);
+      } catch (error) {
+        console.error('Error parsing event date:', event.startTime, error);
+      }
+    });
+
+    return eventsByDate;
+  };
+
+  // Format date for display (e.g., "Today", "Tomorrow", "Dec 25")
+  const formatEventDate = (dateString) => {
+    try {
+      const eventDate = new Date(dateString);
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      // Reset time to compare only dates
+      const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+      const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const tomorrowOnly = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate());
+
+      if (eventDateOnly.getTime() === todayOnly.getTime()) {
+        return 'Today';
+      } else if (eventDateOnly.getTime() === tomorrowOnly.getTime()) {
+        return 'Tomorrow';
+      } else {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        const month = months[eventDate.getMonth()];
+        const day = eventDate.getDate();
+        const weekday = weekdays[eventDate.getDay()];
+
+        return `${weekday}, ${month} ${day}`;
+      }
+    } catch (error) {
+      console.error('Error formatting event date:', dateString, error);
+      return dateString;
     }
   };
 
@@ -222,71 +303,101 @@ const DefaultPage = () => {
               Loading events...
             </div>
           ) : (
-            events
-              .filter(event => visibleEvents[event.eventId])
-              .map(event => {
-                const style = getEventStyle(event.type);
+            (() => {
+              const eventsByDate = getEventsByDate();
+              const sortedDates = Object.keys(eventsByDate).sort((a, b) => new Date(a) - new Date(b));
+
+              if (sortedDates.length === 0) {
                 return (
-                  <div key={event.eventId} style={{ marginBottom: '24px' }}>
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginBottom: '12px'
-                    }}>
-                      <div style={{
-                        color: style.color,
-                        fontSize: '18px',
-                        fontWeight: '600'
-                      }}>
-                        {formatTimeFromISO(event.startTime)} ~ {formatTimeFromISO(event.endTime)} {event.title}
-                      </div>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        {style.showCheck && (
-                          <CheckCircle
-                            size={20}
-                            color={style.color}
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => acceptEvent(event.eventId)}
-                          />
-                        )}
-                        <button
-                          onClick={() => deleteSuggestedEvent(event.eventId)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            padding: 0
-                          }}
-                        >
-                          <X size={20} color="#9ca3af" />
-                        </button>
-                      </div>
-                    </div>
-                    {event.location && (
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        marginBottom: '12px',
-                        color: '#d1d5db'
-                      }}>
-                        <MapPin size={16} />
-                        <span>{event.location}</span>
-                      </div>
-                    )}
-                    {event.description && (
-                      <div style={{
-                        fontSize: '14px',
-                        color: '#d1d5db',
-                        marginBottom: '8px'
-                      }}>
-                        {event.description}
-                      </div>
-                    )}
+                  <div style={{ color: '#d1d5db', textAlign: 'center', padding: '20px' }}>
+                    No upcoming events
                   </div>
                 );
-              })
+              }
+
+              return sortedDates.map(dateKey => (
+                <div key={dateKey}>
+                  {/* Date Header */}
+                  <div style={{
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    marginBottom: '16px',
+                    paddingBottom: '8px',
+                    borderBottom: '1px solid #4b5563'
+                  }}>
+                    {formatEventDate(dateKey)}
+                  </div>
+
+                  {/* Events for this date */}
+                  {eventsByDate[dateKey].map(event => {
+                    const style = getEventStyle(event.type);
+                    return (
+                      <div key={event.eventId} style={{ marginBottom: '24px' }}>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: '12px'
+                        }}>
+                          <div style={{
+                            color: style.color,
+                            fontSize: '18px',
+                            fontWeight: '600'
+                          }}>
+                            {formatTimeFromISO(event.startTime)} ~ {formatTimeFromISO(event.endTime)} {event.title}
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            {style.showCheck && (
+                              <CheckCircle
+                                size={20}
+                                color={style.color}
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => acceptEvent(event.eventId)}
+                              />
+                            )}
+                            {style.showDelete && (
+                              <button
+                                onClick={() => deleteSuggestedEvent(event.eventId)}
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  padding: 0
+                                }}
+                              >
+                                <X size={20} color="#9ca3af" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        {event.location && (
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            marginBottom: '12px',
+                            color: '#d1d5db'
+                          }}>
+                            <MapPin size={16} />
+                            <span>{event.location}</span>
+                          </div>
+                        )}
+                        {event.description && (
+                          <div style={{
+                            fontSize: '14px',
+                            color: '#d1d5db',
+                            marginBottom: '8px'
+                          }}>
+                            {event.description}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ));
+            })()
           )}
         </div>
       </div>
