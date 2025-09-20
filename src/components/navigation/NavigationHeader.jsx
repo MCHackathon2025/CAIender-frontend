@@ -33,14 +33,14 @@ const NavigationHeader = ({
         }}>
           <NavigationButton
             icon={Home}
-            text="Home"
+            text={!isMobile && 'Home'}
             onClick={() => onPageChange('default')}
             isActive={currentPage === 'default'}
             isMobile={isMobile}
           />
           <NavigationButton
             icon={Calendar}
-            text="Calendar"
+            text={!isMobile && 'Calendar'}
             onClick={() => onPageChange('calendar')}
             isActive={currentPage === 'calendar'}
             isMobile={isMobile}
@@ -58,7 +58,7 @@ const NavigationHeader = ({
               color: '#9ca3af',
               fontSize: '14px'
             }}>
-              Loading...
+              {!isMobile && 'Loading...'}
             </div>
           ) : isAuthenticated ? (
             <>
@@ -74,7 +74,7 @@ const NavigationHeader = ({
               </div>
               <NavigationButton
                 icon={LogOut}
-                text="Logout"
+                text={!isMobile && 'Logout'}
                 onClick={onLogout}
                 isMobile={isMobile}
               />
@@ -82,7 +82,7 @@ const NavigationHeader = ({
           ) : (
             <NavigationButton
               icon={LogIn}
-              text="Login"
+              text={!isMobile && 'Login'}
               onClick={onLogin}
               variant="primary"
               isMobile={isMobile}

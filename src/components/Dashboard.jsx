@@ -134,23 +134,6 @@ const Dashboard = () => {
       >
         {renderPageContent()}
       </main>
-
-      {/* Footer (optional) */}
-      <footer
-        className="dashboard-footer"
-        style={{
-          backgroundColor: 'var(--background-color)',
-          borderTop: '1px solid var(--border-color)',
-          padding: '16px 24px',
-          textAlign: 'center',
-          fontSize: 'var(--font-size-sm)',
-          color: 'var(--text-secondary)'
-        }}
-      >
-        <p style={{ margin: 0 }}>
-          © 2024 Calendar App. Built with React and GraphQL.
-        </p>
-      </footer>
     </div>
   );
 };
