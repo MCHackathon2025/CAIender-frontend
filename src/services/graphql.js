@@ -1,7 +1,11 @@
 import { GraphQLClient } from 'graphql-request';
 
-// GraphQL endpoint
-const GRAPHQL_ENDPOINT = 'https://86hofs0dtf.execute-api.ap-east-2.amazonaws.com/Prod/graphql';
+// GraphQL endpoint from environment variable
+const GRAPHQL_ENDPOINT = import.meta.env.VITE_GRAPHQL_ENDPOINT;
+
+if (!GRAPHQL_ENDPOINT) {
+  throw new Error('VITE_GRAPHQL_ENDPOINT environment variable is not set. Please check your .env file.');
+}
 
 console.log('Initializing GraphQL client...');
 console.log('Endpoint:', GRAPHQL_ENDPOINT);

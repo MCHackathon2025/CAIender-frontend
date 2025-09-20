@@ -1,5 +1,9 @@
 // Fallback auth service using native fetch instead of graphql-request
-const GRAPHQL_ENDPOINT = 'https://86hofs0dtf.execute-api.ap-east-2.amazonaws.com/Prod/graphql';
+const GRAPHQL_ENDPOINT = import.meta.env.VITE_GRAPHQL_ENDPOINT;
+
+if (!GRAPHQL_ENDPOINT) {
+  throw new Error('VITE_GRAPHQL_ENDPOINT environment variable is not set. Please check your .env file.');
+}
 
 const makeGraphQLRequest = async (query, variables = {}, token = null) => {
   console.log('Making GraphQL request with native fetch...');
