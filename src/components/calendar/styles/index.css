@@ -1,0 +1,1489 @@
+/**
+ * Main styles for Mobile Calendar component
+ * Mobile-first responsive design with proper touch targets
+ */
+
+/* Global reset for full height and width */
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  /* Allow horizontal scrolling when needed */
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* CSS Custom Properties for theming */
+:root {
+  --calendar-primary: #4caf50;
+  --calendar-primary-light: #c8e6c9;
+  --calendar-primary-dark: #2e7d32;
+  --calendar-primary-contrast: #ffffff;
+  --calendar-secondary: #f5f5f5;
+  --calendar-accent: #2196f3;
+  --calendar-background: #ffffff;
+  --calendar-surface: #fafafa;
+  --calendar-border: #e0e0e0;
+  --calendar-text-primary: #212121;
+  --calendar-text-secondary: #757575;
+  --calendar-text-disabled: #bdbdbd;
+}
+
+/* Mobile Calendar Container - Responsive */
+.mobile-calendar {
+  width: 100%;
+  max-width: none;
+  /* Remove max-width constraint */
+  height: 100vh;
+  min-height: 600px;
+  /* Minimum height to prevent over-shrinking */
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--calendar-background);
+  display: flex;
+  flex-direction: column;
+  overflow-x: auto;
+  /* Allow horizontal scrolling for mobile */
+  overflow-y: hidden;
+  box-sizing: border-box;
+  min-height: 0;
+}
+
+/* Desktop responsive calendar container */
+@media (min-width: 1024px) {
+  .mobile-calendar {
+    overflow-x: hidden;
+    /* Disable horizontal scrolling on desktop */
+    overflow-y: auto;
+    /* Enable vertical scrolling on desktop */
+  }
+}
+
+/* Dedicated horizontal scroll area for content under sticky header */
+.calendar-scroll {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Desktop responsive calendar scroll */
+@media (min-width: 1024px) {
+  .calendar-scroll {
+    overflow-x: hidden;
+    /* Disable horizontal scrolling on desktop */
+  }
+}
+
+/* Week View - Responsive Layout */
+.week-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* Responsive width - scales with container */
+  min-width: 740px;
+  /* Minimum width for mobile */
+  flex: 1;
+  background-color: #e0e0e0;
+  position: relative;
+  overflow: hidden;
+  /* Remove scrolling from week-view - handled by parent */
+  transition: transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  touch-action: pan-x pan-y;
+  /* Allow both horizontal and vertical panning */
+  min-height: 400px;
+  /* Minimum height to show content properly */
+}
+
+/* Desktop responsive scaling */
+@media (min-width: 1024px) {
+  .week-view {
+    width: 100%;
+    min-width: 100%;
+    /* Allow full width on desktop */
+  }
+}
+
+/* Headers Row - Responsive Sticky */
+.week-headers {
+  display: flex;
+  flex-direction: row;
+  min-width: 740px;
+  /* Minimum width for mobile */
+  width: 100%;
+  /* Responsive width */
+  background-color: #ffffff;
+  border-bottom: 2px solid #e0e0e0;
+  z-index: 10;
+  flex-shrink: 0;
+  /* Prevent headers from shrinking */
+  overflow: hidden;
+  /* Remove individual scrolling from headers */
+  position: sticky;
+  top: 0;
+  /* Keep headers at top during vertical scrolling */
+}
+
+/* Desktop responsive headers */
+@media (min-width: 1024px) {
+  .week-headers {
+    min-width: 100%;
+    /* Allow full width on desktop */
+  }
+}
+
+.time-scale-header {
+  width: 40px;
+  min-width: 40px;
+  /* Prevent shrinking */
+  height: 60px;
+  min-height: 60px;
+  /* Prevent shrinking */
+  border-right: 2px solid #e0e0e0;
+  background-color: #fafafa;
+  flex-shrink: 0;
+}
+
+.day-headers {
+  display: flex;
+  min-width: 700px;
+  /* Minimum width for mobile */
+  width: 100%;
+  /* Responsive width */
+  gap: 1px;
+  background-color: #e0e0e0;
+  flex-shrink: 0;
+}
+
+/* Desktop responsive day headers */
+@media (min-width: 1024px) {
+  .day-headers {
+    min-width: calc(100% - 40px);
+    /* Full width minus time scale */
+  }
+}
+
+.day-header-cell {
+  width: 100px;
+  min-width: 100px;
+  /* Fixed width per day for mobile */
+  height: 60px;
+  min-height: 60px;
+  /* Prevent shrinking */
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+/* Desktop responsive day header cells */
+@media (min-width: 1024px) {
+  .day-header-cell {
+    width: calc((100% - 6px) / 7);
+    /* Equal width distribution minus gaps */
+    min-width: 100px;
+    /* Maintain minimum width */
+  }
+}
+
+.day-header-cell:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.day-header-cell:focus {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.day-header-cell:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Maintain today's background on hover */
+.day-header-cell--today:hover {
+  background-color: #c8e6c9;
+}
+
+/* Maintain selected background on hover */
+.day-header-cell--selected:hover {
+  background-color: #f5f5f5;
+}
+
+/* Today + Selected hover state */
+.day-header-cell--today.day-header-cell--selected:hover {
+  background-color: #c8e6c9;
+}
+
+.day-header-cell--today {
+  background-color: #e8f5e8;
+  position: relative;
+}
+
+.day-header-cell--selected {
+  background-color: #ffffff;
+  position: relative;
+}
+
+/* Today + Selected state (highest priority) */
+.day-header-cell--today.day-header-cell--selected {
+  background-color: #e8f5e8;
+}
+
+.day-header-cell--today .day-number {
+  background-color: #4caf50;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+.day-header-cell--selected .day-number {
+  background-color: transparent;
+  color: #212121;
+  border-radius: 0;
+  width: auto;
+  height: auto;
+  box-shadow: none;
+}
+
+/* Today + Selected takes precedence with today's color but selected border */
+.day-header-cell--today.day-header-cell--selected .day-number {
+  background-color: #4caf50;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+/* Scrollable Content - Responsive */
+.week-content {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 300px;
+  min-width: 740px;
+  /* Minimum width for mobile */
+  width: 100%;
+  /* Responsive width */
+  overflow: hidden;
+  /* Remove horizontal scrolling from content - handled by parent */
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling on iOS */
+  position: relative;
+  padding-bottom: 20px;
+  /* Add bottom padding for better scrolling experience */
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  /* Smooth scrolling behavior */
+}
+
+/* Desktop responsive week content */
+@media (min-width: 1024px) {
+  .week-content {
+    min-width: 100%;
+    /* Allow full width on desktop */
+  }
+}
+
+.time-scale-slots {
+  width: 40px;
+  min-width: 40px;
+  /* Prevent shrinking */
+  flex-shrink: 0;
+  background-color: #fafafa;
+  border-right: 2px solid #e0e0e0;
+  height: calc(24 * 60px + 100px);
+  /* Match day content height: 24 hours * 60px + 100px padding */
+  overflow: hidden;
+  /* Prevent individual scrolling - handled by parent */
+}
+
+.time-slot {
+  height: 60px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #757575;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  box-sizing: border-box;
+}
+
+.time-slot:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Days Content - Responsive */
+.days-content {
+  display: flex;
+  min-width: 700px;
+  /* Minimum width for mobile */
+  width: 100%;
+  /* Responsive width */
+  gap: 1px;
+  background-color: #e0e0e0;
+  flex-shrink: 0;
+  height: calc(24 * 60px + 100px);
+  /* Match time scale height: 24 hours * 60px + 100px padding */
+  overflow: hidden;
+  /* Prevent individual scrolling - handled by parent */
+}
+
+/* Desktop responsive days content */
+@media (min-width: 1024px) {
+  .days-content {
+    min-width: calc(100% - 40px);
+    /* Full width minus time scale */
+  }
+}
+
+.day-content {
+  width: 100px;
+  min-width: 100px;
+  /* Fixed width per day for mobile */
+  position: relative;
+  background-color: #ffffff;
+  height: calc(24 * 60px + 100px);
+  /* Match time scale height: 24 hours * 60px + 100px padding */
+  box-sizing: border-box;
+  transition: background-color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  flex-shrink: 0;
+  overflow: hidden;
+  /* Prevent individual scrolling - handled by parent */
+}
+
+/* Desktop responsive day content */
+@media (min-width: 1024px) {
+  .day-content {
+    width: calc((100% - 6px) / 7);
+    /* Equal width distribution minus gaps */
+    min-width: 100px;
+    /* Maintain minimum width */
+  }
+}
+
+.day-content--today {
+  background-color: #f8fdf8;
+}
+
+.day-content--selected {
+  background-color: #ffffff;
+}
+
+.day-content--today.day-content--selected {
+  background-color: #f8fdf8;
+}
+
+/* Touch gesture states */
+.week-view--gesturing {
+  transition: none;
+  /* Disable transitions during gestures for immediate feedback */
+}
+
+.week-view--navigating {
+  pointer-events: none;
+  /* Prevent interactions during navigation */
+}
+
+/* Gesture direction feedback */
+.week-view--gesture-left {
+  transform: translateX(-2px);
+}
+
+.week-view--gesture-right {
+  transform: translateX(2px);
+}
+
+/* Keep mobile layout for all screen sizes */
+
+/* Day Cell Styles */
+.day-cell {
+  background-color: #ffffff;
+  flex: 1;
+  /* Take equal width in horizontal layout */
+  height: 100%;
+  /* Take full height of container */
+  cursor: pointer;
+  transition: background-color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  border: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* Day Cell Header */
+.day-cell-header {
+  position: sticky;
+  top: 0;
+  background-color: inherit;
+  z-index: 2;
+  padding: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Day Cell Content */
+.day-cell-content {
+  flex: 1;
+  position: relative;
+  min-height: calc(24 * 60px + 100px);
+  /* Match other components: 24 hours * 60px + 100px padding */
+  box-sizing: border-box;
+}
+
+/* Keep mobile layout for all screen sizes */
+
+/* Day Cell States */
+.day-cell:hover {
+  background-color: #f5f5f5;
+}
+
+.day-cell:active {
+  background-color: #eeeeee;
+}
+
+.day-cell:focus {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
+}
+
+/* Maintain today's background on hover */
+.day-cell--today:hover {
+  background-color: #c8e6c9;
+}
+
+/* Maintain selected background on hover */
+.day-cell--selected:hover {
+  background-color: #f5f5f5;
+}
+
+/* Today + Selected hover state */
+.day-cell--today.day-cell--selected:hover {
+  background-color: #c8e6c9;
+}
+
+.day-cell--today {
+  background-color: #e8f5e8;
+  position: relative;
+}
+
+.day-cell--today .day-number {
+  background-color: #4caf50;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+.day-cell--selected {
+  background-color: #ffffff;
+  position: relative;
+}
+
+.day-cell--selected .day-number {
+  background-color: transparent;
+  color: #212121;
+  border-radius: 0;
+  width: auto;
+  height: auto;
+  box-shadow: none;
+}
+
+/* Today + Selected state (highest priority) */
+.day-cell--today.day-cell--selected {
+  background-color: #e8f5e8;
+}
+
+.day-cell--today.day-cell--selected .day-number {
+  background-color: #4caf50;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+.day-cell--has-events {
+  background-color: #fafafa;
+}
+
+/* Day Cell Header */
+.day-cell-header {
+  position: sticky;
+  top: 0;
+  background-color: inherit;
+  z-index: 2;
+  border-bottom: 1px solid #e0e0e0;
+  height: 60px;
+  /* Fixed height to match time-scale-header */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Day Header Styles */
+.day-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Add subtle animation for today's date */
+.day-header-cell--today .day-header {
+  animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes subtle-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* Disable animation if user prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .day-header-cell--today .day-header {
+    animation: none;
+  }
+}
+
+/* Day cell borders for horizontal layout */
+.day-cell {
+  border-right: 1px solid #e0e0e0;
+}
+
+.day-cell:last-child {
+  border-right: none;
+}
+
+.day-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #757575;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.day-number {
+  font-size: 16px;
+  font-weight: 600;
+  color: #212121;
+  margin-top: 2px;
+  transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Enhanced styling for today's date */
+.day-header-cell--today .day-name {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+/* Enhanced styling for selected date */
+.day-header-cell--selected .day-name {
+  color: #757575;
+  font-weight: 500;
+}
+
+/* Today + Selected state */
+.day-header-cell--today.day-header-cell--selected .day-name {
+  color: #2e7d32;
+}
+
+/* Apply horizontal layout spacing for all screen sizes */
+.day-number {
+  margin-top: 2px;
+  font-size: 16px;
+}
+
+/* Time grid background */
+.time-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(24 * 60px + 100px);
+  /* Match day content height: 24 hours * 60px + 100px padding */
+  z-index: 0;
+}
+
+.time-grid-hour {
+  height: 60px;
+  border-bottom: 1px solid #f0f0f0;
+  box-sizing: border-box;
+}
+
+.time-grid-hour:nth-child(even) {
+  background-color: rgba(245, 245, 245, 0.3);
+}
+
+/* Positioned events */
+.positioned-event {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  z-index: 1;
+  min-height: 20px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Event styling within positioned container */
+.positioned-event .event-item {
+  height: 100%;
+  margin: 0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 2px 6px;
+  /* Minimal top padding to align at very top */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  /* Align content to top instead of center */
+}
+
+/* Empty state for days without events */
+.day-events-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Event overflow indicator */
+.day-events-overflow {
+  background-color: #f5f5f5;
+  border: 1px dashed #bdbdbd;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #757575;
+  text-align: center;
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.day-events-overflow:hover {
+  background-color: #eeeeee;
+  border-color: #9e9e9e;
+  color: #424242;
+}
+
+.day-events-overflow:focus {
+  outline: 2px solid #2196f3;
+  outline-offset: 1px;
+}
+
+/* Day indicators for visual event presence */
+.day-indicators {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.day-indicator {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #bdbdbd;
+}
+
+/* Theme-specific indicator colors */
+.day-indicator--main {
+  background-color: #4caf50;
+}
+
+.day-indicator--suggestion {
+  background-color: #ffc107;
+}
+
+.day-indicator--announcement {
+  background-color: #9c27b0;
+}
+
+.day-indicator--info {
+  background-color: #2196f3;
+}
+
+/* Overflow state styling */
+.day-cell--overflow .day-header {
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+
+/* Event item styling within day cell */
+.day-cell-event {
+  margin-bottom: 1px;
+}
+
+.day-cell-event:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Event Preview Styles */
+.event-preview {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  border-left: 3px solid #bdbdbd;
+  min-height: 32px;
+  /* Touch-optimized sizing */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.event-preview:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.event-preview:active {
+  transform: translateY(0);
+}
+
+/* Event Theme Colors */
+.event-preview--main {
+  background-color: #c8e6c9;
+  border-left-color: #4caf50;
+  color: #2e7d32;
+}
+
+.event-preview--suggestion {
+  background-color: #fff3c4;
+  border-left-color: #ffc107;
+  color: #f57f17;
+}
+
+.event-preview--announcement {
+  background-color: #e1bee7;
+  border-left-color: #9c27b0;
+  color: #6a1b9a;
+}
+
+.event-preview--info {
+  background-color: #bbdefb;
+  border-left-color: #2196f3;
+  color: #1565c0;
+}
+
+/* Event Title and Time - Title first, Time below */
+.event-title {
+  font-weight: 600;
+  overflow: visible;
+  /* Allow text to wrap */
+  white-space: normal;
+  /* Allow text wrapping */
+  word-wrap: break-word;
+  /* Break long words if necessary */
+  margin: 0 0 1px 0;
+  /* Minimal margin below title */
+  padding: 0;
+  flex: 0 0 auto;
+  min-height: 1.3em;
+}
+
+.event-time {
+  font-weight: 600;
+  font-size: 10px;
+  opacity: 0.8;
+  margin: 0;
+  /* No margins to follow title immediately */
+  padding: 0;
+  transition: opacity 0.2s ease;
+  flex: 0 0 auto;
+  min-height: 1.2em;
+}
+
+/* Hide event preview time only when space is very limited */
+@media (max-width: 400px) {
+  .event-time {
+    display: none;
+  }
+}
+
+@media (max-width: 500px) {
+  .event-time {
+    opacity: 0.6;
+    font-size: 9px;
+  }
+}
+
+/* Apply horizontal layout event styling for all screen sizes */
+.event-preview {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 2px 6px;
+  /* Minimal top padding to align content at very top */
+  min-height: 32px;
+}
+
+
+/* Responsive Typography */
+@media (max-width: 480px) {
+
+  .time-scale-header,
+  .time-scale-slots {
+    width: 50px;
+  }
+
+  .time-slot {
+    font-size: 10px;
+    height: 50px;
+    box-sizing: border-box;
+  }
+
+  .time-grid-hour {
+    height: 50px;
+    box-sizing: border-box;
+  }
+
+  .day-content {
+    min-height: calc(24 * 50px + 50px);
+  }
+
+  .day-header-cell {
+    height: 50px;
+  }
+
+  .time-scale-header {
+    height: 50px;
+  }
+
+  .day-name {
+    font-size: 11px;
+  }
+
+  .day-number {
+    font-size: 16px;
+  }
+
+  .event-preview {
+    font-size: 11px;
+    padding: 3px 5px;
+  }
+
+  .event-time {
+    font-size: 9px;
+    margin-top: 1px;
+  }
+}
+
+/* EventItem Component Styles */
+.event-item {
+  background-color: var(--event-light, #f5f5f5);
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  border-left: 3px solid var(--event-primary, #bdbdbd);
+  min-height: 32px;
+  /* Touch-optimized sizing - minimum 32px height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Touch interaction states */
+.event-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--event-primary, #f5f5f5);
+  color: var(--event-contrast, #212121);
+}
+
+.event-item:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.event-item:focus {
+  outline: 2px solid var(--event-primary, #2196f3);
+  outline-offset: 1px;
+}
+
+/* Theme-specific colors */
+.event-item--main {
+  background-color: #c8e6c9;
+  border-left-color: #4caf50;
+  color: #2e7d32;
+}
+
+.event-item--main:hover {
+  background-color: #4caf50;
+  color: #ffffff;
+}
+
+.event-item--suggestion {
+  background-color: #fff3c4;
+  border-left-color: #ffc107;
+  color: #f57f17;
+}
+
+.event-item--suggestion:hover {
+  background-color: #ffc107;
+  color: #000000;
+}
+
+.event-item--announcement {
+  background-color: #e1bee7;
+  border-left-color: #9c27b0;
+  color: #6a1b9a;
+}
+
+.event-item--announcement:hover {
+  background-color: #9c27b0;
+  color: #ffffff;
+}
+
+.event-item--info {
+  background-color: #bbdefb;
+  border-left-color: #2196f3;
+  color: #1565c0;
+}
+
+.event-item--info:hover {
+  background-color: #2196f3;
+  color: #ffffff;
+}
+
+/* Event time display - positioned directly below title */
+.event-item__time {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.8;
+  margin: 0;
+  /* No margins to follow title immediately */
+  padding: 0;
+  /* No padding */
+  line-height: 1.2;
+  flex: 0 0 auto;
+  /* Don't grow/shrink, maintain natural size */
+  transition: opacity 0.2s ease;
+  min-height: 1.2em;
+  /* Ensure time has minimum height */
+}
+
+/* Fade out time when space is very limited */
+@media (max-width: 500px) {
+  .event-item__time {
+    opacity: 0.6;
+    font-size: 9px;
+  }
+}
+
+/* Event title with text wrapping - now primary, shown first */
+.event-item__title {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: visible;
+  /* Allow text to wrap */
+  white-space: normal;
+  /* Allow text wrapping */
+  word-wrap: break-word;
+  /* Break long words if necessary */
+  flex: 0 0 auto;
+  /* Don't grow/shrink, maintain natural size */
+  margin: 0 0 1px 0;
+  /* Minimal margin below title */
+  padding: 0;
+  /* No padding to align at top */
+  min-height: 1.3em;
+  /* Ensure title has minimum height */
+}
+
+/* Compact mode for smaller displays */
+.event-item--compact {
+  padding: 1px 6px;
+  /* Minimal padding to align at very top */
+  min-height: 28px;
+  flex-direction: row;
+  align-items: flex-start;
+  /* Align to top instead of center */
+  gap: 6px;
+}
+
+.event-item--compact .event-item__time {
+  display: none;
+}
+
+.event-item--compact .event-item__title {
+  margin-bottom: 0;
+  font-size: 10px;
+  flex: 0 0 auto;
+}
+
+
+
+/* Apply horizontal layout event item styling for all screen sizes */
+.event-item {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  /* Align content to top */
+  gap: 0;
+  /* Remove gap, use margins instead */
+  padding: 2px 8px;
+  /* Minimal top padding to align title at very top */
+  min-height: 32px;
+  /* Ensure minimum height for touch targets */
+  height: auto;
+  /* Allow height to grow with content */
+}
+
+
+.event-item__title {
+  flex: 0 0 auto;
+  /* Don't grow, maintain natural size */
+}
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+  .event-item {
+    font-size: 11px;
+    padding: 4px 6px;
+    min-height: 32px;
+  }
+
+  .event-item__time {
+    font-size: 9px;
+    margin-top: 1px;
+  }
+
+  .event-item__title {
+    font-size: 11px;
+    margin: 0 0 1px 0;
+    padding: 0;
+    flex: 0 0 auto;
+  }
+}
+
+
+/* Large mobile screens - show time with good visibility */
+@media (max-width: 768px) and (min-width: 481px) {
+  .event-item__time {
+    opacity: 0.8;
+    font-size: 10px;
+  }
+}
+
+/* Narrow day columns - events will be more constrained */
+@media (max-width: 768px) {
+  /* Day columns become narrower, affecting event display space */
+}
+
+/* Medium mobile - reduce time visibility */
+@media (max-width: 480px) {
+  .event-item__time {
+    opacity: 0.5;
+    font-size: 9px;
+  }
+
+  .event-item__title {
+    margin: 0 0 1px 0;
+    padding: 0;
+    font-size: 11px;
+    flex: 0 0 auto;
+  }
+}
+
+/* Small mobile - hide time when space is very limited */
+@media (max-width: 360px) {
+  .event-item__time {
+    display: none;
+  }
+
+  .event-item__title {
+    margin: 0;
+    padding: 0;
+    font-size: 10px;
+    flex: 0 0 auto;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .event-item {
+    border-width: 2px;
+    border-left-width: 4px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .event-item {
+    transition: none;
+  }
+
+  .event-item:hover {
+    transform: none;
+  }
+}
+
+/* Navigation header and event modal styles are in separate files */
+
+/* F
+loating Action Button for Event Creation */
+.fab-create-event {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--calendar-primary);
+  color: var(--calendar-primary-contrast);
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 1000;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.fab-create-event:hover {
+  background-color: var(--calendar-primary-dark);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.fab-create-event:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.fab-create-event:focus {
+  outline: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 0 3px rgba(76, 175, 80, 0.3);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+  .fab-create-event {
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* Day co
+ntent click feedback */
+.day-content {
+  position: relative;
+}
+
+.day-content:hover {
+  background-color: rgba(76, 175, 80, 0.02);
+}
+
+.day-content:hover .time-grid-hour {
+  border-color: rgba(76, 175, 80, 0.1);
+}
+
+/* Add subtle visual cue for clickable areas */
+.day-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  transition: background-color 0.2s ease;
+}
+
+.day-content:active::before {
+  background-color: rgba(76, 175, 80, 0.05);
+}
+
+/* Fo
+rce 24-hour format for time inputs */
+input[type="time"] {
+  /* Force 24-hour format display */
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: none;
+}
+
+/* Ensure time inputs display in 24-hour format across browsers */
+input[type="time"]::-webkit-datetime-edit-hour-field,
+input[type="time"]::-webkit-datetime-edit-minute-field {
+  /* This helps ensure 24-hour format in WebKit browsers */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Additional styling for time inputs to ensure consistency */
+input[type="time"] {
+  font-family: monospace;
+  letter-spacing: 0.1em;
+}
+
+/* 24-hour format time inputs */
+input[type="time"] {
+  font-family: monospace;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hide AM/PM indicators if they appear in WebKit browsers */
+input[type="time"]::-webkit-datetime-edit-ampm-field {
+  display: none;
+}
+
+/* Ensure consistent 24-hour display across browsers */
+input[type="time"][data-format="24"] {
+  /* Custom attribute to indicate 24-hour format preference */
+  --time-format: 24;
+}
+
+/* Current Time Line - Google Calendar style */
+.current-time-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.current-time-line__indicator {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.current-time-line__circle {
+  width: 12px;
+  height: 12px;
+  background-color: #ea4335;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+  z-index: 2;
+  margin-left: -6px;
+  /* Center the circle on the left edge */
+}
+
+.current-time-line__line {
+  height: 2px;
+  background-color: #ea4335;
+  flex: 1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+  .current-time-line__circle {
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+  }
+
+  .current-time-line__line {
+    height: 1.5px;
+  }
+
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .current-time-line__circle {
+    border-width: 3px;
+  }
+
+  .current-time-line__line {
+    height: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .current-time-line {
+    transition: none;
+  }
+}
+
+/*
+ Custom 24-hour time input component */
+.time-input-24 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.time-select {
+  padding: 8px 4px;
+  border: 1px solid var(--calendar-border);
+  border-radius: 4px;
+  background-color: var(--calendar-background);
+  color: var(--calendar-text-primary);
+  font-family: monospace;
+  font-size: 14px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.time-select:focus {
+  outline: none;
+  border-color: var(--calendar-primary);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.time-separator {
+  font-weight: bold;
+  color: var(--calendar-text-primary);
+  font-family: monospace;
+  font-size: 16px;
+}
+
+/* Error state for time input */
+.time-input-24.error .time-select {
+  border-color: #f44336;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .time-input-24 {
+    font-size: 13px;
+  }
+
+  .time-select {
+    font-size: 13px;
+    padding: 6px 2px;
+    min-width: 45px;
+  }
+}
+
+/* Mobile devices - maintain fixed width and horizontal scrolling */
+@media (max-width: 1023px) {
+  .mobile-calendar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .week-view {
+    width: 740px;
+    min-width: 740px;
+    flex-shrink: 0;
+  }
+
+  .week-headers {
+    width: 740px;
+    min-width: 740px;
+  }
+
+  .week-content {
+    width: 740px;
+    min-width: 740px;
+    padding-bottom: 80px;
+    padding-top: 15px;
+  }
+
+  .day-headers {
+    width: 700px;
+    min-width: 700px;
+  }
+
+  .days-content {
+    width: 700px;
+    min-width: 700px;
+  }
+
+  .day-header-cell {
+    width: 100px;
+    min-width: 100px;
+  }
+
+  .day-content {
+    width: 100px;
+    min-width: 100px;
+  }
+
+  .time-scale-slots {
+    height: calc(24 * 50px + 50px);
+    /* Match day content height: 24 hours * 50px + 50px padding */
+  }
+
+  .days-content {
+    height: calc(24 * 50px + 50px);
+    /* Match time scale height: 24 hours * 50px + 50px padding */
+  }
+
+  .day-content {
+    height: calc(24 * 50px + 50px);
+    /* Match other components height: 24 hours * 50px + 50px padding */
+  }
+
+  .time-grid {
+    height: calc(24 * 50px + 50px);
+    /* Match day content height: 24 hours * 50px + 50px padding */
+  }
+}
