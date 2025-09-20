@@ -242,7 +242,7 @@ const ScheduleRecommendationsModal = ({ isOpen, onClose }) => {
 
   return createPortal(
     <div className="schedule-modal-overlay">
-      <div className="schedule-modal" ref={modalRef}>
+      <div className="schedule-modal" ref={modalRef} role="dialog" aria-modal="true">
         <button
           className="schedule-modal-close"
           onClick={onClose}
