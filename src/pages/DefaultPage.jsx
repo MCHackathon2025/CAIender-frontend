@@ -71,7 +71,7 @@ const DefaultPage = () => {
   useEffect(() => {
     const loadWeatherData = async () => {
       try {
-        const { fetchWeather } = await import('../services/weatherAPI');
+        const { fetchWeather } = await import('../services/weatherApi');
         const weather = await fetchWeather('Hsinchu');
         setWeatherData(weather);
       } catch (error) {

@@ -1,59 +1,85 @@
 // src/services/eventApi.js
-const API_URL = "https://86hofs0dtf.execute-api.ap-east-2.amazonaws.com/Prod/graphql";
-const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFjZjk1N2Y3LTE4OGEtNDJiNy04NzdmLWQ2OWYwZGE3YzM2YSIsImlhdCI6MTc1ODM3MTg3MCwiZXhwIjoxNzU4NDU4MjcwfQ.WwKxY4eGxqS864r1LPaWVCv77q6ph21L5JssHQWQMMs"; // 記得換成你的 token
+import { gql } from 'graphql-request';
+import graphqlClient from './graphql.js';
+import authService from './auth.js';
 
-// 查 me → 拿到所有 eventId
+// GraphQL queries
+const FETCH_MY_EVENTS_QUERY = gql`
+  query {
+    me {
+      events { eventId }
+    }
+  }
+`;
+
+const FETCH_EVENT_QUERY = gql`
+  query($input: GetEventInput!) {
+    getEvent(input: $input) {
+      eventId
+      title
+      description
+      startTime
+      endTime
+      type
+      location
+    }
+  }
+`;
+
+const UPDATE_EVENT_MUTATION = gql`
+  mutation($input: UpdateEventInput!) {
+    updateEvent(input: $input) {
+      eventId
+      title
+      description
+      startTime
+      endTime
+      type
+      location
+    }
+  }
+`;
+
+const DELETE_EVENT_MUTATION = gql`
+  mutation($input: DeleteEventInput!) {
+    deleteEvent(input: $input)
+  }
+`;
+
+// Get current user's events
 export async function fetchMyEvents() {
-  const query = `
-    query {
-      me {
-        events { eventId }
-      }
+  try {
+    // Ensure user is authenticated
+    if (!authService.isAuthenticated()) {
+      throw new Error('User not authenticated');
     }
-  `;
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-token": TOKEN,
-    },
-    body: JSON.stringify({ query }),
-  });
-  const json = await res.json();
-  return json.data.me.events || [];
+
+    const data = await graphqlClient.request(FETCH_MY_EVENTS_QUERY);
+    return data.me?.events || [];
+  } catch (error) {
+    console.error('Error fetching my events:', error);
+    throw error;
+  }
 }
 
-// 查單一 event
+// Get specific event by ID
 export async function fetchEvent(eventId) {
-  const query = `
-    query($input: GetEventInput!) {
-      getEvent(input: $input) {
-        eventId
-        title
-        description
-        startTime
-        endTime
-        type
-        location
-      }
+  try {
+    // Ensure user is authenticated
+    if (!authService.isAuthenticated()) {
+      throw new Error('User not authenticated');
     }
-  `;
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-token": TOKEN,
-    },
-    body: JSON.stringify({
-      query,
-      variables: { input: { eventId } },
-    }),
-  });
-  const json = await res.json();
-  return json.data.getEvent;
+
+    const data = await graphqlClient.request(FETCH_EVENT_QUERY, {
+      input: { eventId }
+    });
+    return data.getEvent;
+  } catch (error) {
+    console.error('Error fetching event:', error);
+    throw error;
+  }
 }
 
-// 一次拿所有 events (排序)
 export async function fetchAllEvents() {
   const basicEvents = await fetchMyEvents();
   const fullEvents = await Promise.all(basicEvents.map(e => fetchEvent(e.eventId)));
@@ -67,60 +93,34 @@ export async function fetchAllEvents() {
     });
 }
 
-// 更新 event
 export async function updateEvent(input) {
-  const mutation = `
-    mutation($input: UpdateEventInput!) {
-      updateEvent(input: $input) {
-        eventId
-        title
-        description
-        startTime
-        endTime
-        type
-        location
-      }
+  try {
+    // Ensure user is authenticated
+    if (!authService.isAuthenticated()) {
+      throw new Error('User not authenticated');
     }
-  `;
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-token": TOKEN,
-    },
-    body: JSON.stringify({
-      query: mutation,
-      variables: { input },
-    }),
-  });
-  const json = await res.json();
-  if (json.errors) {
-    throw new Error(json.errors[0].message);
+
+    const data = await graphqlClient.request(UPDATE_EVENT_MUTATION, { input });
+    return data.updateEvent;
+  } catch (error) {
+    console.error('Error updating event:', error);
+    throw error;
   }
-  return json.data.updateEvent;
 }
 
-// 刪除 event
 export async function deleteEvent(eventId) {
-  const mutation = `
-    mutation($input: DeleteEventInput!) {
-      deleteEvent(input: $input)
+  try {
+    // Ensure user is authenticated
+    if (!authService.isAuthenticated()) {
+      throw new Error('User not authenticated');
     }
-  `;
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-token": TOKEN,
-    },
-    body: JSON.stringify({
-      query: mutation,
-      variables: { input: { eventId } },
-    }),
-  });
-  const json = await res.json();
-  if (json.errors) {
-    throw new Error(json.errors[0].message);
+
+    const data = await graphqlClient.request(DELETE_EVENT_MUTATION, {
+      input: { eventId }
+    });
+    return data.deleteEvent;
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    throw error;
   }
-  return json.data.deleteEvent;
 }
