@@ -3,9 +3,19 @@ import graphqlClient, { setAuthToken } from './graphql.js';
 
 // GraphQL mutations and queries
 const GET_EVENT_QUERY = gql`
-  query GetEvent {
+  query GetSuggestedEvents {
     suggestEvent {
       eventId
+      title
+      startTime
+      endTime
+      description
+      type
+      location
+      participants {
+        id
+        username
+      }
     }
   }
 `;
@@ -24,7 +34,7 @@ export const getSuggestedEvents = async () => {
     }
 
     const data = await graphqlClient.request(GET_EVENT_QUERY);
-    return data.SuggestEvents || [];
+    return data.suggestEvent || [];
   } catch (error) {
     console.error('Error fetching suggested events:', error);
     throw new Error('Failed to fetch suggested events. Please try again.');
