@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { fetchWeather } from '../../services/weatherAPI';
+import { fetchWeather } from '../../services/weatherApi';
 import WeatherIcons, { getWeatherCondition, getTemperatureColor } from './WeatherIcons';
 import '../../styles/App.css';
 import './WeatherCard.css';

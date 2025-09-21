@@ -5,11 +5,11 @@ import { vi } from 'vitest';
 import WeatherCard from './WeatherCard';
 
 // Mock the weather API
-vi.mock('../../services/weatherAPI', () => ({
+vi.mock('../../services/weatherApi', () => ({
   fetchWeather: vi.fn()
 }));
 
-import { fetchWeather } from '../../services/weatherAPI';
+import { fetchWeather } from '../../services/weatherApi';
 
 describe('WeatherCard', () => {
   beforeEach(() => {
