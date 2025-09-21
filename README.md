@@ -21,7 +21,6 @@ The project, called **CAIendar**, is designed as an **AI Calendar × Life Design
 * **Language**: JavaScript (ES6+)
 * **API**: GraphQL
 * **Database**: DynamoDB
-* **Integrations**: Google Calendar, Firebase (Auth, Firestore, Functions)
 * **AI Engine**: LLM for intelligent scheduling and recommendations
 
 ---
@@ -40,7 +39,7 @@ mc-hackathon-frontend/
 ├── vite.config.js         # Vite config
 ├── vitest.config.js       # Testing config
 ├── package.json
-├── .env.example           # Example environment variables
+├── example_env.txt           # Example environment variables
 └── README.md
 ```
 
@@ -62,7 +61,7 @@ mc-hackathon-frontend/
    ```
 
 3. **Configure environment variables**
-   Copy `.env.example` → `.env` and configure:
+   Copy `example_env.txt` → `.env` and configure:
 
    ```env
    VITE_GRAPHQL_ENDPOINT=<your-api-endpoint>
