@@ -256,6 +256,36 @@
   font-family: monospace;
 }
 
+/* Navigation Button Styles */
+.navigation-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.navigation-button:disabled {
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+.navigation-button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.navigation-button .animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 640px) {
   .gps-modal-overlay {
@@ -289,5 +319,11 @@
   .gps-error-actions {
     width: 100%;
     justify-content: flex-end;
+  }
+
+  /* Mobile navigation button adjustments */
+  .navigation-button {
+    font-size: 14px !important;
+    padding: 10px 16px !important;
   }
 }

@@ -34,6 +34,7 @@ export async function fetchEvent(eventId) {
         startTime
         endTime
         type
+        location
       }
     }
   `;

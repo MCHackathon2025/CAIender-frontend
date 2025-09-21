@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, CheckCircle, X } from 'lucide-react';
+import { MapPin, CheckCircle, X, Navigation } from 'lucide-react';
 import { fetchAllEvents, updateEvent, deleteEvent } from '../services/eventApi.js';
 import WeatherCard from '../components/weather/WeatherCard';
 import { getWeatherCondition } from '../components/weather/WeatherIcons';
+import { useGPS } from '../hooks/useGPS';
+import '../components/gps/GPSPermissionModal.css';
 import '../styles/WeatherBackgrounds.css';
 
 
@@ -24,6 +26,12 @@ const DefaultPage = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [visibleEvents, setVisibleEvents] = useState({});
+
+  // GPS hook for navigation
+  const {
+    coordinates,
+    getCurrentLocation
+  } = useGPS();
 
   // Auto-update time
   useEffect(() => {
@@ -198,6 +206,40 @@ const DefaultPage = () => {
     }
   };
 
+  // Navigate to event location using Google Maps
+  const navigateToLocation = async (location) => {
+    try {
+      // Get current location (this will trigger browser permission request if needed)
+      let fromLocation;
+      if (coordinates) {
+        fromLocation = `${coordinates.latitude},${coordinates.longitude}`;
+      } else {
+        try {
+          // This will show the browser's native permission dialog
+          const coords = await getCurrentLocation();
+          fromLocation = `${coords.latitude},${coords.longitude}`;
+        } catch (error) {
+          console.error('Failed to get location:', error);
+          // If GPS fails, just open destination in Google Maps without navigation
+          const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(location)}?force=pwa&source=pwa`;
+          window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+          return;
+        }
+      }
+
+      // Open Google Maps with navigation from current location to destination
+      const mapsUrl = `https://www.google.com/maps/dir/${encodeURIComponent(fromLocation)}/${encodeURIComponent(location)}?force=pwa&source=pwa`;
+      window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Fallback: just show the destination
+      const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(location)}?force=pwa&source=pwa`;
+      window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+
   // Filter events to only show future events (starting after current time)
   const getFutureEvents = () => {
     const now = new Date();
@@ -370,6 +412,22 @@ const DefaultPage = () => {
                                 {formatTimeFromISO(event.startTime)} ~ {formatTimeFromISO(event.endTime)} {event.title}
                               </div>
                               <div style={{ display: 'flex', gap: '8px' }}>
+                                {event.location && (
+                                  <button
+                                    onClick={() => navigateToLocation(event.location)}
+                                    style={{
+                                      background: 'none',
+                                      border: 'none',
+                                      cursor: 'pointer',
+                                      padding: 0,
+                                      display: 'flex',
+                                      alignItems: 'center'
+                                    }}
+                                    title={`Navigate to ${event.location}`}
+                                  >
+                                    <Navigation size={20} color="#fbbf24" />
+                                  </button>
+                                )}
                                 {style.showCheck && (
                                   <CheckCircle
                                     size={20}
@@ -427,6 +485,7 @@ const DefaultPage = () => {
           )}
         </div>
       </div>
+
     </div>
   );
 };
