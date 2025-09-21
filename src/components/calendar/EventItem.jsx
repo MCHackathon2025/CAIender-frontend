@@ -4,6 +4,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { MapPin } from 'lucide-react';
 import { CALENDAR_THEMES } from './theme.js';
 
 /**
@@ -27,7 +28,8 @@ const EventItem = ({ event, onClick, onDelete, isCompact = false, className = ''
     startTime = '',
     endTime = '',
     theme = 'main',
-    isAllDay = false
+    isAllDay = false,
+    location = ''
   } = event;
 
   // Get theme colors for the event
@@ -48,6 +50,11 @@ const EventItem = ({ event, onClick, onDelete, isCompact = false, className = ''
     }
 
     return startTime;
+  };
+
+  // Check if location should be displayed
+  const shouldShowLocation = () => {
+    return location && location !== 'null' && location.trim() !== '';
   };
 
   // Handle click events
@@ -128,6 +135,14 @@ const EventItem = ({ event, onClick, onDelete, isCompact = false, className = ''
           {timeDisplay}
         </div>
       )}
+
+      {/* Location display - tertiary information, shown if there's space */}
+      {shouldShowLocation() && (
+        <div className="event-item__location" title={location}>
+          <MapPin size={12} />
+          <span>{location}</span>
+        </div>
+      )}
     </div>
   );
 };
@@ -139,7 +154,8 @@ EventItem.propTypes = {
     startTime: PropTypes.string,
     endTime: PropTypes.string,
     theme: PropTypes.oneOf(['main', 'suggestion', 'announcement', 'info']),
-    isAllDay: PropTypes.bool
+    isAllDay: PropTypes.bool,
+    location: PropTypes.string
   }).isRequired,
   onClick: PropTypes.func,
   onDelete: PropTypes.func,

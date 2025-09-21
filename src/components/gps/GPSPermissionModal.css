@@ -1,0 +1,329 @@
+/* GPS Permission Modal Styles */
+
+.gps-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.gps-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.gps-modal-header {
+  padding: 24px 24px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.gps-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.gps-modal-content {
+  padding: 24px;
+}
+
+.gps-icon {
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.gps-modal-content p {
+  margin: 0 0 20px;
+  color: #6b7280;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.gps-benefits {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.gps-benefits h4 {
+  margin: 0 0 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.gps-benefits ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #6b7280;
+}
+
+.gps-benefits li {
+  margin-bottom: 4px;
+  font-size: 0.875rem;
+}
+
+.gps-error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 20px;
+}
+
+.gps-error strong {
+  color: #dc2626;
+}
+
+.gps-error {
+  color: #991b1b;
+  font-size: 0.875rem;
+}
+
+.gps-modal-actions {
+  display: flex;
+  gap: 12px;
+  padding: 0 24px 24px;
+  justify-content: flex-end;
+}
+
+.gps-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.gps-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.gps-btn-primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.gps-btn-primary:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.gps-btn-secondary {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.gps-btn-secondary:hover:not(:disabled) {
+  background-color: #e5e7eb;
+}
+
+.gps-btn-sm {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  min-width: auto;
+}
+
+/* GPS Error Alert Styles */
+
+.gps-error-alert {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.gps-error-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.gps-error-icon {
+  font-size: 1.25rem;
+  margin-top: 2px;
+}
+
+.gps-error-text h4 {
+  margin: 0 0 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.gps-error-text p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #991b1b;
+  line-height: 1.4;
+}
+
+.gps-error-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* GPS Status Indicator Styles */
+
+.gps-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.gps-status-loading {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.gps-status-success {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.gps-status-error {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.gps-status-inactive {
+  background-color: #f9fafb;
+  color: #6b7280;
+}
+
+.gps-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: gps-spin 1s linear infinite;
+}
+
+@keyframes gps-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.gps-location-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gps-address {
+  font-weight: 500;
+  color: inherit;
+}
+
+.gps-coordinates {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  font-family: monospace;
+}
+
+/* Navigation Button Styles */
+.navigation-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.navigation-button:disabled {
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+.navigation-button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.navigation-button .animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .gps-modal-overlay {
+    padding: 10px;
+  }
+
+  .gps-modal {
+    max-height: 95vh;
+  }
+
+  .gps-modal-header,
+  .gps-modal-content,
+  .gps-modal-actions {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .gps-modal-actions {
+    flex-direction: column;
+  }
+
+  .gps-btn {
+    width: 100%;
+  }
+
+  .gps-error-alert {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .gps-error-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Mobile navigation button adjustments */
+  .navigation-button {
+    font-size: 14px !important;
+    padding: 10px 16px !important;
+  }
+}
