@@ -199,9 +199,13 @@ const DefaultPage = () => {
       .filter(event => visibleEvents[event.eventId])
       .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
 
+    // Limit to maximum 10 events to keep dashboard clean
+    const maxEvents = 10;
+    const limitedEvents = futureEvents.slice(0, maxEvents);
+
     const eventsByDate = {};
 
-    futureEvents.forEach(event => {
+    limitedEvents.forEach(event => {
       if (!event.startTime) return;
 
       try {
@@ -315,88 +319,94 @@ const DefaultPage = () => {
                 );
               }
 
-              return sortedDates.map(dateKey => (
-                <div key={dateKey}>
-                  {/* Date Header */}
-                  <div style={{
-                    color: 'white',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    marginBottom: '16px',
-                    paddingBottom: '8px',
-                    borderBottom: '1px solid #4b5563'
-                  }}>
-                    {formatEventDate(dateKey)}
-                  </div>
-
-                  {/* Events for this date */}
-                  {eventsByDate[dateKey].map(event => {
-                    const style = getEventStyle(event.type);
-                    return (
-                      <div key={event.eventId} style={{ marginBottom: '24px' }}>
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          marginBottom: '12px'
-                        }}>
-                          <div style={{
-                            color: style.color,
-                            fontSize: '18px',
-                            fontWeight: '600'
-                          }}>
-                            {formatTimeFromISO(event.startTime)} ~ {formatTimeFromISO(event.endTime)} {event.title}
-                          </div>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            {style.showCheck && (
-                              <CheckCircle
-                                size={20}
-                                color={style.color}
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => acceptEvent(event.eventId)}
-                              />
-                            )}
-                            {style.showDelete && (
-                              <button
-                                onClick={() => deleteSuggestedEvent(event.eventId)}
-                                style={{
-                                  background: 'none',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  padding: 0
-                                }}
-                              >
-                                <X size={20} color="#9ca3af" />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                        {event.location && (
-                          <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            marginBottom: '12px',
-                            color: '#d1d5db'
-                          }}>
-                            <MapPin size={16} />
-                            <span>{event.location}</span>
-                          </div>
-                        )}
-                        {event.description && (
-                          <div style={{
-                            fontSize: '14px',
-                            color: '#d1d5db',
-                            marginBottom: '8px'
-                          }}>
-                            {event.description}
-                          </div>
-                        )}
+              return (
+                <div>
+                  {sortedDates.map(dateKey => (
+                    <div key={dateKey}>
+                      {/* Date Header */}
+                      <div style={{
+                        color: 'white',
+                        fontSize: '16px',
+                        fontWeight: '600',
+                        marginBottom: '16px',
+                        paddingBottom: '8px',
+                        borderBottom: '1px solid #4b5563'
+                      }}>
+                        {formatEventDate(dateKey)}
                       </div>
-                    );
-                  })}
+
+                      {/* Events for this date */}
+                      {eventsByDate[dateKey].map(event => {
+                        const style = getEventStyle(event.type);
+                        return (
+                          <div key={event.eventId} style={{ marginBottom: '24px' }}>
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              marginBottom: '12px'
+                            }}>
+                              <div style={{
+                                color: style.color,
+                                fontSize: '18px',
+                                fontWeight: '600'
+                              }}>
+                                {formatTimeFromISO(event.startTime)} ~ {formatTimeFromISO(event.endTime)} {event.title}
+                              </div>
+                              <div style={{ display: 'flex', gap: '8px' }}>
+                                {style.showCheck && (
+                                  <CheckCircle
+                                    size={20}
+                                    color={style.color}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => acceptEvent(event.eventId)}
+                                  />
+                                )}
+                                {style.showDelete && (
+                                  <button
+                                    onClick={() => deleteSuggestedEvent(event.eventId)}
+                                    style={{
+                                      background: 'none',
+                                      border: 'none',
+                                      cursor: 'pointer',
+                                      padding: 0
+                                    }}
+                                  >
+                                    <X size={20} color="#9ca3af" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                            {event.location && (
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                marginBottom: '12px',
+                                color: '#fbbf24',
+                                fontSize: '16px',
+                                fontWeight: '600'
+                              }}>
+                                <MapPin size={18} />
+                                <span>{event.location}</span>
+                              </div>
+                            )}
+                            {event.description && (
+                              <div style={{
+                                fontSize: '14px',
+                                color: '#d1d5db',
+                                marginBottom: '8px'
+                              }}>
+                                {event.description}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
                 </div>
-              ));
+              );
             })()
           )}
         </div>
