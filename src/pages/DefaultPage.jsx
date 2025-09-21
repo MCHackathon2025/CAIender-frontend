@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, CheckCircle, X } from 'lucide-react';
 import { fetchAllEvents, updateEvent, deleteEvent } from '../services/eventApi.js';
 import WeatherCard from '../components/weather/WeatherCard';
+import { getWeatherCondition } from '../components/weather/WeatherIcons';
+import '../styles/WeatherBackgrounds.css';
+
 
 /**
  * Default page component showing time, weather, and schedule
@@ -9,6 +12,9 @@ import WeatherCard from '../components/weather/WeatherCard';
 const DefaultPage = () => {
   // Time state
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Weather state for background
+  const [weatherData, setWeatherData] = useState(null);
 
   // State management: control whether notifications are displayed
   const [showWeatherAlert, setShowWeatherAlert] = useState(true);
@@ -51,6 +57,21 @@ const DefaultPage = () => {
     };
 
     loadEvents();
+  }, []);
+
+  // Load weather data for background
+  useEffect(() => {
+    const loadWeatherData = async () => {
+      try {
+        const { fetchWeather } = await import('../services/weatherAPI');
+        const weather = await fetchWeather('Hsinchu');
+        setWeatherData(weather);
+      } catch (error) {
+        console.error('Failed to load weather data:', error);
+      }
+    };
+
+    loadWeatherData();
   }, []);
 
   // Format time display (HH:MM)
@@ -266,12 +287,7 @@ const DefaultPage = () => {
       overflow: 'hidden'
     }}>
       {/* Top Section with Weather */}
-      <div style={{
-        position: 'relative',
-        background: 'linear-gradient(135deg, #60a5fa, #93c5fd, #ffffff)',
-        padding: '32px',
-        textAlign: 'center'
-      }}>
+      <div className={`weather-background ${weatherData ? getWeatherCondition(weatherData.temperature, weatherData.humidity) : 'default'}`}>
         <div style={{
           position: 'absolute',
           top: '16px',
@@ -280,7 +296,7 @@ const DefaultPage = () => {
         }}>
         </div>
 
-        <div style={{ marginTop: "32px" }}>
+        <div className="weather-content" style={{ marginTop: "32px" }}>
           <div style={{ color: "#374151", fontSize: "14px", marginBottom: "8px" }}>
             {formatDate(currentTime)}
           </div>
@@ -289,7 +305,7 @@ const DefaultPage = () => {
           </div>
 
           {/* WeatherCard */}
-          <WeatherCard region="Hsinchu" />
+          <WeatherCard region="Hsinchu" showDetails={true} refreshInterval={300000} />
         </div>
       </div>
 

@@ -1,0 +1,199 @@
+/* Weather Background Styles for DefaultPage */
+
+.weather-background {
+  position: relative;
+  padding: 32px;
+  text-align: center;
+  overflow: hidden;
+  transition: background 0.5s ease;
+  min-height: 200px;
+}
+
+/* Weather-specific background gradients */
+.weather-background.sunny {
+  background: linear-gradient(135deg, #87ceeb, #98d8e8, #b8e6ff);
+  color: #1e40af;
+}
+
+.weather-background.cloudy {
+  background: linear-gradient(135deg, #94a3b8, #cbd5e1, #f1f5f9);
+  color: #475569;
+}
+
+.weather-background.rainy {
+  background: linear-gradient(135deg, #64748b, #94a3b8, #cbd5e1);
+  color: #1e293b;
+}
+
+.weather-background.stormy {
+  background: linear-gradient(135deg, #374151, #4b5563, #6b7280);
+  color: #f9fafb;
+}
+
+.weather-background.snowy {
+  background: linear-gradient(135deg, #e2e8f0, #f1f5f9, #ffffff);
+  color: #475569;
+}
+
+.weather-background.foggy {
+  background: linear-gradient(135deg, #9ca3af, #d1d5db, #f3f4f6);
+  color: #374151;
+}
+
+.weather-background.default {
+  background: linear-gradient(135deg, #60a5fa, #93c5fd, #ffffff);
+  color: #374151;
+}
+
+/* Rain animation effects */
+.weather-background.rainy::before {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 200%;
+  background: repeating-linear-gradient(90deg,
+      transparent,
+      transparent 2px,
+      rgba(59, 130, 246, 0.3) 2px,
+      rgba(59, 130, 246, 0.3) 4px);
+  animation: rain 1s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.weather-background.rainy::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 200%;
+  background: repeating-linear-gradient(90deg,
+      transparent,
+      transparent 3px,
+      rgba(59, 130, 246, 0.2) 3px,
+      rgba(59, 130, 246, 0.2) 6px);
+  animation: rain 1.5s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Snow animation effects */
+.weather-background.snowy::before {
+  content: '❄️';
+  position: absolute;
+  top: -20px;
+  left: 20%;
+  animation: snowFall 3s linear infinite;
+  font-size: 12px;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.weather-background.snowy::after {
+  content: '❄️';
+  position: absolute;
+  top: -20px;
+  left: 70%;
+  animation: snowFall 4s linear infinite;
+  font-size: 10px;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Fog animation effects */
+.weather-background.foggy::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.3),
+      rgba(255, 255, 255, 0.1),
+      transparent);
+  animation: fogDrift 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Content positioning */
+.weather-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* Animations */
+@keyframes rain {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes snowFall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.8;
+  }
+
+  90% {
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(120px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fogDrift {
+
+  0%,
+  100% {
+    transform: translateX(-100%);
+  }
+
+  50% {
+    transform: translateX(100%);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .weather-background {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .weather-background {
+    padding: 16px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+  .weather-background.rainy::before,
+  .weather-background.rainy::after,
+  .weather-background.snowy::before,
+  .weather-background.snowy::after,
+  .weather-background.foggy::before {
+    animation: none;
+  }
+}

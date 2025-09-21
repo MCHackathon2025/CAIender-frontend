@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { fetchWeather } from '../../services/weatherAPI';
+import WeatherIcons, { getWeatherCondition, getTemperatureColor } from './WeatherIcons';
 import '../../styles/App.css';
+import './WeatherCard.css';
 
 /**
  * WeatherCard component - Displays weather information for a specific region
  * Provides loading states, error handling, and retry functionality
+ * Simplified design showing only weather icon and temperature
  */
+
 const WeatherCard = ({
   region,
   showDetails = false,
@@ -117,6 +121,8 @@ const WeatherCard = ({
           gap: '8px',
           color: 'var(--text-secondary)',
           fontSize: 'var(--font-size-sm)',
+          backgroundColor: 'transparent',
+          width: 'fit-content',
           ...style
         }}
       >
@@ -145,6 +151,8 @@ const WeatherCard = ({
           gap: '8px',
           color: 'var(--error-color)',
           fontSize: 'var(--font-size-sm)',
+          backgroundColor: 'transparent',
+          width: 'fit-content',
           ...style
         }}
       >
@@ -184,6 +192,8 @@ const WeatherCard = ({
           gap: '8px',
           color: 'var(--text-muted)',
           fontSize: 'var(--font-size-sm)',
+          backgroundColor: 'transparent',
+          width: 'fit-content',
           ...style
         }}
       >
@@ -192,8 +202,11 @@ const WeatherCard = ({
     );
   }
 
-  // Success state - Compact view
+  // Success state - Compact view (simplified)
   if (!showDetails) {
+    const weatherCondition = getWeatherCondition(weather.temperature, weather.humidity);
+    const tempColor = getTemperatureColor(weather.temperature);
+
     return (
       <div
         className={`weather-card compact ${className}`}
@@ -202,109 +215,97 @@ const WeatherCard = ({
           alignItems: 'center',
           justifyContent: 'center',
           gap: '8px',
-          color: 'var(--text-primary)',
-          fontSize: 'var(--font-size-sm)',
+          padding: '6px 10px',
+          backgroundColor: 'transparent',
+          transition: 'all 0.2s ease',
+          width: 'fit-content',
           ...style
         }}
-        title={`${weather.temperature}°C, ${weather.humidity}% humidity - ${region}${lastUpdated ? ` (${formatLastUpdated(lastUpdated)})` : ''}`}
+        title={`${weather.temperature}°C - ${region}${lastUpdated ? ` (${formatLastUpdated(lastUpdated)})` : ''}`}
       >
-        <span style={{ fontWeight: '500' }}>{weather.temperature}°C</span>
-        <div
+        <WeatherIcons
+          condition={weatherCondition}
+          size={18}
+          color={tempColor}
+          className="weather-icon"
+        />
+        <span
+          className="temperature"
           style={{
-            width: '20px',
-            height: '20px',
-            backgroundColor: 'var(--primary-color)',
-            borderRadius: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontSize: '12px'
+            fontWeight: '600',
+            fontSize: 'var(--font-size-sm)',
+            color: tempColor
           }}
-          title="Temperature"
         >
-          🌡️
-        </div>
-        <span>{weather.humidity}%</span>
+          {weather.temperature}°C
+        </span>
       </div>
     );
   }
 
-  // Success state - Detailed view
+  // Success state - Detailed view (simplified)
+  const weatherCondition = getWeatherCondition(weather.temperature, weather.humidity);
+  const tempColor = getTemperatureColor(weather.temperature);
+
   return (
     <div
       className={`weather-card detailed ${className}`}
       style={{
         display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-        padding: '12px',
-        backgroundColor: 'var(--background-color)',
-        borderRadius: 'var(--border-radius)',
-        border: '1px solid var(--border-color)',
-        boxShadow: 'var(--shadow-sm)',
-        minWidth: '200px',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '12px',
+        padding: '12px 16px',
+        backgroundColor: 'transparent',
+        width: 'fit-content',
+        margin: '0 auto',
         ...style
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h4 style={{ margin: 0, fontSize: 'var(--font-size-base)', color: 'var(--text-primary)' }}>
+      <WeatherIcons
+        condition={weatherCondition}
+        size={32}
+        color={tempColor}
+        className={`weather-icon ${weatherCondition}`}
+      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+        <span
+          className="temperature"
+          style={{
+            fontSize: 'var(--font-size-lg)',
+            fontWeight: '600',
+            color: tempColor,
+            lineHeight: 1
+          }}
+        >
+          {weather.temperature}°C
+        </span>
+        <span style={{
+          fontSize: 'var(--font-size-xs)',
+          color: 'var(--primary-color)',
+          textTransform: 'capitalize',
+          fontWeight: '500'
+        }}>
           {region}
-        </h4>
-        {lastUpdated && (
-          <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)' }}>
-            {formatLastUpdated(lastUpdated)}
-          </span>
-        )}
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: '600' }}>
-            {weather.temperature}°C
-          </span>
-          <div
-            style={{
-              width: '24px',
-              height: '24px',
-              backgroundColor: 'var(--primary-color)',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '14px'
-            }}
-          >
-            🌡️
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
-            Humidity:
-          </span>
-          <span style={{ fontWeight: '500' }}>
-            {weather.humidity}%
-          </span>
-        </div>
+        </span>
       </div>
 
       {refreshInterval > 0 && (
         <button
           onClick={() => fetchWeatherData()}
           style={{
-            background: 'var(--surface-color)',
-            border: '1px solid var(--border-color)',
-            borderRadius: 'var(--border-radius)',
-            padding: '4px 8px',
+            background: 'none',
+            border: 'none',
+            color: 'var(--text-muted)',
+            cursor: 'pointer',
             fontSize: 'var(--font-size-xs)',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer'
+            padding: '4px',
+            marginLeft: 'auto'
           }}
           disabled={loading}
+          title="Refresh weather"
         >
-          {loading ? 'Updating...' : 'Refresh'}
+          {loading ? '⟳' : '↻'}
         </button>
       )}
     </div>
