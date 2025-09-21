@@ -412,7 +412,7 @@ const DefaultPage = () => {
                                 {formatTimeFromISO(event.startTime)} ~ {formatTimeFromISO(event.endTime)} {event.title}
                               </div>
                               <div style={{ display: 'flex', gap: '8px' }}>
-                                {event.location && (
+                                {event.location && event.location !== 'null' && event.location.trim() !== '' && (
                                   <button
                                     onClick={() => navigateToLocation(event.location)}
                                     style={{
@@ -425,7 +425,7 @@ const DefaultPage = () => {
                                     }}
                                     title={`Navigate to ${event.location}`}
                                   >
-                                    <Navigation size={20} color="#fbbf24" />
+                                    <Navigation size={20} color="white" />
                                   </button>
                                 )}
                                 {style.showCheck && (
@@ -451,17 +451,17 @@ const DefaultPage = () => {
                                 )}
                               </div>
                             </div>
-                            {event.location && (
+                            {event.location && event.location !== 'null' && event.location.trim() !== '' && (
                               <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px',
-                                marginBottom: '12px',
-                                color: '#fbbf24',
-                                fontSize: '16px',
-                                fontWeight: '600'
+                                gap: '6px',
+                                marginBottom: '8px',
+                                color: 'white',
+                                fontSize: '14px',
+                                fontWeight: '400'
                               }}>
-                                <MapPin size={18} />
+                                <MapPin size={14} />
                                 <span>{event.location}</span>
                               </div>
                             )}
