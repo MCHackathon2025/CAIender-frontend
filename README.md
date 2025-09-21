@@ -29,18 +29,32 @@ The project, called **CAIendar**, is designed as an **AI Calendar × Life Design
 
 ```
 mc-hackathon-frontend/
-├── src/
-│   ├── components/        # Reusable UI components (Dashboard, Calendar, etc.)
-│   ├── contexts/          # Global state management (AuthContext)
-│   ├── styles/            # CSS stylesheets
+├── CAIandar.pdf           # Project slide deck
+├── dockerfile             # Container build config
+├── example_env.txt        # Example environment variables
+├── index.html             # Entry HTML file
+├── package.json           # Project metadata & scripts
+├── package-lock.json
+├── pictures/              # Project screenshots
+│   ├── add_events.jpg
+│   ├── calendar.jpg
+│   └── default_page.jpg
+├── README.md              # Project documentation
+├── src/                   # Source code
 │   ├── App.jsx            # Root app component
+│   ├── components/        # UI components (Calendar, Auth, Dashboard, etc.)
+│   ├── contexts/          # Global state (AuthContext)
+│   ├── hooks/             # Custom React hooks
+│   ├── pages/             # Page-level components (DefaultPage, LoginPage)
+│   ├── services/          # API & service modules (GraphQL, Firebase, Weather)
+│   ├── styles/            # Global and component CSS
+│   ├── test/              # Test setup & utilities
+│   ├── index.css          # Global CSS
 │   └── main.jsx           # Entry point
-├── public/                # Static assets
+├── tsconfig.json          # TypeScript config
+├── tsconfig.node.json     # TS config for Node
 ├── vite.config.js         # Vite config
-├── vitest.config.js       # Testing config
-├── package.json
-├── example_env.txt           # Example environment variables
-└── README.md
+└── vitest.config.js       # Testing config
 ```
 
 ---
@@ -79,6 +93,25 @@ mc-hackathon-frontend/
    ```bash
    npm run dev
    ```
+
+---
+
+## 📸 Screenshots
+
+* Default Page
+  ![Default Page](./pictures/default_page.jpg)
+
+* Calendar View
+  ![Calendar](./pictures/calendar.jpg)
+
+* Add Events Page
+  ![Add Events](./pictures/add_events.jpg)
+
+---
+
+## 📑 Slides
+
+The full project presentation is available here: [CAIandar.pdf](./CAIandar.pdf)
 
 ---
 
