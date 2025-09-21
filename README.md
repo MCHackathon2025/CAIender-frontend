@@ -35,7 +35,7 @@ mc-hackathon-frontend/
 ├── index.html             # Entry HTML file
 ├── package.json           # Project metadata & scripts
 ├── package-lock.json
-├── pictures/              # Project screenshots
+├── pictures/              # Demo images
 │   ├── add_events.jpg
 │   ├── calendar.jpg
 │   └── default_page.jpg
@@ -96,7 +96,7 @@ mc-hackathon-frontend/
 
 ---
 
-## 📸 Screenshots
+## 🎬 Demo
 
 * Default Page
   ![Default Page](./pictures/default_page.jpg)
