@@ -98,14 +98,11 @@ mc-hackathon-frontend/
 
 ## 🎬 Demo
 
-* Default Page
-  ![Default Page](./pictures/default_page.jpg)
+* Default Page <img src="./pictures/default_page.jpg" alt="Default Page" width="300"/>
 
-* Calendar View
-  ![Calendar](./pictures/calendar.jpg)
+* Calendar View <img src="./pictures/calendar.jpg" alt="Calendar" width="300"/>
 
-* Add Events Page
-  ![Add Events](./pictures/add_events.jpg)
+* Add Events Page <img src="./pictures/add_events.jpg" alt="Add Events" width="300"/>
 
 ---
 
