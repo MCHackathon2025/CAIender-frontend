@@ -119,3 +119,9 @@ The full project presentation is available here: [CAIandar.pdf](./CAIandar.pdf)
 * Fork the repository
 * Create a branch: `git checkout -b feature/your-feature`
 * Commit and open a PR
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
