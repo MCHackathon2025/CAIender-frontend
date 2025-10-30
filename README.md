@@ -82,6 +82,7 @@ mc-hackathon-frontend/
    ```env
    VITE_GRAPHQL_ENDPOINT=<your-api-endpoint>
    VITE_FIREBASE_API_KEY=<your-firebase-api-key>
+   VITE_API_PROXY_TARGET=<your-api-proxy-target>
    ```
 
 4. **Build the project**
