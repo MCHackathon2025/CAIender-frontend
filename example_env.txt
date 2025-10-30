@@ -1,2 +1,0 @@
-VITE_GRAPHQL_ENDPOINT=<your-api-endpoint>
-VITE_FIREBASE_API_KEY=<your-firebase-api-key>
