@@ -31,7 +31,7 @@ The project, called **CAIendar**, is designed as an **AI Calendar × Life Design
 mc-hackathon-frontend/
 ├── CAIandar.pdf           # Project slide deck
 ├── dockerfile             # Container build config
-├── example_env.txt        # Example environment variables
+├── .env.example           # Example environment variables
 ├── index.html             # Entry HTML file
 ├── package.json           # Project metadata & scripts
 ├── package-lock.json
@@ -68,14 +68,16 @@ mc-hackathon-frontend/
    cd mc-hackathon-frontend
    ```
 
-2. **Install dependencies**
+2. **Install dependencies (pnpm)**
 
    ```bash
-   npm install
+   corepack enable || true
+   corepack prepare pnpm@9.0.0 --activate || true
+   pnpm install
    ```
 
 3. **Configure environment variables**
-   Copy `example_env.txt` → `.env` and configure:
+   Copy `.env.example` → `.env` and configure:
 
    ```env
    VITE_GRAPHQL_ENDPOINT=<your-api-endpoint>
@@ -85,13 +87,13 @@ mc-hackathon-frontend/
 4. **Build the project**
 
    ```bash
-   npm run build
+   pnpm build
    ```
 
 5. **Run locally**
 
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
 ---
@@ -112,23 +114,8 @@ The full project presentation is available here: [CAIandar.pdf](./CAIandar.pdf)
 
 ---
 
-## 🔮 Future Development
-
-* **Google OAuth Integration** – Streamline user authentication and reduce account creation friction.
-* **Workflow Automation (n8n)** – Provide customizable workflows for different themes.
-* **Communication Integration** – Extend notifications to Email and messaging platforms.
-* **AI-Driven Event Broadcasting** – Enable group activity scheduling and AI-recommended event announcements.
-
----
-
 ## 👥 Contributing
 
 * Fork the repository
 * Create a branch: `git checkout -b feature/your-feature`
 * Commit and open a PR
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License.
